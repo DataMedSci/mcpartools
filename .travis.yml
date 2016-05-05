@@ -1,0 +1,16 @@
+language: generic
+
+os:
+  - linux
+
+# require Ubuntu 14.04
+sudo: required
+dist: trusty
+
+#before_install:
+#  - sudo apt-get -qq update
+#  - sudo apt-get install -y python3-scipy python3-pandas python3-matplotlib python3-pip
+#  - sudo pip3 install pydicom
+
+script:
+  - python3 -V
