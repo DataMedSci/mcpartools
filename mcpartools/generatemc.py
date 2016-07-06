@@ -31,7 +31,7 @@ def main():
     print("number of jobs", args.jobs_no)
 
     opt = Options(args)
-    generator = Generator(option=opt)
+    generator = Generator(options=opt)
     generator.run()
 
 if __name__ == '__main__':
