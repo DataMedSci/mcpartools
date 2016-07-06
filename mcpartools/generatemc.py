@@ -1,10 +1,12 @@
 import argparse
+import logging
+import sys
 
 from mcpartools.generator import Generator
 from mcpartools.generator import Options
 
 
-def main():
+def main(args=sys.argv[1:]):
     """
     Main function, called from CLI script
     :return:
@@ -25,14 +27,16 @@ def main():
                         type=int,
                         default=10,
                         help='number of parallel jobs')
+    parser.add_argument('input',
+                        type=str,
+                        help='path to input configuration')
     args = parser.parse_args()
 
-    print("number of particles", args.particle_no)
-    print("number of jobs", args.jobs_no)
+    logging.basicConfig(level=logging.DEBUG)
 
     opt = Options(args)
     generator = Generator(options=opt)
     generator.run()
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main(sys.argv[1:]))
