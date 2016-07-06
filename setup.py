@@ -147,7 +147,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'run_mcpartools=' + \
-            'mcpartools.run_mcpartools:main',
+            'mcpartools.generatemc:main',
         ],
     },
     cmdclass=get_cmdclass(),
