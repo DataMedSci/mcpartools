@@ -16,4 +16,4 @@
   exclude tox.ini
   exclude .travis.yml
   prune .travis
-  prune install_deps.sh
+  exclude install_deps.sh

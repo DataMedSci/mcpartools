@@ -1,5 +1,8 @@
 import argparse
 
+from mcpartools.generator import Generator
+from mcpartools.generator import Options
+
 
 def main():
     """
@@ -26,6 +29,10 @@ def main():
 
     print("number of particles", args.particle_no)
     print("number of jobs", args.jobs_no)
+
+    opt = Options(args)
+    generator = Generator(option=opt)
+    generator.run()
 
 if __name__ == '__main__':
     main()
