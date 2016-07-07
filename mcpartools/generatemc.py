@@ -41,7 +41,19 @@ def main(args=sys.argv[1:]):
     # TODO add grouping of options
     args = parser.parse_args()
 
-    logging.basicConfig(level=logging.DEBUG)
+    if args.quiet:
+        if args.quiet == 1:
+            level = "WARNING"
+        if args.quiet == 2:
+            level = "ERROR"
+        else:
+            level = "CRITICAL"
+    elif args.verbose:
+        level = "DEBUG"
+    else:
+        level = "INFO"
+
+    logging.basicConfig(level=level)
 
     opt = Options(args)
     generator = Generator(options=opt)

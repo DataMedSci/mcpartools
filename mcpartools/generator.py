@@ -2,6 +2,8 @@ import os
 import logging
 import time
 
+logger = logging.getLogger(__name__)
+
 
 class Options:
     def __init__(self, args):
@@ -16,7 +18,7 @@ class Options:
             self.root_dir = self.input_path
         else:
             self.root_dir = os.path.dirname(self.input_path)
-        logging.debug("Root directory: " + self.root_dir)
+        logger.debug("Root directory: " + self.root_dir)
 
     @property
     def valid(self):
@@ -51,10 +53,10 @@ class Generator:
 
     def generate_main_dir(self):
         dir_name = time.strftime("run_%Y%m%d_%H%M%S")
-        logging.debug("Generated main directory name: " + dir_name)
+        logger.debug("Generated main directory name: " + dir_name)
 
         dir_path = os.path.join(self.options.root_dir, dir_name)
-        logging.debug("Generated main directory path: " + dir_path)
+        logger.debug("Generated main directory path: " + dir_path)
 
         os.mkdir(dir_path)
 

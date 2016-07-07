@@ -10,6 +10,7 @@
   recursive-include tests *.py
   include versioneer.py
   include mcpartools/_version.py
+  include install_deps.sh
 
   prune .travis
   exclude .gitkeep
