@@ -2,6 +2,8 @@ import os
 import logging
 import time
 
+from mcpartools.scheduler.common import SchedulerDiscover
+
 logger = logging.getLogger(__name__)
 
 
@@ -30,6 +32,7 @@ class Generator:
         self.options = options
         print("number of particles", options.particle_no)
         print("number of jobs", options.jobs_no)
+        self.scheduler = SchedulerDiscover.get_scheduler()
 
     def run(self):
         if not self.options.valid:
@@ -59,9 +62,12 @@ class Generator:
         logger.debug("Generated main directory path: " + dir_path)
 
         os.mkdir(dir_path)
+        self.main_dir = dir_path
 
     def generate_submit_script(self):
-        pass
+        script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
+        self.scheduler.write_submit_script(script_path,
+                                           self.options.particle_no)
 
     def generate_workspace(self):
         pass

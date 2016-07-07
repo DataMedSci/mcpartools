@@ -22,7 +22,7 @@ def main(args=sys.argv[1:]):
                         action='count',
                         default=0,
                         help='Be silent')
-    parser.add_argument('-V','--version',
+    parser.add_argument('-V', '--version',
                         action='version',
                         version=mcpartools.__version__)
     parser.add_argument('-p', '--particle_no',

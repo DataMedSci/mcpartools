@@ -3,7 +3,6 @@ language: python
 cache:
   directories:
   - ~/.cache/pip
-  - ~/.pyenv
 
 before_cache:
   - rm -f $HOME/.cache/pip/log/debug.log
@@ -13,9 +12,10 @@ matrix:
         - os: linux
           python: 2.7
           env: TOXENV=py27
-        - os: linux
-          python: 3.2
-          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
+#       temporarily disable
+#        - os: linux
+#          python: 3.2
+#          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
         - os: linux
           python: 3.3
           env: TOXENV=py33
