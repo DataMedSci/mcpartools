@@ -13,13 +13,21 @@ def main(args=sys.argv[1:]):
     """
     import mcpartools
     parser = argparse.ArgumentParser()
-    parser.add_argument('--verbose',
-                        action='store_true',
-                        help='be verbose')
-    parser.add_argument('--version',
+    parser.add_argument('-v', '--verbose',
+                        action='count',
+                        default=0,
+                        help='Give more output. Option is additive, '
+                             'and can be used up to 3 times')
+    parser.add_argument('-q', '--quiet',
+                        action='count',
+                        default=0,
+                        help='Be silent')
+    parser.add_argument('-V','--version',
                         action='version',
                         version=mcpartools.__version__)
     parser.add_argument('-p', '--particle_no',
+                        dest='particle_no',
+                        metavar='particle_no',
                         type=int,
                         default=10000,
                         help='number of primary particles per job')
@@ -30,6 +38,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
+    # TODO add grouping of options
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG)

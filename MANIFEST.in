@@ -11,9 +11,9 @@
   include versioneer.py
   include mcpartools/_version.py
 
+  prune .travis
   exclude .gitkeep
   exclude .gitconfig
   exclude tox.ini
   exclude .travis.yml
-  prune .travis
-  exclude install_deps.sh
+  exclude *.sh
