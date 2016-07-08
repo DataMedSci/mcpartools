@@ -6,6 +6,7 @@ from mcpartools.mcengine.shieldhit import ShieldHit
 
 logger = logging.getLogger(__name__)
 
+
 class EngineDiscover:
     def __init__(self):
         pass
@@ -14,11 +15,10 @@ class EngineDiscover:
     def get_mcengine(cls, input_path):
         if os.path.isfile(input_path) and input_path.endswith('.inp'):
             logger.debug("Discovered MC engine FLUKA")
-            return Fluka()
+            return Fluka(input_path)
         elif os.path.isdir(input_path):
             logger.debug("Discovered MC engine SHIELDHIT")
-            return ShieldHit()
+            return ShieldHit(input_path)
         else:
             logger.error("Input file doesn't match available MC codes")
             return None
-

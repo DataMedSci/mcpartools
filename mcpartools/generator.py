@@ -1,5 +1,6 @@
 import os
 import logging
+import shutil
 import time
 
 from mcpartools.mcengine.common import EngineDiscover
@@ -93,12 +94,27 @@ class Generator:
             os.mkdir(jobdir_path)
             logger.debug("Generated job directory path: " + jobdir_path)
 
+            self.mc_engine.randomize(jobid)
+            self.mc_engine.set_particle_no(self.options.particle_no)
+            self.mc_engine.save_input(jobdir_path)
+
+            self.mc_engine.save_run_script(jobdir_path)
+
+        self.scheduler.write_main_run_script(self.workspace_dir)
+        self.mc_engine.write_collect_script(self.main_dir)
+
     def copy_input(self):
         indir_name = 'input'
         indir_path = os.path.join(self.main_dir, indir_name)
         logger.debug("Generated input directory path: " + indir_path)
         os.mkdir(indir_path)
         self.input_dir = indir_path
+
+        for f in self.mc_engine.input_files:
+            f_base_name = os.path.basename(f)
+            dest_file = os.path.join(self.input_dir, f_base_name)
+            logger.debug("Copying " + f + " to " + dest_file)
+            shutil.copyfile(f, dest_file)
 
     def save_logs(self):
         pass
