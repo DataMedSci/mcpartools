@@ -18,7 +18,6 @@ class JobScheduler:
     def write_main_run_script(self, output_dir):
         out_file_name = "main_run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
-        out_fd = open(out_file_path, 'w')
         fd = open(out_file_path, 'w')
         fd.write(self.main_run_script_body())
         logging.debug("Saved main run script: " + out_file_path)

@@ -98,7 +98,7 @@ class Generator:
             self.mc_engine.set_particle_no(self.options.particle_no)
             self.mc_engine.save_input(jobdir_path)
 
-            self.mc_engine.save_run_script(jobdir_path)
+            self.mc_engine.save_run_script(jobdir_path, jobid)
 
         self.scheduler.write_main_run_script(self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)

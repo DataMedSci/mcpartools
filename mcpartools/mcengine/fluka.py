@@ -12,7 +12,7 @@ class Fluka(Engine):
 # go to working directory
 cd {:s}
 # run rfluka
-rfluka -N -D
+rfluka -N{:d} -M{:d} {:s}
 """
 
     collect_script = """#!/bin/bash
@@ -67,8 +67,10 @@ cp XXX YYY {:s}
             out_fd.write(l)
         out_fd.close()
 
-    def save_run_script(self, output_dir):
-        contents = self.run_script.format(output_dir)
+    def save_run_script(self, output_dir, jobid):
+        input_base_name = os.path.basename(self.input_path)[:-4]
+        contents = self.run_script.format(output_dir, jobid,
+                                          jobid + 1, input_base_name)
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')

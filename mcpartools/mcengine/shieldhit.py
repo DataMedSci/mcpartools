@@ -29,7 +29,6 @@ shieldhit .... {:s}
         "nothing, we will use switches -b, -g etc"
         pass
 
-
     def save_run_script(self, output_dir):
         contents = self.run_script.format(output_dir)
         out_file_name = "run.sh"
