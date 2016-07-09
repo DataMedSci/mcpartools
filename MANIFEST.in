@@ -11,6 +11,8 @@
   include versioneer.py
   include mcpartools/_version.py
   include install_deps.sh
+  include mcpartools/mcengine/data/*.sh
+  include mcpartools/scheduler/data/*.sh
 
   prune .travis
   exclude .gitkeep
@@ -18,3 +20,4 @@
   exclude tox.ini
   exclude .travis.yml
   exclude *.sh
+

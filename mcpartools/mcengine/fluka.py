@@ -8,13 +8,6 @@ logger = logging.getLogger(__name__)
 
 class Fluka(Engine):
 
-    run_script = """#!/bin/bash
-# go to working directory
-cd {:s}
-# run rfluka
-rfluka -N{:d} -M{:d} {:s}
-"""
-
     collect_script = """#!/bin/bash
 cp XXX YYY {:s}
 """
@@ -22,7 +15,10 @@ cp XXX YYY {:s}
     def __init__(self, input_path, mc_run_script):
         super().__init__(input_path, mc_run_script)
         if self.run_script is None:
-            self.run_script = Fluka.run_script
+            from pkg_resources import resource_string
+            tpl = resource_string(__name__,
+                                  os.path.join('data', 'run_fluka.sh'))
+            self.run_script = tpl.decode('ascii')
         in_file = self.input_path
         in_fd = open(in_file, 'r')
         self.input_lines = in_fd.readlines()
