@@ -19,8 +19,10 @@ rfluka -N{:d} -M{:d} {:s}
 cp XXX YYY {:s}
 """
 
-    def __init__(self, input_path):
-        super().__init__(input_path)
+    def __init__(self, input_path, mc_run_script):
+        super().__init__(input_path, mc_run_script)
+        if self.run_script is None:
+            self.run_script = Fluka.run_script
         in_file = self.input_path
         in_fd = open(in_file, 'r')
         self.input_lines = in_fd.readlines()

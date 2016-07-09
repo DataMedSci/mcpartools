@@ -12,13 +12,13 @@ class EngineDiscover:
         pass
 
     @classmethod
-    def get_mcengine(cls, input_path):
+    def get_mcengine(cls, input_path, mc_run_script):
         if os.path.isfile(input_path) and input_path.endswith('.inp'):
             logger.debug("Discovered MC engine FLUKA")
-            return Fluka(input_path)
+            return Fluka(input_path, mc_run_script)
         elif os.path.isdir(input_path):
             logger.debug("Discovered MC engine SHIELDHIT")
-            return ShieldHit(input_path)
+            return ShieldHit(input_path, mc_run_script)
         else:
             logger.error("Input file doesn't match available MC codes")
             return None

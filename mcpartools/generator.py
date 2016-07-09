@@ -13,11 +13,17 @@ class Options:
     def __init__(self, args):
         self._valid = True
 
-        # TODO add check if > 1
         self.particle_no = args.particle_no
+        if self.particle_no < 1:
+            logging.error("Number of particles should be positive integer "
+                          "(got " + self.particle_no + " instead")
+            self._valid = False
 
-        # TODO add check if > 0
         self.jobs_no = args.jobs_no
+        if self.jobs_no < 1:
+            logging.error("Number of jobs should be positive integer "
+                          "(got " + self.jobs_no + " instead")
+            self._valid = False
 
         self.input_path = args.input
         if not os.path.exists(self.input_path):
@@ -30,6 +36,15 @@ class Options:
             self.root_dir = os.path.dirname(self.input_path)
         logger.debug("Root directory: " + self.root_dir)
 
+        self.mc_run_template = args.mc_run_template
+        if self.mc_run_template is None:
+            pass
+            # use from script resources
+        elif not os.path.exists(self.mc_run_template):
+            logging.error("MC run template " + self.input_path +
+                          " doesn't exists")
+            self._valid = False
+
     @property
     def valid(self):
         return self._valid
@@ -41,7 +56,9 @@ class Generator:
         print("number of particles", options.particle_no)
         print("number of jobs", options.jobs_no)
         self.scheduler = SchedulerDiscover.get_scheduler()
-        self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path)
+        self.mc_engine = EngineDiscover.get_mcengine(
+            self.options.input_path,
+            self.options.mc_run_template)
 
     def run(self):
         if not self.options.valid:
@@ -51,11 +68,11 @@ class Generator:
         # generate main dir according to date
         self.generate_main_dir()
 
-        # generate submit script
-        self.generate_submit_script()
-
         # generate tmp dir with workspace
         self.generate_workspace()
+
+        # generate submit script
+        self.generate_submit_script()
 
         # copy input files
         self.copy_input()
@@ -73,11 +90,6 @@ class Generator:
         os.mkdir(dir_path)
         self.main_dir = dir_path
 
-    def generate_submit_script(self):
-        script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
-        self.scheduler.write_submit_script(script_path,
-                                           self.options.particle_no)
-
     def generate_workspace(self):
         wspdir_name = 'workspace'
         wspdir_path = os.path.join(self.main_dir, wspdir_name)
@@ -88,20 +100,26 @@ class Generator:
         for jobid in range(self.options.jobs_no):
             print(jobid)
             # TODO add padding with zeros
-            jobdir_name = "job_{:d}".format(jobid)
+            jobdir_name = "job_{:d}".format(jobid + 1)
             logger.debug("Generated job directory name: " + jobdir_name)
             jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
             os.mkdir(jobdir_path)
             logger.debug("Generated job directory path: " + jobdir_path)
 
-            self.mc_engine.randomize(jobid)
+            self.mc_engine.randomize(jobid + 1)
             self.mc_engine.set_particle_no(self.options.particle_no)
             self.mc_engine.save_input(jobdir_path)
 
-            self.mc_engine.save_run_script(jobdir_path, jobid)
+            self.mc_engine.save_run_script(jobdir_path, jobid + 1)
 
         self.scheduler.write_main_run_script(self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
+
+    def generate_submit_script(self):
+        script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
+        self.scheduler.write_submit_script(script_path,
+                                           self.options.particle_no,
+                                           self.workspace_dir)
 
     def copy_input(self):
         indir_name = 'input'

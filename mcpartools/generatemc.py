@@ -35,6 +35,10 @@ def main(args=sys.argv[1:]):
                         type=int,
                         default=10,
                         help='number of parallel jobs')
+    parser.add_argument('-m', '--mc_run_template',
+                        type=str,
+                        default=None,
+                        help='path to optional MC run script')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
