@@ -13,6 +13,7 @@
   include install_deps.sh
   include mcpartools/mcengine/data/*.sh
   include mcpartools/scheduler/data/*.sh
+  include tests/res/*.inp
 
   prune .travis
   exclude .gitkeep

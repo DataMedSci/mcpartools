@@ -47,7 +47,7 @@ def main(args=sys.argv[1:]):
                         type=str,
                         help='path to input configuration')
     # TODO add grouping of options
-    args = parser.parse_args()
+    args = parser.parse_args(args)
 
     if args.quiet:
         if args.quiet == 1:
@@ -66,6 +66,8 @@ def main(args=sys.argv[1:]):
     opt = Options(args)
     generator = Generator(options=opt)
     generator.run()
+
+    return 0
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv[1:]))
