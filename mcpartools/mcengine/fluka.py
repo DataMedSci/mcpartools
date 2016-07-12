@@ -87,6 +87,7 @@ cp XXX YYY {:s}
         out_fd = open(out_file_path, 'w')
         out_fd.write(contents)
         out_fd.close()
+        os.chmod(out_file_path, 0o750)
 
     def write_collect_script(self, output_dir):
         contents = self.collect_script.format(output_dir)
@@ -95,3 +96,4 @@ cp XXX YYY {:s}
         out_fd = open(out_file_path, 'w')
         out_fd.write(contents)
         out_fd.close()
+        os.chmod(out_file_path, 0o750)

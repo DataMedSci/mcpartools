@@ -45,11 +45,6 @@ class Options:
             self._valid = False
 
         self.scheduler_options = args.scheduler_options
-        if self.scheduler_options is not None and \
-                not os.path.exists(self.scheduler_options):
-            logging.error("Scheduler options file " + self.scheduler_options +
-                          " doesn't exists")
-            self._valid = False
 
     @property
     def valid(self):

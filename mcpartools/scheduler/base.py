@@ -5,10 +5,35 @@ logger = logging.getLogger(__name__)
 
 
 class JobScheduler:
-    def __init__(self, options_file_path):
-        self.options_file_path = options_file_path
+    def __init__(self, scheduler_options):
+        # check if user provided path to options file
+        if os.path.exists(scheduler_options):
+            opt_fd = open(scheduler_options, 'r')
+            options_file_content = opt_fd.read()
+            opt_fd.close()
+            self.options_content = options_file_content
+        if scheduler_options is None:
+            self.options_content = "# no user options provided"
 
     submit_script = 'submit.sh'
+    main_run_script = 'main_run.sh'
+
+    def submit_script_body(self, jobs_no, workspace_dir):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.submit_script_template)
+        self.submit_script = tpl.decode('ascii')
+
+        script_path = os.path.join(workspace_dir, "main_run.sh")
+
+        return self.submit_script.format(self.options_content,
+                                         jobs_no, script_path)
+
+    def main_run_script_body(self, workspace_dir):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.main_run_script_template)
+        self.main_run_script = tpl.decode('ascii').format(workspace_dir)
+
+        return self.main_run_script
 
     def write_submit_script(self, script_path, jobs_no, workspace_dir):
         fd = open(script_path, 'w')
@@ -21,11 +46,10 @@ class JobScheduler:
         logger.debug("Workspace " + abs_path_workspace)
 
     def write_main_run_script(self, output_dir):
-        out_file_name = "main_run.sh"
-        out_file_path = os.path.join(output_dir, out_file_name)
-        output_dir_abs_path = os.path.abspath(output_dir)
+        output_dir_abspath = os.path.abspath(output_dir)
+        out_file_path = os.path.join(output_dir_abspath, self.main_run_script)
         fd = open(out_file_path, 'w')
-        fd.write(self.main_run_script_body(output_dir_abs_path))
+        fd.write(self.main_run_script_body(output_dir_abspath))
         fd.close()
         os.chmod(out_file_path, 0o750)
         logger.debug("Saved main run script: " + out_file_path)
