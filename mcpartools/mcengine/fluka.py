@@ -1,5 +1,6 @@
 import logging
 import os
+from pkg_resources import resource_string
 
 from mcpartools.mcengine.mcengine import Engine
 
@@ -8,9 +9,7 @@ logger = logging.getLogger(__name__)
 
 class Fluka(Engine):
 
-    collect_script = """#!/bin/bash
-cp XXX YYY {:s}
-"""
+    collect_script = os.path.join('data', 'collect_fluka.sh')
 
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
 
@@ -19,7 +18,6 @@ cp XXX YYY {:s}
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
-            from pkg_resources import resource_string
             tpl = resource_string(__name__, self.default_run_script_path)
             self.run_script_content = tpl.decode('ascii')
             logger.debug("Using default run script: " +
@@ -33,6 +31,8 @@ cp XXX YYY {:s}
         in_fd = open(in_file, 'r')
         self.input_lines = in_fd.readlines()
         in_fd.close()
+
+        self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
     @property
     def input_files(self):
@@ -91,7 +91,9 @@ cp XXX YYY {:s}
         os.chmod(out_file_path, 0o750)
 
     def write_collect_script(self, output_dir):
-        contents = self.collect_script.format(output_dir)
+        output_dir_abs_path = os.path.abspath(output_dir)
+        contents = self.collect_script_content.format(
+            output_dir = output_dir_abs_path)
         out_file_name = "collect.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
