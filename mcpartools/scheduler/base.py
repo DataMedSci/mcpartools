@@ -5,8 +5,8 @@ logger = logging.getLogger(__name__)
 
 
 class JobScheduler:
-    def __init__(self):
-        pass
+    def __init__(self, options_file_path):
+        self.options_file_path = options_file_path
 
     submit_script = 'submit.sh'
 

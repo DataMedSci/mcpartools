@@ -10,6 +10,6 @@ class SchedulerDiscover:
         pass
 
     @classmethod
-    def get_scheduler(cls):
+    def get_scheduler(cls, scheduler_options):
         logger.debug("Discovered job scheduler SLURM")
-        return Slurm()
+        return Slurm(scheduler_options)

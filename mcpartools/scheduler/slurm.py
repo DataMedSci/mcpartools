@@ -4,20 +4,33 @@ from mcpartools.scheduler.base import JobScheduler
 
 
 class Slurm(JobScheduler):
-    pass
 
-    submit_script_template = """#!/bin/bash
-sbatch -A ccbmc5 -p plgrid --time=1:00:00 --array=1-{:d} {:s}
-"""
+    def __init__(self, options_file_path):
+        super().__init__(options_file_path)
+        if options_file_path is None:
+            self.options_file_content = "# no user options provided"
+        else:
+            opt_fd = open(self.options_file_path, 'r')
+            self.options_file_content = opt_fd.read()
+            opt_fd.close()
 
-    main_run_script_template = """#!/bin/bash
-./job_$SLURM_ARRAY_TASK_ID/run.sh
-"""
+    submit_script_template = os.path.join('data', 'submit_slurm.sh')
+
+    main_run_script_template = os.path.join('data', 'run_slurm.sh')
 
     def submit_script_body(self, particle_no, workspace_dir):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.submit_script_template)
+        self.submit_script = tpl.decode('ascii')
+
         script_path = os.path.join(workspace_dir, "main_run.sh")
-        return self.submit_script_template.format(particle_no, script_path)
+
+        return self.submit_script.format(self.options_file_content,
+                                         particle_no, script_path)
 
     def main_run_script_body(self):
-        # TODO fix it
-        return self.main_run_script_template
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.main_run_script_template)
+        self.main_run_script = tpl.decode('ascii')
+
+        return self.main_run_script

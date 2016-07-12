@@ -39,6 +39,10 @@ def main(args=sys.argv[1:]):
                         type=str,
                         default=None,
                         help='path to optional MC run script')
+    parser.add_argument('-s', '--scheduler_options',
+                        type=str,
+                        default=None,
+                        help='path to optional scheduler options file')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')

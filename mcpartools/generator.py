@@ -37,11 +37,16 @@ class Options:
         logger.debug("Root directory: " + self.root_dir)
 
         self.mc_run_template = args.mc_run_template
-        if self.mc_run_template is None:
-            pass
-            # use from script resources
-        elif not os.path.exists(self.mc_run_template):
-            logging.error("MC run template " + self.input_path +
+        if self.mc_run_template is not None and \
+                not os.path.exists(self.mc_run_template):
+            logging.error("MC run template " + self.mc_run_template +
+                          " doesn't exists")
+            self._valid = False
+
+        self.scheduler_options = args.scheduler_options
+        if self.scheduler_options is not None and \
+                not os.path.exists(self.scheduler_options):
+            logging.error("Scheduler options file " + self.scheduler_options +
                           " doesn't exists")
             self._valid = False
 
@@ -55,7 +60,9 @@ class Generator:
         self.options = options
         print("number of particles", options.particle_no)
         print("number of jobs", options.jobs_no)
-        self.scheduler = SchedulerDiscover.get_scheduler()
+        self.scheduler = SchedulerDiscover.get_scheduler(
+            self.options.scheduler_options
+        )
         self.mc_engine = EngineDiscover.get_mcengine(
             self.options.input_path,
             self.options.mc_run_template)

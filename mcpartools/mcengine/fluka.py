@@ -12,13 +12,23 @@ class Fluka(Engine):
 cp XXX YYY {:s}
 """
 
+    default_run_script_path = os.path.join('data', 'run_fluka.sh')
+
     def __init__(self, input_path, mc_run_script):
         super().__init__(input_path, mc_run_script)
-        if self.run_script is None:
+
+        # user didn't provided path to input scripts, use default
+        if self.run_script_path is None:
             from pkg_resources import resource_string
-            tpl = resource_string(__name__,
-                                  os.path.join('data', 'run_fluka.sh'))
-            self.run_script = tpl.decode('ascii')
+            tpl = resource_string(__name__, self.default_run_script_path)
+            self.run_script_content = tpl.decode('ascii')
+            logger.debug("Using default run script: " +
+                         self.default_run_script_path)
+        else:
+            tpl_fd = open(self.run_script_path, 'r')
+            self.run_script_content = tpl_fd.read()
+            tpl_fd.close()
+            logger.debug("Using user run script: " + self.run_script_path)
         in_file = self.input_path
         in_fd = open(in_file, 'r')
         self.input_lines = in_fd.readlines()
@@ -67,8 +77,10 @@ cp XXX YYY {:s}
 
     def save_run_script(self, output_dir, jobid):
         input_base_name = os.path.basename(self.input_path)[:-4]
-        contents = self.run_script.format(output_dir, jobid,
-                                          jobid + 1, input_base_name)
+        contents = self.run_script_content.format(output_dir,
+                                                  jobid,
+                                                  jobid + 1,
+                                                  input_base_name)
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
