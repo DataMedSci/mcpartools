@@ -7,13 +7,18 @@ logger = logging.getLogger(__name__)
 class JobScheduler:
     def __init__(self, scheduler_options):
         # check if user provided path to options file
-        if os.path.exists(scheduler_options):
+        if scheduler_options is None:
+            self.options_header = "# no user options provided"
+            self.options_args = ""
+        elif os.path.exists(scheduler_options):
             opt_fd = open(scheduler_options, 'r')
             options_file_content = opt_fd.read()
             opt_fd.close()
-            self.options_content = options_file_content
-        if scheduler_options is None:
-            self.options_content = "# no user options provided"
+            self.options_header = options_file_content
+            self.options_args = ""
+        else:
+            self.options_header = "# no user options provided"
+            self.options_args = scheduler_options
 
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
@@ -25,7 +30,8 @@ class JobScheduler:
 
         script_path = os.path.join(workspace_dir, "main_run.sh")
 
-        return self.submit_script.format(self.options_content,
+        return self.submit_script.format(self.options_header,
+                                         self.options_args,
                                          jobs_no, script_path)
 
     def main_run_script_body(self, workspace_dir):

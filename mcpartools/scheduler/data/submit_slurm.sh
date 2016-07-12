@@ -1,3 +1,3 @@
 #!/bin/bash
 {:s}
-sbatch --array=1-{:d} {:s}
+sbatch {:s} --array=1-{:d} {:s}
