@@ -10,10 +10,14 @@
   recursive-include tests *.py
   include versioneer.py
   include mcpartools/_version.py
+  include install_deps.sh
+  include mcpartools/mcengine/data/*.sh
+  include mcpartools/scheduler/data/*.sh
 
+  prune .travis
   exclude .gitkeep
   exclude .gitconfig
   exclude tox.ini
   exclude .travis.yml
-  prune .travis
-  prune install_deps.sh
+  exclude *.sh
+

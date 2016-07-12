@@ -114,7 +114,11 @@ with open('README.rst') as readme_file:
 setuptools.setup(
     name='mcpartools',
     version=get_version(),
-    packages=['mcpartools'],
+    packages=setuptools.find_packages(exclude=["tests"]),
+    package_data={
+        'mcpartools.mcengine.data': ['*.sh'],
+        'mcpartools.scheduler.data': ['*.sh'],
+    },
     url='https://github.com/DataMedSci/mcpartools',
     license='GPL',
     author='Leszek Grzanka',
