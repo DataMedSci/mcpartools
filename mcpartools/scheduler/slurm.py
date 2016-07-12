@@ -18,7 +18,7 @@ class Slurm(JobScheduler):
 
     main_run_script_template = os.path.join('data', 'run_slurm.sh')
 
-    def submit_script_body(self, particle_no, workspace_dir):
+    def submit_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.submit_script_template)
         self.submit_script = tpl.decode('ascii')
@@ -26,11 +26,11 @@ class Slurm(JobScheduler):
         script_path = os.path.join(workspace_dir, "main_run.sh")
 
         return self.submit_script.format(self.options_file_content,
-                                         particle_no, script_path)
+                                         jobs_no, script_path)
 
-    def main_run_script_body(self):
+    def main_run_script_body(self, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.main_run_script_template)
-        self.main_run_script = tpl.decode('ascii')
+        self.main_run_script = tpl.decode('ascii').format(workspace_dir)
 
         return self.main_run_script

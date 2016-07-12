@@ -15,26 +15,27 @@ class Options:
 
         self.particle_no = args.particle_no
         if self.particle_no < 1:
-            logging.error("Number of particles should be positive integer "
-                          "(got " + self.particle_no + " instead")
+            logger.error("Number of particles should be positive integer "
+                         "(got " + str(self.particle_no) + " instead")
             self._valid = False
 
         self.jobs_no = args.jobs_no
         if self.jobs_no < 1:
-            logging.error("Number of jobs should be positive integer "
-                          "(got " + self.jobs_no + " instead")
+            logger.error("Number of jobs should be positive integer "
+                         "(got " + str(self.jobs_no) + " instead")
             self._valid = False
 
         self.input_path = args.input
         if not os.path.exists(self.input_path):
-            logging.error("Input path " + self.input_path + " doesn't exists")
+            logger.error("Input path " + str(self.input_path) +
+                         " doesn't exists")
             self._valid = False
 
         if os.path.isdir(self.input_path):
             self.root_dir = self.input_path
         else:
             self.root_dir = os.path.dirname(self.input_path)
-        logger.debug("Root directory: " + self.root_dir)
+        logger.debug("Root directory: " + str(self.root_dir))
 
         self.mc_run_template = args.mc_run_template
         if self.mc_run_template is not None and \
@@ -69,7 +70,7 @@ class Generator:
 
     def run(self):
         if not self.options.valid:
-            logging.error("Invalid options, aborting run")
+            logger.error("Invalid options, aborting run")
             return
 
         # generate main dir according to date
@@ -124,8 +125,10 @@ class Generator:
 
     def generate_submit_script(self):
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
+        logger.debug("Preparation to generate " + script_path)
+        logger.debug("Jobs no " + str(self.options.jobs_no))
         self.scheduler.write_submit_script(script_path,
-                                           self.options.particle_no,
+                                           self.options.jobs_no,
                                            self.workspace_dir)
 
     def copy_input(self):
