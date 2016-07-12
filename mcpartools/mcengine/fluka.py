@@ -43,6 +43,7 @@ cp XXX YYY {:s}
 
     def randomize(self, new_seed):
         result = []
+        # TODO think of using flair API for that purpose
         for l in self.input_lines:
             # TODO better discovery needed
             if l.startswith("RANDOMIZ"):
@@ -78,10 +79,10 @@ cp XXX YYY {:s}
     def save_run_script(self, output_dir, jobid):
         input_base_name = os.path.basename(self.input_path)[:-4]
         output_dir_abs_path = os.path.abspath(output_dir)
-        contents = self.run_script_content.format(output_dir_abs_path,
-                                                  jobid,
-                                                  jobid + 1,
-                                                  input_base_name)
+        contents = self.run_script_content.format(
+            working_directory = output_dir_abs_path,
+            input_basename = input_base_name,
+            job_id = jobid)
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')

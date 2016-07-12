@@ -54,8 +54,6 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        print("number of particles", options.particle_no)
-        print("number of jobs", options.jobs_no)
         self.scheduler = SchedulerDiscover.get_scheduler(
             self.options.scheduler_options
         )
@@ -101,7 +99,6 @@ class Generator:
         self.workspace_dir = wspdir_path
 
         for jobid in range(self.options.jobs_no):
-            print(jobid)
             # TODO add padding with zeros
             jobdir_name = "job_{:d}".format(jobid + 1)
             logger.debug("Generated job directory name: " + jobdir_name)
