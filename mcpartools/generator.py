@@ -99,8 +99,7 @@ class Generator:
         self.workspace_dir = wspdir_path
 
         for jobid in range(self.options.jobs_no):
-            # TODO add padding with zeros
-            jobdir_name = "job_{:d}".format(jobid + 1)
+            jobdir_name = "job_{:04d}".format(jobid + 1)
             logger.debug("Generated job directory name: " + jobdir_name)
             jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
             os.mkdir(jobdir_path)

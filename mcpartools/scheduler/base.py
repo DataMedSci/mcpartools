@@ -30,14 +30,16 @@ class JobScheduler:
 
         script_path = os.path.join(workspace_dir, "main_run.sh")
 
-        return self.submit_script.format(self.options_header,
-                                         self.options_args,
-                                         jobs_no, script_path)
+        return self.submit_script.format(options_header=self.options_header,
+                                         options_args=self.options_args,
+                                         jobs_no=jobs_no,
+                                         script_path=script_path)
 
     def main_run_script_body(self, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.main_run_script_template)
-        self.main_run_script = tpl.decode('ascii').format(workspace_dir)
+        self.main_run_script = tpl.decode('ascii').format(
+            workspace_dir=workspace_dir)
 
         return self.main_run_script
 

@@ -32,7 +32,8 @@ class Fluka(Engine):
         self.input_lines = in_fd.readlines()
         in_fd.close()
 
-        self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
+        self.collect_script_content = resource_string(
+            __name__, self.collect_script).decode('ascii')
 
     @property
     def input_files(self):
@@ -80,9 +81,9 @@ class Fluka(Engine):
         input_base_name = os.path.basename(self.input_path)[:-4]
         output_dir_abs_path = os.path.abspath(output_dir)
         contents = self.run_script_content.format(
-            working_directory = output_dir_abs_path,
-            input_basename = input_base_name,
-            job_id = jobid)
+            working_directory=output_dir_abs_path,
+            input_basename=input_base_name,
+            job_id=jobid)
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
@@ -93,7 +94,7 @@ class Fluka(Engine):
     def write_collect_script(self, output_dir):
         output_dir_abs_path = os.path.abspath(output_dir)
         contents = self.collect_script_content.format(
-            output_dir = output_dir_abs_path)
+            output_dir=output_dir_abs_path)
         out_file_name = "collect.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
