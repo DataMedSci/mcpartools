@@ -14,7 +14,7 @@ class Fluka(Engine):
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
 
     def __init__(self, input_path, mc_run_script):
-        super().__init__(input_path, mc_run_script)
+        Engine.__init__(self, input_path, mc_run_script)
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
