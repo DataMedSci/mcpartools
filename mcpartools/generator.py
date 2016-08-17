@@ -54,12 +54,8 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        self.scheduler = SchedulerDiscover.get_scheduler(
-            self.options.scheduler_options
-        )
-        self.mc_engine = EngineDiscover.get_mcengine(
-            self.options.input_path,
-            self.options.mc_run_template)
+        self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options)
+        self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path, self.options.mc_run_template)
 
     def run(self):
         if not self.options.valid:
@@ -118,9 +114,7 @@ class Generator:
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
         logger.debug("Jobs no " + str(self.options.jobs_no))
-        self.scheduler.write_submit_script(script_path,
-                                           self.options.jobs_no,
-                                           self.workspace_dir)
+        self.scheduler.write_submit_script(script_path, self.options.jobs_no, self.workspace_dir)
 
     def copy_input(self):
         indir_name = 'input'

@@ -11,8 +11,7 @@ class TestFunMethod(unittest.TestCase):
         self.assertRaises(SystemExit, generatemc.main, ["--version"])
 
     def test_input_ok(self):
-        generatemc.main(["-j", "2", "-p", "100",
-                         "tests/res/sample_fluka.inp"])
+        generatemc.main(["-j", "2", "-p", "100", "tests/res/sample_fluka.inp"])
 
     def test_input2(self):
         with self.assertRaises(SystemExit) as cm:

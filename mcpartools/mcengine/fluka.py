@@ -20,8 +20,7 @@ class Fluka(Engine):
         if self.run_script_path is None:
             tpl = resource_string(__name__, self.default_run_script_path)
             self.run_script_content = tpl.decode('ascii')
-            logger.debug("Using default run script: " +
-                         self.default_run_script_path)
+            logger.debug("Using default run script: " + self.default_run_script_path)
         else:
             tpl_fd = open(self.run_script_path, 'r')
             self.run_script_content = tpl_fd.read()
@@ -32,8 +31,7 @@ class Fluka(Engine):
         self.input_lines = in_fd.readlines()
         in_fd.close()
 
-        self.collect_script_content = resource_string(
-            __name__, self.collect_script).decode('ascii')
+        self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
     @property
     def input_files(self):
@@ -93,8 +91,7 @@ class Fluka(Engine):
 
     def write_collect_script(self, output_dir):
         output_dir_abs_path = os.path.abspath(output_dir)
-        contents = self.collect_script_content.format(
-            output_dir=output_dir_abs_path)
+        contents = self.collect_script_content.format(output_dir=output_dir_abs_path)
         out_file_name = "collect.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
