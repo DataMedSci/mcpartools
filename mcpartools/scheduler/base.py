@@ -38,8 +38,7 @@ class JobScheduler:
     def main_run_script_body(self, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.main_run_script_template)
-        self.main_run_script = tpl.decode('ascii').format(
-            workspace_dir=workspace_dir)
+        self.main_run_script = tpl.decode('ascii').format(workspace_dir=workspace_dir)
 
         return self.main_run_script
 
