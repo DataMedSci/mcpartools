@@ -60,7 +60,7 @@ class Generator:
     def run(self):
         if not self.options.valid:
             logger.error("Invalid options, aborting run")
-            return
+            return None
 
         # generate main dir according to date
         self.generate_main_dir()
@@ -76,6 +76,8 @@ class Generator:
 
         # save logs
         self.save_logs()
+
+        return 0
 
     def generate_main_dir(self):
         dir_name = time.strftime("run_%Y%m%d_%H%M%S")
@@ -101,7 +103,7 @@ class Generator:
             os.mkdir(jobdir_path)
             logger.debug("Generated job directory path: " + jobdir_path)
 
-            self.mc_engine.randomize(jobid + 1)
+            self.mc_engine.randomize(new_seed=jobid + 1)
             self.mc_engine.set_particle_no(self.options.particle_no)
             self.mc_engine.save_input(jobdir_path)
 
