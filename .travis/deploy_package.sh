@@ -53,5 +53,3 @@ python setup.py sdist
 if [[ $TRAVIS_TAG != "" ]]; then
     twine upload -r $PYPIREPO dist/*
 fi
-
-twine upload -r $PYPIREPO dist/*
