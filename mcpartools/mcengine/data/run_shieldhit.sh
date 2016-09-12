@@ -22,4 +22,5 @@ MAT_FILE={mat_file:s}
 DETECT_FILE={detect_file:s}
 
 # execute simulation
-$SHIELDHIT_BIN -b $BEAM_FILE -g $GEO_FILE -m $MAT_FILE -d $DETECT_FILE -n $PARTICLE_NO -N $RNG_SEED $WORK_DIR
+$SHIELDHIT_BIN --beamfile=$BEAM_FILE --geofile=$GEO_FILE --matfile=$MAT_FILE --detectfile=$DETECT_FILE -n $PARTICLE_NO -N $RNG_SEED $WORK_DIR
+
