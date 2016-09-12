@@ -41,7 +41,7 @@ set +x
 write_pypirc
 set -x
 
-pip install wheel twine
+pip install -U wheel twine
 
 # make bdist universal package
 python setup.py bdist_wheel
