@@ -24,7 +24,7 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - |travis| |appveyor|
+      - |travis|
     * - package
       - |version| |downloads| |wheel| |supported-versions| |supported-implementations|
 
@@ -35,10 +35,6 @@ Overview
 .. |travis| image:: https://travis-ci.org/DataMedSci/mcpartools.svg?branch=master
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/DataMedSci/mcpartools
-
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/grzanka/mcpartools?branch=master&svg=true
-    :alt: Appveyor Build Status
-    :target: https://ci.appveyor.com/project/grzanka/mcpartools
 
 .. |version| image:: https://img.shields.io/pypi/v/mcpartools.svg?style=flat
     :alt: PyPI Package latest release
