@@ -14,6 +14,7 @@
   include mcpartools/mcengine/data/*.sh
   include mcpartools/scheduler/data/*.sh
   include tests/res/*.inp
+  include tests/res/shieldhit/*.dat
 
   prune .travis
   exclude .gitkeep
