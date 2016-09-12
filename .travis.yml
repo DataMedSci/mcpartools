@@ -1,74 +1,48 @@
+# before commiting check this file here: https://lint.travis-ci.org/
+
 language: python
 
-cache:
-  directories:
-  - ~/.cache/pip
-
-before_cache:
-  - rm -f $HOME/.cache/pip/log/debug.log
+env:
+  global:
+    - PYPIUSER=grzanka
+    #  pypi secured password (PYPIPASS variable), you need to update it to your own if you want to use it
+    - secure: "WLg9eOFwGwH2riVdcl2mdUjzBIx4NaamMmB6XNOtAl91cPK/LtchLaMVMjVlPKMchQ/cCVpVgjiqRgEUPLz40sfv+DqmcnZH7UXE4kpUuUtFECTpIqc69Ohzn82JdrKQIaH0FWPTjRvxZgV+b6KWo8TK71VFANPpQTuhfaRJ+laKj1S5ikwg4c1zj6kqYefGHhvdvs5LtBXEZ9UQg+dkuWK8mrnl/gpZUuR7P8o+wofv2X510kHrV8WkUDfk9JmfpRyTmpvJcawl5CpGeov7c6wz5+nKNg+Fki5qft2TEb6DsHCMOBI6UviMvROSPgNs/C4tI5zNtabs+61uwU2vHsEiOuHGbmMcfGaOyjumQPcyBz3bvQ+e7ZA1ZyYipw4ihU9M7sPZtmwSlxE2ECXXy/MjPyVharTiy3rGAYwT4rH+F8fubsYeYtFax4IUFQfq3DXS9YUCJ82bCRnDlzLZ5MLy/4WL+sL7nMLR9ApkN97MWkv+aqmYjvKG0N519HSVJwuptWkoCok8E7e3zi5nOiG5eJ/0f4TVlEyOPrxeCtWCOPATXb54vSz7GPvMgTx4CKFmNbe5sLhx1A8cuOikA1Keyii8VKda8LVr7gXDh8BvgcL/CIAF/pALf2cDL224Gy8Mlz32PqBJMSKuopeIRKnj2eN3GBL1t9GuiXb8oRg="
 
 matrix:
     include:
-        - os: linux
-          python: 2.7
+        - python: 2.7
           env: TOXENV=py27
 #       temporarily disable
-#        - os: linux
-#          python: 3.2
-#          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
-        - os: linux
-          python: 3.3
+        - python: 3.2
+          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
+        - python: 3.3
           env: TOXENV=py33
-        - os: linux
-          python: 3.4
+        - python: 3.4
           env: TOXENV=py34
-        - os: linux
-          python: 3.5
+        - python: 3.5
           env: TOXENV=py35
-        - os: linux
-          python: 3.5-dev
+        - python: 3.5-dev
           env: TOXENV=py35
-        - os: linux
-          python: nightly
+        - python: nightly
           env: TOXENV=py36
-        - os: linux
-          python: 3.4
+        - python: 3.4
           env: TOXENV=docs
-        - os: linux
-          python: 2.7
+        - python: 2.7
           env: TOXENV=pep8
-        - os: linux
-          python: 3.4
+        - python: 3.4
           env: TOXENV=pep8
-        - os: linux
-          python: 3.5
-          env:
-            - TOXENV=packaging
-            - PYPIUSER=grzanka
-            #  pypi secured password (PYPIPASS variable), you need to update it to your own if you want to use it
-            - secure: "rNwadW0pBDK1R3kccAB1Y0NxBjI/x1lypDO7L5ycd0ysLsyFQNRNgas2bZfDU1SowPwUVXzuQY1kGT+5FlrwxKJrRv+lvQh2m4lPzgClBnlFIeEQah9symAVAoAXKDliAtjBzWDNwBZrPN7IDbT/MJK3LX5ObCdx1FofJ6FeuzBN88A5U5jH4q9mFVWMsDKGYbc4J22Ux9NAiJvA6zHz+Vy6PCUiJJp1MQEBzP7jSanqiJyCxWS4gFtb5ZmcTx0EQ98riTZ2pAH1v1pxm8nN21JxYVhK75aXcmF1nDWxJzrYjKQ8+gNdseTFF2TcR8yeJgAVuMLx7QDWa6zQ7QgLj303hn0RJteoKDC8EeIXTYS7FcI9Dz6PUyf9LOUUcmHoSUSJGTh+vhruHOpup9pKi+sLT1Jmcn5HGw2In/hfuDBDh+Gw9j6xeWxTbxuwA8uOE6z13sNLdlGuEZxda7Mqg2CETbj4d5pRcUbsqaFJDrOIIdbbAwG9gBSTSDFJrdRG7F7b13kPjCJjgjbtzDrum2/wxLKvfoKxNRczXsX9DxoKHVdJPGnbiuRR5zgECAZz7r3IEnObPJ503b/5+I4s44QGHcUk+ED2iK3XReiTjsWJJm7FBjPLTSoDI5w+9LYDHtlNgERDMdwviu+EmM2YhUoXfzxQxiiv9ZePN6p3Gz4="
+        - python: 3.5
+          env: TOXENV=packaging
 
 # travis-ci runs by default on ancient Ubuntu 12.04 (precise)
 # following options will give us Ubuntu 14.04 (trusty)
 sudo: required
 dist: trusty
 
-before_install:
-  - PYTHON_VERSION="py3"
-  - if [[ $TOXENV == "py27" ]]; then PYTHON_VERSION="py2" ; fi
-  - sudo bash ./install_deps.sh $PYTHON_VERSION
-
 install:
-  - travis_wait bash ./.travis/install_linux.sh
+  - bash ./.travis/install_linux.sh
 
-# if scipy is used, then installation from pip last longer than 10min, thus we add travis_wait
 script:
-  - travis_wait tox --notest && tox -- -n 8
-
-after_success:
-  # deploy to normal if tag is present
-  - if [[ $TRAVIS_TAG != "" ]] && [[ $TOXENV == "packaging" ]]; then bash .travis/deploy_package.sh pypi ; fi
-
-notifications:
-  email:
-    - leszek.grzanka@gmail.com
+  - tox --notest && tox -- -n 8
+# in case all previous commands in script section succeeded, run deploy (if tag is present then upload)
+  - if [[ "$TRAVIS_TEST_RESULT" == "0" ]] && [[ $TOXENV == "packaging" ]]; then bash .travis/deploy_package.sh pypi ; fi

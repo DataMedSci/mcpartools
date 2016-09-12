@@ -1,5 +1,10 @@
-versioneer
-pytest
+# micro-language and markers are described here: https://www.python.org/dev/peps/pep-0496/
+# official versioneer doesn't work well with Python 3.2
+git+https://github.com/grzanka/python-versioneer.git@support_python32 ; python_version >= '3.2' and python_version < '3.3' # py 3.2
+versioneer ; python_version < '3.0' or python_version >= '3.3' # py different than 3.2
+# pytest v 3.0, released in 08.2016 doesn't work well with Python 3.2
+pytest<3.0 ; python_version >= '3.2' and python_version < '3.3' # py 3.2
+pytest ; python_version < '3.0' or python_version >= '3.3' # py different than 3.2
 pytest-capturelog
 pytest-timeout
 pytest-xdist

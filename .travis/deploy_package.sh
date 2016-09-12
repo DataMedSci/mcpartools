@@ -41,10 +41,15 @@ set +x
 write_pypirc
 set -x
 
+pip install -U wheel twine
+
 # make bdist universal package
-pip install wheel
 python setup.py bdist_wheel
 
-# upload the package to pypi repository
-pip install twine
-twine upload -r $PYPIREPO dist/*
+# makes source package
+python setup.py sdist
+
+# upload only if tag present
+if [[ $TRAVIS_TAG != "" ]]; then
+    twine upload -r $PYPIREPO dist/*
+fi

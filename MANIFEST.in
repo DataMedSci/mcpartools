@@ -15,6 +15,8 @@
   include mcpartools/scheduler/data/*.sh
   include tests/res/*.inp
   include tests/res/shieldhit/*.dat
+  include tests/manual/*.sh
+  include *.sh
 
   prune .travis
   exclude .gitkeep
@@ -22,4 +24,3 @@
   exclude tox.ini
   exclude .travis.yml
   exclude *.sh
-

@@ -8,13 +8,14 @@ set -o pipefail # Return value of a pipeline as the value of the last command to
                 # exit with a non-zero status, or zero if all commands in the
                 # pipeline exit successfully.
 
+# print platform version
+python -c "import platform; print(platform.python_version());"
+
 pip install --upgrade virtualenv$VENVVER pip$PIPVER setuptools tox wheel
 
-if [[ $TOXENV == py32 ]];
-then
-  pip install git+https://github.com/grzanka/python-versioneer.git@support_python32
-  versioneer install
-else
-  pip install --upgrade versioneer
-fi
-pip install -r requirements.txt
+pip --version
+
+pip install -r tests/requirements-test.txt
+
+
+
