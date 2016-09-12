@@ -63,7 +63,7 @@ install:
 
 # if scipy is used, then installation from pip last longer than 10min, thus we add travis_wait
 script:
-  - travis_wait tox --notest && tox -- -n 8
+  - travis_wait tox --notest && tox -- -n 1
 
 after_success:
   # deploy to normal if tag is present
