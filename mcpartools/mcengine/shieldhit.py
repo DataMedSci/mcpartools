@@ -33,7 +33,7 @@ class ShieldHit(Engine):
 
     @property
     def input_files(self):
-        base = self.input_path
+        base = os.path.abspath(self.input_path)
         # TODO add *.txt files with stopping power
         # TODO add *.ctx/.hed files with CT scans
         files = ('beam.dat', 'geo.dat', 'mat.dat', 'detect.dat')
@@ -51,9 +51,10 @@ class ShieldHit(Engine):
 
     def save_run_script(self, output_dir, job_id):
         beam_file, geo_file, mat_file, detect_file = self.input_files
+        abs_output_dir = os.path.abspath(output_dir)
         contents = self.run_script_content.format(
             shieldhit_bin='shieldhit',
-            working_directory=output_dir,
+            working_directory=abs_output_dir,
             particle_no=self.particle_no,
             rnd_seed=self.rng_seed,
             beam_file=beam_file,
