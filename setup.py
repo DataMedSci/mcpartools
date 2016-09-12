@@ -3,11 +3,11 @@ from pkg_resources import parse_version
 
 
 def pip_command_output(pip_args):
-    '''
+    """
     Get output (as a string) from pip command
     :param pip_args: list o pip switches to pass
     :return: string with results
-    '''
+    """
     import sys
     import pip
     from io import StringIO
@@ -23,10 +23,10 @@ def pip_command_output(pip_args):
 
 
 def setup_versioneer():
-    '''
+    """
     Generate (temporarily) versioneer.py file in project root directory
     :return:
-    '''
+    """
     try:
         # assume versioneer.py was generated using "versioneer install" command
         import versioneer
@@ -68,11 +68,11 @@ def setup_versioneer():
 
 
 def clean_cache():
-    '''
+    """
     Python won't realise that new module has appeared in the runtime
     We need to clean the cache of module finders. Hacking again
     :return:
-    '''
+    """
     import importlib
     try:  # Python ver < 3.3
         vermod = importlib.import_module("versioneer")
@@ -82,10 +82,10 @@ def clean_cache():
 
 
 def get_version():
-    '''
+    """
     Get project version (using versioneer)
     :return: string containing version
-    '''
+    """
     setup_versioneer()
     clean_cache()
     import versioneer
@@ -98,10 +98,10 @@ def get_version():
 
 
 def get_cmdclass():
-    '''
+    """
     Get setuptools command class
     :return:
-    '''
+    """
     setup_versioneer()
     clean_cache()
     import versioneer
@@ -123,7 +123,7 @@ setuptools.setup(
     license='GPL',
     author='Leszek Grzanka',
     author_email='leszek.grzanka@gmail.com',
-    description='Set of tools to parallelize MC calculation on clusters',
+    description='Set of tools to parallelize MC calculations on clusters',
     long_description=readme + '\n',
     classifiers=[
         # How mature is this project? Common values are
@@ -132,12 +132,20 @@ setuptools.setup(
         #   5 - Production/Stable
         'Development Status :: 3 - Alpha',
 
+        'Topic :: Software Development :: Build Tools',
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        'Intended Audience :: Science/Research',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: Scientific/Engineering :: Medical Science Apps.',
+        'Topic :: Scientific/Engineering :: Physics',
 
-        # Pick your license as you wish (should match "license" above)
-        'License :: OSI Approved :: MIT License',
+        # OS and env
+        'Environment :: Console',
+        'Operating System :: Unix',
+
+        # License
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
 
         # Specify the Python versions you support here. In particular, ensure
         # that you indicate whether you support Python 2, Python 3 or both.
@@ -150,8 +158,7 @@ setuptools.setup(
     ],
     entry_points={
         'console_scripts': [
-            'run_mcpartools=' + \
-            'mcpartools.generatemc:main',
+            'run_mcpartools=mcpartools.generatemc:main',
         ],
     },
     cmdclass=get_cmdclass(),
