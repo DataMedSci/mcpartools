@@ -1,6 +1,8 @@
 import os
-import time
+import tempfile
 import unittest
+
+import shutil
 
 from mcpartools import generatemc
 
@@ -11,41 +13,41 @@ class TestRunGenerate(unittest.TestCase):
         self.main_dir = os.path.join("tests", "res")
 
     def test_help(self):
-        time.sleep(1)  # TODO should be removed after fixing https://github.com/DataMedSci/mcpartools/issues/14
         try:
             generatemc.main(["--help"])
         except SystemExit as e:
             self.assertEqual(e.code, 0)
 
     def test_version(self):
-        time.sleep(1)
         try:
             generatemc.main(["--version"])
         except SystemExit as e:
             self.assertEqual(e.code, 0)
 
     def test_fluka_input_ok(self):
-        time.sleep(1)
+        working_dir = tempfile.mkdtemp()  # make temp working dir
         fluka_input = os.path.join(self.main_dir, "sample_fluka.inp")
-        ret_code = generatemc.main(["-j", "2", "-p", "100", fluka_input])
+        ret_code = generatemc.main(["-j", "2", "-p", "100", "-w", working_dir, fluka_input])
         self.assertEqual(ret_code, 0)
+        shutil.rmtree(working_dir)
 
     def test_shieldhit_input_ok(self):
-        time.sleep(1)
+        working_dir = tempfile.mkdtemp()  # make temp working dir
         shieldhit_input = os.path.join(self.main_dir, "shieldhit")
-        ret_code = generatemc.main(["-j", "2", "-p", "100", shieldhit_input])
+        ret_code = generatemc.main(["-j", "2", "-p", "100", "-w", working_dir, shieldhit_input])
         self.assertEqual(ret_code, 0)
+        shutil.rmtree(working_dir)
 
     def test_shieldhit_scheduler_options(self):
-        time.sleep(1)
+        working_dir = tempfile.mkdtemp()  # make temp working dir
         shieldhit_input = os.path.join(self.main_dir, "shieldhit")
-        ret_code = generatemc.main(["-j", "2", "-p", "100", "-s",
+        ret_code = generatemc.main(["-j", "2", "-p", "100", "-w", working_dir, "-s",
                                     "--nodes=1 --ntasks-per-node=1 --mem=2000 --time=0:30:00",
                                     shieldhit_input])
         self.assertEqual(ret_code, 0)
+        shutil.rmtree(working_dir)
 
     def test_input_bad(self):
-        time.sleep(1)
         try:
             generatemc.main(["-j", "2"])
         except SystemExit as e:

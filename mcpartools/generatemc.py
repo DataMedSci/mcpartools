@@ -35,6 +35,9 @@ def main(args=sys.argv[1:]):
                         type=int,
                         default=10,
                         help='number of parallel jobs')
+    parser.add_argument('-w', '--workspace',
+                        type=str,
+                        help='directory to save workspace')
     parser.add_argument('-m', '--mc_run_template',
                         type=str,
                         default=None,

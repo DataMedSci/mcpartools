@@ -31,15 +31,18 @@ class Options:
                          " doesn't exists")
             self._valid = False
 
-        if os.path.isdir(self.input_path):
+        if args.workspace is not None:
+            if not os.path.exists(args.workspace):
+                logger.warn("Workspace dir " + args.workspace + " doesn't exists, will be created.")
+            self.root_dir = args.workspace
+        elif os.path.isdir(self.input_path):
             self.root_dir = self.input_path
         else:
             self.root_dir = os.path.dirname(self.input_path)
         logger.debug("Root directory: " + str(self.root_dir))
 
         self.mc_run_template = args.mc_run_template
-        if self.mc_run_template is not None and \
-                not os.path.exists(self.mc_run_template):
+        if self.mc_run_template is not None and not os.path.exists(self.mc_run_template):
             logging.error("MC run template " + self.mc_run_template +
                           " doesn't exists")
             self._valid = False
@@ -80,6 +83,11 @@ class Generator:
         return 0
 
     def generate_main_dir(self):
+
+        if not os.path.exists(self.options.root_dir):
+            logger.info("Creating directory: " + self.options.root_dir)
+            os.makedirs(self.options.root_dir)
+
         dir_name = time.strftime("run_%Y%m%d_%H%M%S")
         logger.debug("Generated main directory name: " + dir_name)
 
