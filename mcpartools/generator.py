@@ -32,6 +32,8 @@ class Options:
             self._valid = False
 
         if args.workspace is not None:
+            if not os.path.exists(args.workspace):
+                logger.warn("Workspace dir " + args.workspace + " doesn't exists, will be created.")
             self.root_dir = args.workspace
         elif os.path.isdir(self.input_path):
             self.root_dir = self.input_path
@@ -81,6 +83,11 @@ class Generator:
         return 0
 
     def generate_main_dir(self):
+
+        if not os.path.exists(self.options.root_dir):
+            logger.info("Creating directory: " + self.options.root_dir)
+            os.makedirs(self.options.root_dir)
+
         dir_name = time.strftime("run_%Y%m%d_%H%M%S")
         logger.debug("Generated main directory name: " + dir_name)
 
