@@ -9,3 +9,4 @@ set -o pipefail # Return value of a pipeline as the value of the last command to
                 # pipeline exit successfully.
 
 pip install --upgrade virtualenv$VENVVER pip$PIPVER setuptools tox wheel
+pip install -r tests/requirements-test.txt
