@@ -1,97 +1,79 @@
-===============================
-mcpartools
-===============================
+==============
+WHAT IS THIS ?
+==============
 
-.. image:: https://img.shields.io/pypi/v/mcpartools.svg
-        :target: https://pypi.python.org/pypi/mcpartools
-.. image:: https://img.shields.io/travis/DataMedSci/mcpartools.svg
-        :target: https://travis-ci.org/DataMedSci/mcpartools
+**mcpartools** is a software simplifying time consuming simulation of particle transport using Monte Carlo codes
+(Fluka, SHIELDHIT12A). We assume user has access to a computing cluster with batch processing software installed
+(i.e. slurm, torque) and wants to parallelize simulation by running it simultanously on many computing nodes.
+**mcpartools** simplifies this process by generating necessary directory structures and scripts for starting calculations
+and collecting the results.
 
-
-.. image:: https://readthedocs.org/projects/mcpartools/badge/?version=latest
-        :target: https://readthedocs.org/projects/mcpartools/?badge=latest
-        :alt: Documentation Status
-
-========
-Overview
-========
-
-.. start-badges
-
-.. list-table::
-    :stub-columns: 1
-
-    * - docs
-      - |docs|
-    * - tests
-      - |travis|
-    * - package
-      - |version| |downloads| |wheel| |supported-versions| |supported-implementations|
-
-.. |docs| image:: https://readthedocs.org/projects/mcpartools/badge/?style=flat
-    :target: https://readthedocs.org/projects/mcpartools
-    :alt: Documentation Status
-
-.. |travis| image:: https://travis-ci.org/DataMedSci/mcpartools.svg?branch=master
-    :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/DataMedSci/mcpartools
-
-.. |version| image:: https://img.shields.io/pypi/v/mcpartools.svg?style=flat
-    :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/mcpartools
-
-.. |downloads| image:: https://img.shields.io/pypi/dm/mcpartools.svg?style=flat
-    :alt: PyPI Package monthly downloads
-    :target: https://pypi.python.org/pypi/mcpartools
-
-.. |wheel| image:: https://img.shields.io/pypi/wheel/mcpartools.svg?style=flat
-    :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/mcpartools
-
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/mcpartools.svg?style=flat
-    :alt: Supported versions
-    :target: https://pypi.python.org/pypi/mcpartools
-
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/mcpartools.svg?style=flat
-    :alt: Supported implementations
-    :target: https://pypi.python.org/pypi/mcpartools
-
-.. end-badges
-
-Set of tools to parallelize MC calculation on clusters
+**mcpartools** provides a command line application called ``generatemc`` which works under Linux operating system
+(interpreter of Python programming language has to be also installed).
+No programming knowledge is required from user, but basic skills in working with terminal console are needed.
 
 
-Installation
-============
+Quick installation guide
+------------------------
 
-Stable version ::
+First be sure to have Python framework installed, then type::
 
     pip install mcpartools
 
-Latest unstable version, directly GIT repository, using::
+This command will automatically download and install **mcpartools** for all users in your system.
+In case you don't have administrator rights, add ``--user`` flag to ``pip`` command.
+In this situation converter will be probably installed in ``~/.local/bin`` directory.
 
-    pip install setuptools versioneer
-    pip install git+https://github.com/DataMedSci/mcpartools.git
+For more detailed instruction, see `installation guide <docs/install.rst>`__.
 
-To unistall, simply use::
+Short documentation
+-------------------
 
-    pip uninstall mcpartools
+Let us start with simple simulation of 10^6 of particles using Fluka MC code.
+Such simulation would probably take few hours when running on single CPU.
+It can be however faster, when you submit 100 parallel jobs, each running simulation of 10^4 particles.
+We assume that:
 
-Documentation
-=============
+* you are logged in to the computing cluster, all commands are executed there
+* **mcpartools** is installed on the cluster
+* Fluka in installed on the cluster and ``rfluka`` is available as a command
+* cluster has working ``slurm`` batch job software
+* an example Fluka input file is located in ``$HOME\sample.inp``
 
-https://mcpartools.readthedocs.io/
+First step is to generate necessary scripts and directory structure. To accomplish this, type in terminal::
 
+    generatemc --jobs_no 100 --particle_no 100000 $HOME\sample.inp
+
+New directory with a name similar to ``$HOME\run_20160913_084601`` will be created. To start simulation, we call
+appriopriate script::
+
+    $HOME/run_20160913_084601/submit.sh
+
+After the simulation is done (it may take few minutes), run following script to gather the results in a single directory::
+
+    $HOME/run_20160913_084601/collect.sh
+
+Output files from 100 parallel jobs will be saved in ``$HOME/run_20160913_084601/output`` directory, ready to be analyzed
+or merged. In case the output is not satisfactory, new workspace can be created and whole process repeated from scratch.
+
+
+More documentation dealing with advanced options can be found here https://mcpartools.readthedocs.io/
 
 Features
 --------
 
-* TODO
+* user-friendly parallelisation of particle transport simulations
+* output collected in single directory
+* workspace with logs and input files saved for bookkeeping
+* Monte-Carlo codes support: SHIELD-HIT12A and Fluka
+* cluster batch software support: slurm
+* python2 and python3 compatible
+* no external libraries needed
 
-Credits
--------
+More documentation
+------------------
 
-This package was created with Cookiecutter_ and the `grzanka/cookiecutter-pip-docker-versioneer`_ project template.
+Full documentation can be found here:
+https://mcpartools.readthedocs.io/
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`grzanka/cookiecutter-pip-docker-versioneer`: https://github.com/grzanka/cookiecutter-pip-docker-versioneer
+If you would like to download the code and modify it, read first `contribution guide <docs/contributing.rst>`__.

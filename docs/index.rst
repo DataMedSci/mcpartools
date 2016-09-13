@@ -1,5 +1,5 @@
 Welcome to mcpartools's documentation!
-================================================================
+======================================
 
 Contents:
 
@@ -7,8 +7,11 @@ Contents:
    :maxdepth: 2
 
    readme
+   install
    contributing
+   technical
    authors
+
 
 Indices and tables
 ==================

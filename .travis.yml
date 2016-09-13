@@ -43,6 +43,6 @@ install:
   - bash ./.travis/install_linux.sh
 
 script:
-  - tox --notest && tox -- -n 8
+  - tox --notest && travis_retry tox -- -n 8
 # in case all previous commands in script section succeeded, run deploy (if tag is present then upload)
   - if [[ "$TRAVIS_TEST_RESULT" == "0" ]] && [[ $TOXENV == "packaging" ]]; then bash .travis/deploy_package.sh pypi ; fi
