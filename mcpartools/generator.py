@@ -15,20 +15,17 @@ class Options:
 
         self.particle_no = args.particle_no
         if self.particle_no < 1:
-            logger.error("Number of particles should be positive integer "
-                         "(got " + str(self.particle_no) + " instead")
+            logger.error("Number of particles should be positive integer (got " + str(self.particle_no) + " instead")
             self._valid = False
 
         self.jobs_no = args.jobs_no
         if self.jobs_no < 1:
-            logger.error("Number of jobs should be positive integer "
-                         "(got " + str(self.jobs_no) + " instead")
+            logger.error("Number of jobs should be positive integer (got " + str(self.jobs_no) + " instead")
             self._valid = False
 
         self.input_path = args.input
         if not os.path.exists(self.input_path):
-            logger.error("Input path " + str(self.input_path) +
-                         " doesn't exists")
+            logger.error("Input path " + str(self.input_path) + " doesn't exists")
             self._valid = False
 
         if args.workspace is not None:
@@ -43,11 +40,15 @@ class Options:
 
         self.mc_run_template = args.mc_run_template
         if self.mc_run_template is not None and not os.path.exists(self.mc_run_template):
-            logging.error("MC run template " + self.mc_run_template +
-                          " doesn't exists")
+            logging.error("MC run template " + self.mc_run_template + " doesn't exists")
             self._valid = False
 
         self.scheduler_options = args.scheduler_options
+        if self.scheduler_options is not None:
+            if not os.path.exists(self.scheduler_options):
+                if not (self.scheduler_options[0] == '[' and self.scheduler_options[-1] == ']'):
+                    logger.error("-s should be followed by a path or text enclosed in square brackets, i.e. [--help]")
+                    self._valid = False
 
     @property
     def valid(self):

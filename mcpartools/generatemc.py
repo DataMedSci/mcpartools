@@ -45,7 +45,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-s', '--scheduler_options',
                         type=str,
                         default=None,
-                        help='path to optional scheduler options file')
+                        help='optional scheduler options path to file or list of options in square brackets')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
