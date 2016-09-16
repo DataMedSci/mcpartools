@@ -27,6 +27,7 @@ class Options:
         if not os.path.exists(self.input_path):
             logger.error("Input path " + str(self.input_path) + " doesn't exists")
             self._valid = False
+        self.input_path = os.path.abspath(self.input_path)
 
         if args.workspace is not None:
             if not os.path.exists(args.workspace):
