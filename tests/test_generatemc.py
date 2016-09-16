@@ -42,7 +42,7 @@ class TestRunGenerate(unittest.TestCase):
         working_dir = tempfile.mkdtemp()  # make temp working dir
         shieldhit_input = os.path.join(self.main_dir, "shieldhit")
         ret_code = generatemc.main(["-j", "2", "-p", "100", "-w", working_dir, "-s",
-                                    "--nodes=1 --ntasks-per-node=1 --mem=2000 --time=0:30:00",
+                                    "[--nodes=1 --ntasks-per-node=1 --mem=2000 --time=0:30:00]",
                                     shieldhit_input])
         self.assertEqual(ret_code, 0)
         shutil.rmtree(working_dir)
