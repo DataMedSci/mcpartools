@@ -43,11 +43,16 @@ class Options:
 
         self.mc_run_template = args.mc_run_template
         if self.mc_run_template is not None and not os.path.exists(self.mc_run_template):
-            logging.error("MC run template " + self.mc_run_template +
-                          " doesn't exists")
+            logging.error("MC run template " + self.mc_run_template + " doesn't exists")
             self._valid = False
 
         self.scheduler_options = args.scheduler_options
+        if self.scheduler_options is not None:
+            if not os.path.exists(self.scheduler_options):
+                if not (self.scheduler_options[0] == '[' and self.scheduler_options[-1] == ']'):
+                    logger.error("-s should be followed by a path or text enclosed in square brackets, i.e. [--help]")
+                    self._valid = False
+
 
     @property
     def valid(self):

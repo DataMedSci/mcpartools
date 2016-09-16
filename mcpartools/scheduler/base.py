@@ -18,7 +18,7 @@ class JobScheduler:
             self.options_args = ""
         else:
             self.options_header = "# no user options provided"
-            self.options_args = scheduler_options
+            self.options_args = scheduler_options[1:-1]
 
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
