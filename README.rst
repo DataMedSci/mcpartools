@@ -4,7 +4,7 @@ WHAT IS THIS ?
 
 **mcpartools** is a software simplifying time consuming simulation of particle transport using Monte Carlo codes
 (Fluka, SHIELDHIT12A). We assume user has access to a computing cluster with batch processing software installed
-(i.e. slurm, torque) and wants to parallelize simulation by running it simultanously on many computing nodes.
+(i.e. slurm, torque) and wants to parallelize simulation by running it simultaneously on many computing nodes.
 **mcpartools** simplifies this process by generating necessary directory structures and scripts for starting calculations
 and collecting the results.
 
@@ -24,7 +24,7 @@ This command will automatically download and install **mcpartools** for all user
 In case you don't have administrator rights, add ``--user`` flag to ``pip`` command.
 In this situation converter will be probably installed in ``~/.local/bin`` directory.
 
-For more detailed instruction, see `installation guide <docs/install.rst>`__.
+For more detailed instruction, see `installation guide <INSTALL.rst>`__.
 
 Short documentation
 -------------------
@@ -38,13 +38,13 @@ We assume that:
 * **mcpartools** is installed on the cluster
 * Fluka in installed on the cluster and ``rfluka`` is available as a command
 * cluster has working ``slurm`` batch job software
-* an example Fluka input file is located in ``$HOME\sample.inp``
+* an example Fluka input file is located in ``$HOME/sample.inp``
 
 First step is to generate necessary scripts and directory structure. To accomplish this, type in terminal::
 
-    generatemc --jobs_no 100 --particle_no 100000 $HOME\sample.inp
+    generatemc --jobs_no 100 --particle_no 100000 $HOME/sample.inp
 
-New directory with a name similar to ``$HOME\run_20160913_084601`` will be created. To start simulation, we call
+New directory with a name similar to ``$HOME/run_20160913_084601`` will be created. To start simulation, we call
 appriopriate script::
 
     $HOME/run_20160913_084601/submit.sh
@@ -53,8 +53,9 @@ After the simulation is done (it may take few minutes), run following script to 
 
     $HOME/run_20160913_084601/collect.sh
 
-Output files from 100 parallel jobs will be saved in ``$HOME/run_20160913_084601/output`` directory, ready to be analyzed
-or merged. In case the output is not satisfactory, new workspace can be created and whole process repeated from scratch.
+Output files from 100 parallel jobs will be saved in ``$HOME/run_20160913_084601/output`` directory,
+ready to be analyzed or merged.
+In case the output is not satisfactory, new workspace can be created and whole process repeated from scratch.
 
 
 More documentation dealing with advanced options can be found here https://mcpartools.readthedocs.io/
@@ -76,4 +77,4 @@ More documentation
 Full documentation can be found here:
 https://mcpartools.readthedocs.io/
 
-If you would like to download the code and modify it, read first `contribution guide <docs/contributing.rst>`__.
+If you would like to download the code and modify it, read first `contribution guide <CONTRIBUTING.rst>`__.
