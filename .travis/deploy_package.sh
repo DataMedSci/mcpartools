@@ -49,6 +49,23 @@ python setup.py bdist_wheel
 # makes source package
 python setup.py sdist
 
+# install the package as user
+pip install dist/*whl --user
+
+# test if it works
+$HOME/./local/bin/generatemc --version
+$HOME/./local/bin/generatemc --help
+
+# uninstall
+pip uninstall -y mcpartools
+
+# install the package as root
+pip install dist/*whl
+
+# test if it works
+generatemc --version
+generatemc --help
+
 # upload only if tag present
 if [[ $TRAVIS_TAG != "" ]]; then
     twine upload -r $PYPIREPO dist/*
