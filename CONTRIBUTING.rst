@@ -4,8 +4,8 @@
 Contributing
 ============
 
-Contributions are welcome, and they are greatly appreciated! Every
-little bit helps, and credit will always be given.
+Contributions are welcome, and they are greatly appreciated!
+Every little bit helps, and credit will always be given.
 
 You can contribute in many ways:
 
@@ -23,23 +23,18 @@ If you are reporting a bug, please include:
 * Any details about your local setup that might be helpful in troubleshooting.
 * Detailed steps to reproduce the bug.
 
-Fix Bugs
-~~~~~~~~
+Fix Bugs or Implement Features
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Look through the GitHub issues for bugs. Anything tagged with "bug"
-is open to whoever wants to implement it.
+Look through the GitHub issues for bugs or features.
+Anything tagged with "bug" or "feature" is open to whoever wants to implement it.
 
-Implement Features
-~~~~~~~~~~~~~~~~~~
-
-Look through the GitHub issues for features. Anything tagged with "feature"
-is open to whoever wants to implement it.
 
 Write Documentation
 ~~~~~~~~~~~~~~~~~~~
 
-mcpartools could always use more documentation, whether as part of the
-official mcpartools docs, in docstrings, or even on the web in blog posts,
+`mcpartools` could always use more documentation, whether as part of the
+official `mcpartools` docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Submit Feedback
@@ -54,43 +49,77 @@ If you are proposing a feature:
 * Remember that this is a volunteer-driven project, and that contributions
   are welcome :)
 
-Get Started!
-------------
+Get Started for GIT-aware developers
+------------------------------------
 
 Ready to contribute? Here's how to set up `mcpartools` for local development.
+We assume you are familiar with GIT source control system. If not you will
+other instruction at the end of this page.
 
 1. Fork the `mcpartools` repo on GitHub.
 2. Clone your fork locally::
 
     $ git clone git@github.com:your_name_here/mcpartools.git
 
-3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development::
+3. If you are not familiar with GIT, proceed to step 5, otherwise create a branch for local development::
 
-    $ mkvirtualenv mcpartools
-    $ cd mcpartools/
-    $ python setup.py develop
+    $ cd mcpartools
+    $ git checkout -b feature/issue_number-name_of_your_bugfix_or_feature
 
-4. Create a branch for local development::
+4. Now you can make your changes locally.
 
-    $ git checkout -b name-of-your-bugfix-or-feature
+As the software is prepared to be shipped as pip package, some modifications
+of PYTHONPATH variables are needed to run the code. Let us assume you are now in the same directory as ``setup.py`` file.
 
-   Now you can make your changes locally.
 
-5. When you're done making changes, check that your changes pass flake8 and the tests, including testing other Python versions with tox::
+The standard way to execute Python scripts WILL NOT WORK::
+
+   $ python mcpartools/generatemc.py --version
+   Traceback (most recent call last):
+     File "mcpartools/generatemc.py", line 5, in <module>
+       from mcpartools.generator import Generator
+   ImportError: No module named mcpartools.generator
+
+To have the code working, two things are needed:
+
+* installation of ``versioneer`` package (needed to set proper version number)
+* adjustment of PYTHONPATH variable.
+
+First let us install ``versioneer`` package and generate necessary files::
+
+   $ pip install versioneer
+   $ versioneer install
+
+Now code can be run by typing::
+
+   $ PYTHONPATH=. python mcpartools/generatemc.py --version
+   0.1.3.post.dev2
+
+5. Make local changes to fix the bug or to implement a feature.
+
+6. When you're done making changes, check that your changes comply with PEP8 code quality standars (flake8 tests) and test against other Python versions with tox::
 
     $ flake8 mcpartools tests
-    $ python setup.py test
     $ tox
 
-   To get flake8 and tox, just pip install them into your virtualenv.
+   To get flake8 and tox, just pip install them.
 
-6. Commit your changes and push your branch to GitHub::
+7. Commit your changes and push your branch to GitHub::
 
     $ git add .
     $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
 
-7. Submit a pull request through the GitHub website.
+8. Repeat points 4-6 until the work is done. Now its time to push the changes to remote repository::
+
+    $ git push origin feature/issue_number-name_of_your_bugfix_or_feature
+
+9. Submit a pull request through the GitHub website to the master branch of ``git@github.com:DataMedSci/mcpartools.git`` repository.
+
+10. Check the status of automatic tests ran by Travis system.
+
+You can find them on the pull request webpage https://travis-ci.org/DataMedSci/mcpartools/pull_requests.
+In case some of the tests fails, fix the problem. Then commit and push your changes (steps 5-8).
+
 
 Pull Request Guidelines
 -----------------------
@@ -105,9 +134,42 @@ Before you submit a pull request, check that it meets these guidelines:
    https://travis-ci.org/DataMedSci/mcpartools/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
+
+Get Started for non-GIT developers
+----------------------------------
+
+1. Fetch the code from remote GIT repository to your local directory::
+
+    $ git clone git@github.com:DataMedSci/mcpartools.git
+
+2. Follow steps 4-6 from the instruction for GIT-aware developers. Install versioneer::
+
+   $ pip install versioneer
+   $ versioneer install
+
+To run code locally, prefix usual calls with ``PYTHONPATH=.``::
+
+   $ PYTHONPATH=. python mcpartools/generatemc.py --version
+   0.1.3.post.dev2
+
+Make your changes and check that they comply with PEP8 code quality standards (flake8 tests) and test against other Python versions with tox::
+
+    $ flake8 mcpartools tests
+    $ tox
+
+3. Compress your working directory and send it to us by email (see `authors <AUTHORS.rst>`__), describing your changes.
+
+
 Tips
 ----
 
-To run a subset of tests::
+To run full tests type::
 
-    $ python -m unittest tests.mcpartools
+    $ tox
+
+To run only a single test type::
+
+   $ PYTHONPATH=. python tests/test_file_to_run.py
+
+.. _`bugs`: https://github.com/DataMedSci/mcpartools/issues
+.. _`features`: https://github.com/DataMedSci/mcpartools/issues
