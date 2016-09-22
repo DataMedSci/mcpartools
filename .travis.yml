@@ -12,7 +12,6 @@ matrix:
     include:
         - python: 2.7
           env: TOXENV=py27
-#       temporarily disable
         - python: 3.2
           env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
         - python: 3.3
