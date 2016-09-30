@@ -28,6 +28,12 @@ build:
         code: |
           tox -e py27
 
+    # running coverage
+    - script:
+        name: coverage
+        code: |
+          tox -e coverage
+
     # making package
     - script:
         name: package_wheel
