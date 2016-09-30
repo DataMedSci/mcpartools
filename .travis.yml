@@ -12,26 +12,28 @@ matrix:
     include:
         - python: 2.7
           env: TOXENV=py27
-        - python: 3.2
-          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
-        - python: 3.3
-          env: TOXENV=py33
-        - python: 3.4
-          env: TOXENV=py34
-        - python: 3.5
-          env: TOXENV=py35
-        - python: 3.5-dev
-          env: TOXENV=py35
-        - python: nightly
-          env: TOXENV=py36
-        - python: 3.4
-          env: TOXENV=docs
         - python: 2.7
-          env: TOXENV=pep8
-        - python: 3.4
-          env: TOXENV=pep8
-        - python: 3.5
-          env: TOXENV=packaging
+          env: TOXENV=coverage
+#        - python: 3.2
+#          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
+#        - python: 3.3
+#          env: TOXENV=py33
+#        - python: 3.4
+#          env: TOXENV=py34
+#        - python: 3.5
+#          env: TOXENV=py35
+#        - python: 3.5-dev
+#          env: TOXENV=py35
+#        - python: nightly
+#          env: TOXENV=py36
+#        - python: 3.4
+#          env: TOXENV=docs
+#        - python: 2.7
+#          env: TOXENV=pep8
+#        - python: 3.4
+#          env: TOXENV=pep8
+#        - python: 3.5
+#          env: TOXENV=packaging
 
 # travis-ci runs by default on ancient Ubuntu 12.04 (precise)
 # following options will give us Ubuntu 14.04 (trusty)

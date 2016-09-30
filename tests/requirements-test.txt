@@ -8,4 +8,5 @@ pytest ; python_version < '3.0' or python_version >= '3.3' # py different than 3
 pytest-capturelog
 pytest-timeout
 pytest-xdist
+pytest-cov
 tox
