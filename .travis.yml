@@ -12,6 +12,8 @@ matrix:
     include:
         - python: 2.7
           env: TOXENV=py27
+        - python: 2.7
+          env: TOXENV=coverage
         - python: 3.2
           env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
         - python: 3.3
@@ -32,6 +34,9 @@ matrix:
           env: TOXENV=pep8
         - python: 3.5
           env: TOXENV=packaging
+    allow_failures:
+        - python: 3.2
+          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0"
 
 # travis-ci runs by default on ancient Ubuntu 12.04 (precise)
 # following options will give us Ubuntu 14.04 (trusty)
