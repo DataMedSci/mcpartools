@@ -53,5 +53,6 @@ class TestRunGenerate(unittest.TestCase):
         except SystemExit as e:
             self.assertEqual(e.code, 2)
 
+
 if __name__ == '__main__':
     unittest.main()
