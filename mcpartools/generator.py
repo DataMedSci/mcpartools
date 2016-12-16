@@ -31,7 +31,7 @@ class Options:
 
         if args.workspace is not None:
             if not os.path.exists(args.workspace):
-                logger.warn("Workspace dir " + args.workspace + " doesn't exists, will be created.")
+                logger.warning("Workspace dir " + args.workspace + " doesn't exists, will be created.")
             self.root_dir = args.workspace
         elif os.path.isdir(self.input_path):
             self.root_dir = self.input_path
@@ -61,6 +61,10 @@ class Generator:
         self.options = options
         self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options)
         self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path, self.options.mc_run_template)
+        # assigned in methods
+        self.input_dir = None
+        self.main_dir = None
+        self.workspace_dir = None
 
     def run(self):
         if not self.options.valid:
@@ -107,7 +111,7 @@ class Generator:
         self.workspace_dir = wspdir_path
 
         for jobid in range(self.options.jobs_no):
-            jobdir_name = "job_{:04d}".format(jobid + 1)
+            jobdir_name = "job_{0:04d}".format(jobid + 1)
             logger.debug("Generated job directory name: " + jobdir_name)
             jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
             os.mkdir(jobdir_path)

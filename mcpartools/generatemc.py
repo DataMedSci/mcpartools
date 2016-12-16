@@ -55,7 +55,7 @@ def main(args=sys.argv[1:]):
     if args.quiet:
         if args.quiet == 1:
             level = "WARNING"
-        if args.quiet == 2:
+        elif args.quiet == 2:
             level = "ERROR"
         else:
             level = "CRITICAL"

@@ -16,17 +16,17 @@ class SchedulerDiscover:
     def get_scheduler(cls, scheduler_options):
         with open(os.devnull, 'w') as FNULL:
             try:
-                check_call(['srun', '--version'], stdout=FNULL, shell=True)
-                check_call(['sinfo', '--help'], stdout=FNULL, shell=True)
+                check_call(['srun --version'], stdout=FNULL, shell=True)
+                check_call(['sinfo --help'], stdout=FNULL, shell=True)
                 logger.debug("Discovered job scheduler SLURM")
                 return Slurm(scheduler_options)
             except CalledProcessError as e:
-                print("Slurm not found: ", str(e))
+                logger.debug("Slurm not found: %s", e)
             try:
                 check_call(['man qsub'], stdout=FNULL, shell=True)
-                check_call(['qstat', '-B'], stdout=FNULL, shell=True)
+                check_call(['qstat -B'], stdout=FNULL, shell=True)
                 logger.debug("Discovered job scheduler Torque")
                 return Torque(scheduler_options)
             except CalledProcessError as e:
-                print("Torque not found: ", str(e))
+                logger.debug("Torque not found: %s", e)
         raise SystemError("No known batch system found!")
