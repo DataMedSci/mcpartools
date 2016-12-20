@@ -59,9 +59,9 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options)
         self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path, self.options.mc_run_template)
         # assigned in methods
+        self.scheduler = None
         self.input_dir = None
         self.main_dir = None
         self.workspace_dir = None
@@ -73,6 +73,9 @@ class Generator:
 
         # generate main dir according to date
         self.generate_main_dir()
+
+        # get scheduler and pass main dir for log file
+        self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
 
         # generate tmp dir with workspace
         self.generate_workspace()
@@ -123,7 +126,7 @@ class Generator:
 
             self.mc_engine.save_run_script(jobdir_path, jobid + 1)
 
-        self.scheduler.write_main_run_script(self.workspace_dir)
+        self.scheduler.write_main_run_script(jobs_no=self.options.jobs_no, output_dir=self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
 
     def generate_submit_script(self):
