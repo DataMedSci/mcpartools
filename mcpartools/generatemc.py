@@ -22,9 +22,9 @@ def main(args=sys.argv[1:]):
                         action='count',
                         default=0,
                         help='Be silent')
-    # parser.add_argument('-V', '--version',
-    #                     action='version',
-    #                     version=mcpartools.__version__)
+    parser.add_argument('-V', '--version',
+                        action='version',
+                        version=mcpartools.__version__)
     parser.add_argument('-p', '--particle_no',
                         dest='particle_no',
                         metavar='particle_no',
@@ -46,6 +46,10 @@ def main(args=sys.argv[1:]):
                         type=str,
                         default=None,
                         help='optional scheduler options path to file or list of options in square brackets')
+    parser.add_argument('-b', '--batch',
+                        type=str,
+                        default=None,
+                        help='batch system (torque|slurm|lsf)')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')

@@ -5,6 +5,8 @@ import time
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
+from mcpartools.scheduler.torque import Torque
+from mcpartools.scheduler.slurm import Slurm
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +53,12 @@ class Options:
                     logger.error("-s should be followed by a path or text enclosed in square brackets, i.e. [--help]")
                     self._valid = False
 
+        self.batch = args.batch
+        if self.batch is not None:
+            if self.batch not in ("torque", "slurm"):
+                    logger.error("Invalid batch system")
+                    self._valid = False
+
     @property
     def valid(self):
         return self._valid
@@ -75,7 +83,14 @@ class Generator:
         self.generate_main_dir()
 
         # get scheduler and pass main dir for log file
-        self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
+        if not self.options.batch:
+            self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
+        elif self.options.batch == "torque":
+            self.scheduler = Torque(self.options.scheduler_options)
+        elif self.options.batch == "slurm":
+            self.scheduler = Slurm(self.options.scheduler_options)
+        else:
+            raise NotImplementedError("Options other than torque|slurm are not implemented")
 
         # generate tmp dir with workspace
         self.generate_workspace()

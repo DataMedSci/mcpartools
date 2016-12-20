@@ -29,5 +29,4 @@ class SchedulerDiscover:
                 return Torque(scheduler_options)
             except CalledProcessError as e:
                 logger.debug("Torque not found: %s", e)
-        return Torque(scheduler_options)  # for testing
         raise SystemError("No known batch system found!")
