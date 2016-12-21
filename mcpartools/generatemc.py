@@ -51,8 +51,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-b', '--batch',
                         type=str,
                         default=None,
-                        choices=[Torque.__name__.lower(), Slurm.__name__.lower()],
-                        help='batch system (torque|slurm)')
+                        choices=[Torque.id(), Slurm.id()],
+                        help='Available batch systems: %s, %s' % (Torque.id(), Slurm.id()))
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')

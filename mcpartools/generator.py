@@ -2,6 +2,7 @@ import os
 import logging
 import shutil
 import time
+import importlib
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
@@ -54,8 +55,8 @@ class Options:
                     self._valid = False
 
         self.batch = args.batch
-        if self.batch is not None and self.batch not in (Torque.__name__.lower(), Slurm.__name__.lower()):
-            logger.error("Invalid batch system, should be torque, slurm or lsf")
+        if self.batch is not None and self.batch not in (Torque.id(), Slurm.id()):
+            logger.error("Invalid batch system, should be torque, slurm")
             self._valid = False
 
     @property
@@ -84,12 +85,13 @@ class Generator:
         # get scheduler and pass main dir for log file
         if not self.options.batch:
             self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
-        elif self.options.batch == Torque.__name__.lower():
-            self.scheduler = Torque(self.options.scheduler_options)
-        elif self.options.batch == Slurm.__name__.lower():
-            self.scheduler = Slurm(self.options.scheduler_options)
         else:
-            raise NotImplementedError("Options other than torque|slurm are not implemented")
+            # use module 'containing' desired scheduler (Torque/Slurm)
+            scheduler_module = importlib.import_module("mcpartools.scheduler.{}".format(self.options.batch))
+            # get desired scheduler class and pass arguments (name begins with capital letter, so we use title method)
+            scheduler_class = getattr(scheduler_module, self.options.batch.title())
+            self.scheduler = scheduler_class(self.options.scheduler_options)
+            logger.info("Using: %s", scheduler_class.id())
 
         # generate tmp dir with workspace
         self.generate_workspace()
