@@ -54,7 +54,7 @@ class Options:
                     self._valid = False
 
         self.batch = args.batch
-        if self.batch is not None and self.batch not in ("torque", "slurm"):
+        if self.batch is not None and self.batch not in (Torque.__name__.lower(), Slurm.__name__.lower()):
             logger.error("Invalid batch system, should be torque, slurm or lsf")
             self._valid = False
 
@@ -84,9 +84,9 @@ class Generator:
         # get scheduler and pass main dir for log file
         if not self.options.batch:
             self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
-        elif self.options.batch == "torque":
+        elif self.options.batch == Torque.__name__.lower():
             self.scheduler = Torque(self.options.scheduler_options)
-        elif self.options.batch == "slurm":
+        elif self.options.batch == Slurm.__name__.lower():
             self.scheduler = Slurm(self.options.scheduler_options)
         else:
             raise NotImplementedError("Options other than torque|slurm are not implemented")

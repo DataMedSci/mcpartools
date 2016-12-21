@@ -4,6 +4,8 @@ import sys
 
 from mcpartools.generator import Generator
 from mcpartools.generator import Options
+from mcpartools.scheduler.slurm import Slurm
+from mcpartools.scheduler.torque import Torque
 
 
 def main(args=sys.argv[1:]):
@@ -49,7 +51,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-b', '--batch',
                         type=str,
                         default=None,
-                        help='batch system (torque|slurm|lsf)')
+                        choices=[Torque.__name__.lower(), Slurm.__name__.lower()],
+                        help='batch system (torque|slurm)')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
