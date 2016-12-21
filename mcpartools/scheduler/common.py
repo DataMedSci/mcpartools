@@ -17,14 +17,12 @@ class SchedulerDiscover:
         with open(os.path.join(log_location, "generatemc.log"), 'w+') as LOG_FILE:
             try:
                 check_call(['srun --version'], stdout=LOG_FILE, stderr=LOG_FILE, shell=True)
-                check_call(['sinfo --help'], stdout=LOG_FILE, stderr=LOG_FILE, shell=True)
                 logger.debug("Discovered job scheduler SLURM")
                 return Slurm(scheduler_options)
             except CalledProcessError as e:
                 logger.debug("Slurm not found: %s", e)
             try:
                 check_call(['qsub --version'], stdout=LOG_FILE, stderr=LOG_FILE, shell=True)
-                check_call(['qstat -B'], stdout=LOG_FILE, stderr=LOG_FILE, shell=True)
                 logger.debug("Discovered job scheduler Torque")
                 return Torque(scheduler_options)
             except CalledProcessError as e:

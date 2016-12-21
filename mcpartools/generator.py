@@ -54,10 +54,9 @@ class Options:
                     self._valid = False
 
         self.batch = args.batch
-        if self.batch is not None:
-            if self.batch not in ("torque", "slurm"):
-                    logger.error("Invalid batch system")
-                    self._valid = False
+        if self.batch is not None and self.batch not in ("torque", "slurm"):
+            logger.error("Invalid batch system, should be torque, slurm or lsf")
+            self._valid = False
 
     @property
     def valid(self):
