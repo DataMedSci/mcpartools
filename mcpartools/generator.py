@@ -87,10 +87,10 @@ class Generator:
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
                 self.scheduler = scheduler_class[0](self.options.scheduler_options)
-                logger.info("Using: %s", self.scheduler.id)
+                logger.info("Using: " + self.scheduler.id)
             else:
                 logger.error("No class for given scheduler was found!")
-                raise NotImplementedError("Class not found: %s" % self.options.batch)
+                raise NotImplementedError("Class not found: " + self.options.batch)
 
         # generate tmp dir with workspace
         self.generate_workspace()
