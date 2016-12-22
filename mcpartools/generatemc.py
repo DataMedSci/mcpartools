@@ -50,8 +50,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-b', '--batch',
                         type=str,
                         default=None,
-                        choices=[b.id for b in SchedulerDiscover.supported()],
-                        help='Available batch systems: {}'.format([b.id for b in SchedulerDiscover.supported()]))
+                        choices=[b.id for b in SchedulerDiscover.supported],
+                        help='Available batch systems: {}'.format([b.id for b in SchedulerDiscover.supported]))
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')

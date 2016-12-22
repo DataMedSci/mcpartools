@@ -82,14 +82,15 @@ class Generator:
             self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
         else:
             # get desired scheduler class and pass arguments
-            scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported()
+            scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported
                                if class_obj.id == self.options.batch]
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
                 self.scheduler = scheduler_class[0](self.options.scheduler_options)
                 logger.info("Using: " + self.scheduler.id)
             else:
-                logger.error("No class for given scheduler was found!")
+                logger.error("Given scheduler: \'%s\' is not on the list of supported batch systems: %s",
+                             self.options.batch, [supported.id for supported in SchedulerDiscover.supported])
                 raise NotImplementedError("Class not found: " + self.options.batch)
 
         # generate tmp dir with workspace

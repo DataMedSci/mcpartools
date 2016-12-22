@@ -9,13 +9,10 @@ logger = logging.getLogger(__name__)
 
 
 class SchedulerDiscover:
+    supported = (Torque, Slurm)
+
     def __init__(self):
         pass
-
-    @staticmethod
-    def supported():
-        # return tuple of supported batch systems
-        return (Torque, Slurm)
 
     @classmethod
     def get_scheduler(cls, scheduler_options, log_location):
