@@ -68,7 +68,7 @@ test_debian_8_jessie_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
 
 
 test_debian_8_jessie_py3:
@@ -95,7 +95,7 @@ test_debian_8_jessie_py3:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
 
 ## ---------------------------------- debian 7 wheezy -----------------------------------------------
 # TODO - to be investigated
@@ -182,7 +182,7 @@ test_debian_testing_py3:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 test_debian_testing_py2:
@@ -209,7 +209,7 @@ test_debian_testing_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 # ---------------------------------- Ubuntu 16.04 -----------------------------------------------
@@ -239,7 +239,7 @@ test_ubuntu_1604_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 test_ubuntu_1604_py3:
@@ -266,7 +266,7 @@ test_ubuntu_1604_py3:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 # ---------------------------------- Ubuntu 14.04 -----------------------------------------------
@@ -296,7 +296,7 @@ test_ubuntu_1404_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 test_ubuntu_1404_py3:
@@ -323,7 +323,7 @@ test_ubuntu_1404_py3:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 # ---------------------------------- Centos 7 -----------------------------------------------
@@ -355,7 +355,7 @@ test_centos_7_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 test_centos_7_py3:
@@ -384,7 +384,7 @@ test_centos_7_py3:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 # ---------------------------------- Centos 7 -----------------------------------------------
@@ -414,7 +414,7 @@ test_fedora_24_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
 test_fedora_24_py3:
@@ -441,5 +441,5 @@ test_fedora_24_py3:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka

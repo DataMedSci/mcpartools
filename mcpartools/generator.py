@@ -31,7 +31,7 @@ class Options:
 
         if args.workspace is not None:
             if not os.path.exists(args.workspace):
-                logger.warn("Workspace dir " + args.workspace + " doesn't exists, will be created.")
+                logger.warning("Workspace dir " + args.workspace + " doesn't exists, will be created.")
             self.root_dir = args.workspace
         elif os.path.isdir(self.input_path):
             self.root_dir = self.input_path
@@ -51,6 +51,9 @@ class Options:
                     logger.error("-s should be followed by a path or text enclosed in square brackets, i.e. [--help]")
                     self._valid = False
 
+        # no checks needed - argparse does it
+        self.batch = args.batch
+
     @property
     def valid(self):
         return self._valid
@@ -59,8 +62,12 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options)
         self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path, self.options.mc_run_template)
+        # assigned in methods
+        self.scheduler = None
+        self.input_dir = None
+        self.main_dir = None
+        self.workspace_dir = None
 
     def run(self):
         if not self.options.valid:
@@ -69,6 +76,22 @@ class Generator:
 
         # generate main dir according to date
         self.generate_main_dir()
+
+        # get scheduler and pass main dir for log file
+        if not self.options.batch:
+            self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
+        else:
+            # get desired scheduler class and pass arguments
+            scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported
+                               if class_obj.id == self.options.batch]
+            if scheduler_class:  # if not empty
+                # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
+                self.scheduler = scheduler_class[0](self.options.scheduler_options)
+                logger.info("Using: " + self.scheduler.id)
+            else:
+                logger.error("Given scheduler: \'%s\' is not on the list of supported batch systems: %s",
+                             self.options.batch, [supported.id for supported in SchedulerDiscover.supported])
+                raise NotImplementedError("Class not found: " + self.options.batch)
 
         # generate tmp dir with workspace
         self.generate_workspace()
@@ -107,7 +130,7 @@ class Generator:
         self.workspace_dir = wspdir_path
 
         for jobid in range(self.options.jobs_no):
-            jobdir_name = "job_{:04d}".format(jobid + 1)
+            jobdir_name = "job_{0:04d}".format(jobid + 1)
             logger.debug("Generated job directory name: " + jobdir_name)
             jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
             os.mkdir(jobdir_path)
@@ -119,7 +142,7 @@ class Generator:
 
             self.mc_engine.save_run_script(jobdir_path, jobid + 1)
 
-        self.scheduler.write_main_run_script(self.workspace_dir)
+        self.scheduler.write_main_run_script(jobs_no=self.options.jobs_no, output_dir=self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
 
     def generate_submit_script(self):

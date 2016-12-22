@@ -4,6 +4,7 @@ import sys
 
 from mcpartools.generator import Generator
 from mcpartools.generator import Options
+from mcpartools.scheduler.common import SchedulerDiscover
 
 
 def main(args=sys.argv[1:]):
@@ -46,6 +47,11 @@ def main(args=sys.argv[1:]):
                         type=str,
                         default=None,
                         help='optional scheduler options path to file or list of options in square brackets')
+    parser.add_argument('-b', '--batch',
+                        type=str,
+                        default=None,
+                        choices=[b.id for b in SchedulerDiscover.supported],
+                        help='Available batch systems: {}'.format([b.id for b in SchedulerDiscover.supported]))
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
@@ -55,7 +61,7 @@ def main(args=sys.argv[1:]):
     if args.quiet:
         if args.quiet == 1:
             level = "WARNING"
-        if args.quiet == 2:
+        elif args.quiet == 2:
             level = "ERROR"
         else:
             level = "CRITICAL"

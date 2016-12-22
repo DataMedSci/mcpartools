@@ -47,7 +47,7 @@ class Fluka(Engine):
             # TODO better discovery needed
             if l.startswith("RANDOMIZ"):
                 # TODO check formatting
-                new_line = "RANDOMIZ         1.0 {:f}\n".format(new_seed)
+                new_line = "RANDOMIZ         1.0 {0:f}\n".format(new_seed)
                 logger.debug("Replace RAND line with [" + new_line[:-1] + "]")
                 result.append(new_line)
             else:
@@ -60,7 +60,7 @@ class Fluka(Engine):
             # TODO better discovery needed
             if l.startswith("START"):
                 # TODO check formatting
-                new_line = "START        {:10.1f}\n".format(particle_no)
+                new_line = "START        {0:10.1f}\n".format(particle_no)
                 result.append(new_line)
                 logger.debug("Replace START line with [" + new_line[:-1] + "]")
             else:

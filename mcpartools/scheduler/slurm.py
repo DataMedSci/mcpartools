@@ -5,6 +5,8 @@ from mcpartools.scheduler.base import JobScheduler
 
 class Slurm(JobScheduler):
 
+    id = "slurm"
+
     def __init__(self, options_content):
         JobScheduler.__init__(self, options_content)
 
