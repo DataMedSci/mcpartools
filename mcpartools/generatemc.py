@@ -4,8 +4,7 @@ import sys
 
 from mcpartools.generator import Generator
 from mcpartools.generator import Options
-from mcpartools.scheduler.slurm import Slurm
-from mcpartools.scheduler.torque import Torque
+from mcpartools.scheduler.common import SchedulerDiscover
 
 
 def main(args=sys.argv[1:]):
@@ -51,8 +50,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-b', '--batch',
                         type=str,
                         default=None,
-                        choices=[Torque.id(), Slurm.id()],
-                        help='Available batch systems: %s, %s' % (Torque.id(), Slurm.id()))
+                        choices=[b.id for b in SchedulerDiscover.supported()],
+                        help='Available batch systems: %s' % [b.id for b in SchedulerDiscover.supported()])
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')

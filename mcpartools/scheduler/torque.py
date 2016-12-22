@@ -4,12 +4,11 @@ from mcpartools.scheduler.base import JobScheduler
 
 
 class Torque(JobScheduler):
+
+    id = "torque"
+
     def __init__(self, options_content):
         JobScheduler.__init__(self, scheduler_options=options_content)
-
-    @staticmethod
-    def id():
-        return "torque"
 
     submit_script_template = os.path.join('data', 'submit_torque.sh')
 

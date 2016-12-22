@@ -12,6 +12,11 @@ class SchedulerDiscover:
     def __init__(self):
         pass
 
+    @staticmethod
+    def supported():
+        # return tuple of supported batch systems
+        return (Torque, Slurm)
+
     @classmethod
     def get_scheduler(cls, scheduler_options, log_location):
         with open(os.path.join(log_location, "generatemc.log"), 'w+') as LOG_FILE:

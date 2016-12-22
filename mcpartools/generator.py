@@ -2,12 +2,9 @@ import os
 import logging
 import shutil
 import time
-import importlib
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
-from mcpartools.scheduler.torque import Torque
-from mcpartools.scheduler.slurm import Slurm
 
 logger = logging.getLogger(__name__)
 
@@ -54,10 +51,8 @@ class Options:
                     logger.error("-s should be followed by a path or text enclosed in square brackets, i.e. [--help]")
                     self._valid = False
 
+        # no checks needed - argparse does it
         self.batch = args.batch
-        if self.batch is not None and self.batch not in (Torque.id(), Slurm.id()):
-            logger.error("Invalid batch system, should be torque, slurm")
-            self._valid = False
 
     @property
     def valid(self):
@@ -86,12 +81,16 @@ class Generator:
         if not self.options.batch:
             self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
         else:
-            # use module 'containing' desired scheduler (Torque/Slurm)
-            scheduler_module = importlib.import_module("mcpartools.scheduler.{}".format(self.options.batch))
-            # get desired scheduler class and pass arguments (name begins with capital letter, so we use title method)
-            scheduler_class = getattr(scheduler_module, self.options.batch.title())
-            self.scheduler = scheduler_class(self.options.scheduler_options)
-            logger.info("Using: %s", scheduler_class.id())
+            # get desired scheduler class and pass arguments
+            scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported()
+                               if class_obj.id == self.options.batch]
+            if scheduler_class:  # if not empty
+                # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
+                self.scheduler = scheduler_class[0](self.options.scheduler_options)
+                logger.info("Using: %s", self.scheduler.id)
+            else:
+                logger.error("No class for given scheduler was found!")
+                raise NotImplementedError("Class not found: %s" % self.options.batch)
 
         # generate tmp dir with workspace
         self.generate_workspace()
