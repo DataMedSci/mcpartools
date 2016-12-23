@@ -109,7 +109,7 @@ test_debian_7_wheezy_py2:
         name: prerequisites
         code: |
           sudo apt-get update
-          sudo apt-get install -qq -y --no-install-recommends python-pip python-pkg-resources wget
+          sudo apt-get install -qq -y --no-install-recommends python-pip ca-certificates wget
           python -V
           pip --version
           easy_install -U pip
