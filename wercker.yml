@@ -105,7 +105,6 @@ test_debian_7_wheezy_py2:
   box: debian:wheezy
 
   steps:
-
     - script:
         name: prerequisites
         code: |
@@ -117,7 +116,7 @@ test_debian_7_wheezy_py2:
     - script:
         name: package_install
         code: |
-          ls
+          ls -al *whl
           pip install mcpartools*.whl
 
     - script:
@@ -141,12 +140,14 @@ test_debian_7_wheezy_py3:
           apt-get install -qq -y --no-install-recommends python3-pip ca-certificates wget
           python3 -V
           python3 -m pip --version
+          easy_install3 -U 'pip<8.0.0'
+          pip3 freeze
 
     - script:
         name: package_install
         code: |
           ls -al *whl
-          python3 -m pip install mcpartools*.whl
+          pip3 install mcpartools*.whl
 
     - script:
         name: test
