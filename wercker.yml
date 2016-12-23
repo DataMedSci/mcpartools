@@ -109,16 +109,17 @@ test_debian_7_wheezy_py2:
         name: prerequisites
         code: |
           sudo apt-get update
-          sudo apt-get install -qq -y --no-install-recommends python-pip python-setuptools python-pkg-resources wget
+          sudo apt-get install -qq -y --no-install-recommends python-pip python-pkg-resources wget
           python -V
           pip --version
           easy_install -U pip
+          pip2 -V
 
     - script:
         name: package_install
         code: |
           ls -al *whl
-          pip install mcpartools*.whl
+          pip2 install mcpartools*.whl
 
     - script:
         name: test
@@ -141,7 +142,7 @@ test_debian_7_wheezy_py3:
           apt-get install -qq -y --no-install-recommends python3-pip ca-certificates wget
           python3 -V
           easy_install3 -U 'pip<8.0.0'
-          pip3 freeze
+          pip3 -V
 
     - script:
         name: package_install
