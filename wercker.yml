@@ -111,8 +111,8 @@ test_debian_7_wheezy_py2:
         code: |
           sudo apt-get update
           sudo apt-get install -qq -y --no-install-recommends python-pip python-pkg-resources wget
-          python2 -V
-          pip2 --version
+          python -V
+          pip --version
 
     - script:
         name: package_install
@@ -126,29 +126,8 @@ test_debian_7_wheezy_py2:
           generatemc --version
           generatemc --help
           wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-          generatemc -p 1000 -j 10 sample_fluka.inp -w fluka
-
-#
-#test_debian_7_wheezy_py3:
-#  box: debian:wheezy
-#
-#  steps:
-#    - script:
-#        name: prerequisites
-#        code: |
-#          sudo apt-get update
-#          sudo apt-get install -qq -y --no-install-recommends python3 ca-certificates wget
-#          python3 -V
-#          wget https://bootstrap.pypa.io/get-pip.py
-#          python3 get-pip.py
-#          pip -V
-#
-#    - script:
-#        name: package_install
-#        code: |
-#          ls
-#          pip install mcpartools*.whl
-#
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
+          ls -al fluka
 
 
 test_debian_7_wheezy_py3:
@@ -161,15 +140,13 @@ test_debian_7_wheezy_py3:
           apt-get update
           apt-get install -qq -y --no-install-recommends python3-pip ca-certificates wget
           python3 -V
-          pip3 --version
-#          easy_install3 -U 'pip<8.0.0'
-#          pip3 freeze
+          python3 -m pip --version
 
     - script:
         name: package_install
         code: |
           ls -al *whl
-          pip3 install mcpartools*.whl
+          python3 -m pip install mcpartools*.whl
 
     - script:
         name: test
