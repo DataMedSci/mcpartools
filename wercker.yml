@@ -453,7 +453,7 @@ test_ubuntu_1204_py2:
         name: prerequisites
         code: |
           apt-get update
-          apt-get install -qq -y --no-install-recommends python python-setuptools
+          apt-get install -qq -y --no-install-recommends python python-setuptools wget
           python -V
           easy_install -U pip
 
@@ -480,9 +480,9 @@ test_ubuntu_1204_py3:
         name: prerequisites
         code: |
           apt-get update
-          apt-get install -qq -y --no-install-recommends python3 python3-setuptools
+          apt-get install -qq -y --no-install-recommends python3 python3-setuptools wget
           python3 -V
-          easy_install3 -U pip
+          easy_install3 -U 'pip<8.0.0'
 
     - script:
         name: package_install
