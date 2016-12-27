@@ -41,8 +41,6 @@ matrix:
     allow_failures:
         - python: 3.2
           env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0" STVER="<30.0.0"
-        - python: 3.6
-          env: TOXENV=py36
         - python: nightly
           env: TOXENV=py37
 
