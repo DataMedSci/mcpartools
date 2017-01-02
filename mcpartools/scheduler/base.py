@@ -10,15 +10,18 @@ class JobScheduler:
         if scheduler_options is None:
             self.options_header = "# no user options provided"
             self.options_args = ""
+            logger.debug("No scheduler options")
         elif os.path.exists(scheduler_options):
             opt_fd = open(scheduler_options, 'r')
             options_file_content = opt_fd.read()
             opt_fd.close()
             self.options_header = options_file_content
             self.options_args = ""
+            logger.debug("Scheduler options file:" + options_file_content)
         else:
             self.options_header = "# no user options provided"
             self.options_args = scheduler_options[1:-1]
+            logger.debug("Scheduler options argument:" + self.options_args)
 
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
@@ -30,17 +33,16 @@ class JobScheduler:
 
         script_path = os.path.join(workspace_dir, "main_run.sh")
 
-        return self.submit_script.format(options_header=self.options_header,
-                                         options_args=self.options_args,
+        return self.submit_script.format(options_args=self.options_args,
                                          jobs_no=jobs_no,
                                          script_path=script_path)
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.main_run_script_template)
-        self.main_run_script = tpl.decode('ascii').format(workspace_dir=workspace_dir,
+        self.main_run_script = tpl.decode('ascii').format(options_header=self.options_header,
+                                                          workspace_dir=workspace_dir,
                                                           jobs_no=jobs_no)
-
         return self.main_run_script
 
     def write_submit_script(self, script_path, jobs_no, workspace_dir):
