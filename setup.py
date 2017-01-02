@@ -31,7 +31,7 @@ def setup_versioneer():
         # assume versioneer.py was generated using "versioneer install" command
         import versioneer
         versioneer.get_version()
-    except ImportError:
+    except (ImportError, AttributeError):
         # it looks versioneer.py is missing
         # lets assume that versioneer package is installed
         # and versioneer binary is present in $PATH
