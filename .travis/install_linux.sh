@@ -17,5 +17,7 @@ pip --version
 
 pip install -r tests/requirements-test.txt
 
+versioneer install
+
 
 
