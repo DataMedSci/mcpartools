@@ -29,6 +29,9 @@ def setup_versioneer():
     """
     try:
         # assume versioneer.py was generated using "versioneer install" command
+        import os
+        import sys
+        sys.path.append(os.getcwd())
         import versioneer
         versioneer.get_version()
     except (ImportError, AttributeError):
@@ -88,6 +91,9 @@ def get_version():
     """
     setup_versioneer()
     clean_cache()
+    import os
+    import sys
+    sys.path.append(os.getcwd())
     import versioneer
     version = versioneer.get_version()
     parsed_version = parse_version(version)
@@ -104,6 +110,9 @@ def get_cmdclass():
     """
     setup_versioneer()
     clean_cache()
+    import os
+    import sys
+    sys.path.append(os.getcwd())
     import versioneer
     return versioneer.get_cmdclass()
 
