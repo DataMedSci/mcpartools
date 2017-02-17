@@ -78,3 +78,54 @@ class ShieldHit(Engine):
         out_fd.write(contents)
         out_fd.close()
         os.chmod(out_file_path, 0o750)
+
+    def parse_input_files(self):
+        beam_file, geo_file, mat_file, detect_file = self.input_files
+        # abs_output_dir = os.path.abspath(output_dir)
+        external_beam_files = self._parse_beam_file(beam_file)
+        logger.debug("External files found in BEAM file: %s" % external_beam_files)
+        icru_numbers = self._parse_mat_file(mat_file)
+        logger.debug("ICRUs found in MAT file: %s" % icru_numbers)
+        # if ICRU references were found - get file names for them
+        if icru_numbers:
+            icru_file_names = self._decrypt_icru_files(icru_numbers)
+            print(icru_file_names)
+
+    @staticmethod
+    def _parse_beam_file(file_path):
+        """Scan BEAM.dat file for references to external files and return them"""
+        external_files = []
+        with open(file_path, 'r') as beam_f:
+            for line in beam_f.readlines():
+                _split_line = line.split()
+                # line length checking to prevent IndexError
+                if _split_line.__len__() > 0 and _split_line[0] == "USEBMOD":
+                    logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
+                                 _split_line[0], _split_line[2]))
+                    external_files.append(_split_line[2])
+                elif _split_line.__len__() > 0 and _split_line[0] == "USECBEAM":
+                    logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
+                        _split_line[0], _split_line[1]))
+                    external_files.append(_split_line[1])
+        return external_files
+
+    @staticmethod
+    def _parse_mat_file(file_path):
+        """Scan MAT.dat file for ICRU references to files and return found ICRU numbers"""
+        icru_numbers = []
+        with open(file_path, 'r') as mat_f:
+            for line in mat_f.readlines():
+                _split_line = line.split()
+                if _split_line.__len__() > 1 and _split_line[0] == "ICRU":
+                    print(_split_line[1])
+                    icru_numbers.append(_split_line[1])
+        return icru_numbers
+
+    def _decrypt_icru_files(self, numbers):
+        """Find matching file names for given ICRU numbers"""
+        # load ICRU reference file
+        icru_file_path = os.path.join('mcengine', 'data', 'ICRU_table')
+        with open(icru_file_path, 'r') as table_f:
+            # first element of file is ICRU ID, second is file name it references
+            ref_dict = {line.split()[0]: line.split()[1] for line in table_f.readlines()}
+        return [ref_dict[e] for e in numbers]

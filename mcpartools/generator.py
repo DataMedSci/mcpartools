@@ -5,6 +5,7 @@ import time
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
+from mcpartools.mcengine.shieldhit import ShieldHit
 
 logger = logging.getLogger(__name__)
 
@@ -108,6 +109,11 @@ class Generator:
         # copy input files
         self.copy_input()
 
+        # make additional symlinks to files needed for SHIELDHIT12A simulation
+        if isinstance(self.mc_engine, ShieldHit):
+            self.make_shieldhit_links()
+            logger.info("Creating additional symlink for SHIELDHIT files")
+
         # save logs
         self.save_logs()
 
@@ -169,6 +175,10 @@ class Generator:
             dest_file = os.path.join(self.input_dir, f_base_name)
             logger.debug("Copying " + f + " to " + dest_file)
             shutil.copyfile(f, dest_file)
+
+    def make_shieldhit_links(self):
+        # todo: additional files have to be symlinked to shieldhit run directory...
+        self.mc_engine.parse_input_files()
 
     def save_logs(self):
         pass
