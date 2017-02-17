@@ -80,16 +80,17 @@ class ShieldHit(Engine):
         os.chmod(out_file_path, 0o750)
 
     def parse_input_files(self):
+        """Scan all SHIELDHIT12A config files to find external files used and return it"""
         beam_file, geo_file, mat_file, detect_file = self.input_files
         # abs_output_dir = os.path.abspath(output_dir)
         external_beam_files = self._parse_beam_file(beam_file)
-        logger.debug("External files found in BEAM file: %s" % external_beam_files)
+        logger.debug("External files found in BEAM file: {0}".format(external_beam_files))
         icru_numbers = self._parse_mat_file(mat_file)
-        logger.debug("ICRUs found in MAT file: %s" % icru_numbers)
+        logger.debug("ICRUs found in MAT file: {0}".format(icru_numbers))
         # if ICRU references were found - get file names for them
         if icru_numbers:
             icru_file_names = self._decrypt_icru_files(icru_numbers)
-            print(icru_file_names)
+        return external_beam_files + icru_file_names
 
     @staticmethod
     def _parse_beam_file(file_path):
@@ -117,14 +118,14 @@ class ShieldHit(Engine):
             for line in mat_f.readlines():
                 _split_line = line.split()
                 if _split_line.__len__() > 1 and _split_line[0] == "ICRU":
-                    print(_split_line[1])
                     icru_numbers.append(_split_line[1])
         return icru_numbers
 
-    def _decrypt_icru_files(self, numbers):
+    @staticmethod
+    def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
-        # load ICRU reference file
-        icru_file_path = os.path.join('mcengine', 'data', 'ICRU_table')
+        # load ICRU reference file, dirname(__file__) hack prevents CI errors
+        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'ICRU_table')
         with open(icru_file_path, 'r') as table_f:
             # first element of file is ICRU ID, second is file name it references
             ref_dict = {line.split()[0]: line.split()[1] for line in table_f.readlines()}

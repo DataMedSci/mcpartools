@@ -178,7 +178,8 @@ class Generator:
 
     def make_shieldhit_links(self):
         # todo: additional files have to be symlinked to shieldhit run directory...
-        self.mc_engine.parse_input_files()
+        external_files = self.mc_engine.parse_input_files()
+        logger.info("SHIELDHIT external files found: {0}".format(external_files))
 
     def save_logs(self):
         pass
