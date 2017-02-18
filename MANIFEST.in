@@ -12,6 +12,7 @@
   include mcpartools/_version.py
   include install_deps.sh
   include mcpartools/mcengine/data/*.sh
+  include mcpartools/mcengine/data/ICRU_table.json
   include mcpartools/scheduler/data/*.sh
   include tests/res/*.inp
   include tests/res/shieldhit/*.dat
