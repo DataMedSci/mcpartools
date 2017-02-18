@@ -89,8 +89,9 @@ class ShieldHit(Engine):
         logger.debug("ICRUs found in MAT file: {0}".format(icru_numbers))
         # if ICRU references were found - get file names for them
         if icru_numbers:
-            icru_file_names = self._decrypt_icru_files(icru_numbers)
-        return external_beam_files + icru_file_names
+            return external_beam_files + self._decrypt_icru_files(icru_numbers)
+        # no ICRU numbers found
+        return external_beam_files
 
     @staticmethod
     def _parse_beam_file(file_path):
