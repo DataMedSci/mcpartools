@@ -81,17 +81,20 @@ class ShieldHit(Engine):
 
     def find_external_files(self):
         """Scan all SHIELDHIT12A config files to find external files used and return it"""
-        beam_file, geo_file, mat_file, detect_file = self.input_files
+        beam_file, geo_file, mat_file, _ = self.input_files
         # abs_output_dir = os.path.abspath(output_dir)
         external_beam_files = self._parse_beam_file(beam_file)
-        logger.debug("External files found in BEAM file: {0}".format(external_beam_files))
+        logger.info("External files found in BEAM file: {0}".format(external_beam_files))
         icru_numbers = self._parse_mat_file(mat_file)
-        logger.debug("ICRUs found in MAT file: {0}".format(icru_numbers))
-        # if ICRU references were found - get file names for them
+        logger.info("ICRU references found in MAT file: {0}".format(icru_numbers))
+        # if ICRU references were found - get file names for material files
+        icru_files = []
         if icru_numbers:
-            return external_beam_files + self._decrypt_icru_files(icru_numbers)
-        # no ICRU numbers found
-        return external_beam_files
+            icru_files = self._decrypt_icru_files(icru_numbers)
+        geo_files = self._parse_geo_file(geo_file)
+        logger.info("External files in GEO file: {0}".format(geo_file))
+        external_files = external_beam_files + icru_files + geo_files
+        return [os.path.join(self.input_path, e) for e in external_files]
 
     @staticmethod
     def _parse_beam_file(file_path):
@@ -111,6 +114,20 @@ class ShieldHit(Engine):
                     external_files.append(split_line[1])
         return external_files
 
+    def _parse_geo_file(self, file_path):
+        external_files = []
+        with open(file_path, 'r') as geo_f:
+            for line in geo_f.readlines():
+                split_line = line.split()
+                if len(split_line) > 0 and os.path.isfile(os.path.join(self.input_path, split_line[0] + '.hed')):
+                    logger.debug("Found ctx + hed files: {0}".format(os.path.join(self.input_path, split_line[0])))
+                    external_files.append(os.path.join(self.input_path, split_line[0] + '.hed'))
+                    if os.path.isfile(os.path.join(self.input_path, split_line[0] + '.ctx')):
+                        external_files.append(os.path.join(self.input_path, split_line[0] + '.ctx'))
+                    elif os.path.isfile(os.path.join(self.input_path, split_line[0] + '.ctx.gz')):
+                        external_files.append(os.path.join(self.input_path, split_line[0] + '.ctx.gz'))
+        return external_files
+
     @staticmethod
     def _parse_mat_file(file_path):
         """Scan MAT.dat file for ICRU references to files and return found ICRU numbers"""
@@ -128,7 +145,7 @@ class ShieldHit(Engine):
         from json import load
         import codecs
         # load ICRU reference file, dirname(__file__) hack prevents CI errors
-        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'SH12A_ICRU_numbers.json')
+        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'SH12A_ICRU_table.json')
         with codecs.open(icru_file_path, 'r', encoding='utf-8') as table_f:
             ref_dict = load(table_f)
         return [ref_dict[e] for e in numbers]

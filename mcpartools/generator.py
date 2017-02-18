@@ -174,7 +174,7 @@ class Generator:
             shutil.copyfile(f, dest_file)
 
     def symlink_external_files(self):
-        # todo: additional files have to be symlinked to shieldhit run directory...
+        # todo: additional files have to be symlinked to run directory...
         external_files = self.mc_engine.find_external_files()
         logger.info("External files found: {0}".format(external_files))
 
