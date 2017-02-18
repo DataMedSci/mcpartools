@@ -119,13 +119,15 @@ class ShieldHit(Engine):
         with open(file_path, 'r') as geo_f:
             for line in geo_f.readlines():
                 split_line = line.split()
-                if len(split_line) > 0 and os.path.isfile(os.path.join(self.input_path, split_line[0] + '.hed')):
-                    logger.debug("Found ctx + hed files: {0}".format(os.path.join(self.input_path, split_line[0])))
-                    external_files.append(os.path.join(self.input_path, split_line[0] + '.hed'))
-                    if os.path.isfile(os.path.join(self.input_path, split_line[0] + '.ctx')):
-                        external_files.append(os.path.join(self.input_path, split_line[0] + '.ctx'))
-                    elif os.path.isfile(os.path.join(self.input_path, split_line[0] + '.ctx.gz')):
-                        external_files.append(os.path.join(self.input_path, split_line[0] + '.ctx.gz'))
+                if len(split_line) > 0:
+                    base_path = os.path.join(self.input_path, split_line[0])
+                    if os.path.isfile(base_path + '.hed'):
+                        logger.debug("Found ctx + hed files: {0}".format(base_path))
+                        external_files.append(base_path + '.hed')
+                        if os.path.isfile(base_path + '.ctx'):
+                            external_files.append(base_path + '.ctx')
+                        elif os.path.isfile(base_path + '.ctx.gz'):
+                            external_files.append(base_path + '.ctx.gz')
         return external_files
 
     @staticmethod
