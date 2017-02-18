@@ -79,7 +79,7 @@ class ShieldHit(Engine):
         out_fd.close()
         os.chmod(out_file_path, 0o750)
 
-    def parse_input_files(self):
+    def find_external_files(self):
         """Scan all SHIELDHIT12A config files to find external files used and return it"""
         beam_file, geo_file, mat_file, detect_file = self.input_files
         # abs_output_dir = os.path.abspath(output_dir)

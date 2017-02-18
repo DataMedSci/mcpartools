@@ -109,10 +109,8 @@ class Generator:
         # copy input files
         self.copy_input()
 
-        # make additional symlinks to files needed for SHIELDHIT12A simulation
-        if isinstance(self.mc_engine, ShieldHit):
-            self.make_shieldhit_links()
-            logger.info("Creating additional symlink for SHIELDHIT files")
+        # make symlinks to external files found
+        self.symlink_external_files()
 
         # save logs
         self.save_logs()
@@ -176,9 +174,9 @@ class Generator:
             logger.debug("Copying " + f + " to " + dest_file)
             shutil.copyfile(f, dest_file)
 
-    def make_shieldhit_links(self):
+    def symlink_external_files(self):
         # todo: additional files have to be symlinked to shieldhit run directory...
-        external_files = self.mc_engine.parse_input_files()
+        external_files = self.mc_engine.find_external_files()
         logger.info("SHIELDHIT external files found: {0}".format(external_files))
 
     def save_logs(self):
