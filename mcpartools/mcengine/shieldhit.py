@@ -98,16 +98,16 @@ class ShieldHit(Engine):
         external_files = []
         with open(file_path, 'r') as beam_f:
             for line in beam_f.readlines():
-                _split_line = line.split()
+                split_line = line.split()
                 # line length checking to prevent IndexError
-                if _split_line.__len__() > 0 and _split_line[0] == "USEBMOD":
+                if len(split_line) > 0 and split_line[0] == "USEBMOD":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                                 _split_line[0], _split_line[2]))
-                    external_files.append(_split_line[2])
-                elif _split_line.__len__() > 0 and _split_line[0] == "USECBEAM":
+                                 split_line[0], split_line[2]))
+                    external_files.append(split_line[2])
+                elif len(split_line) > 0 and split_line[0] == "USECBEAM":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                        _split_line[0], _split_line[1]))
-                    external_files.append(_split_line[1])
+                        split_line[0], split_line[1]))
+                    external_files.append(split_line[1])
         return external_files
 
     @staticmethod
@@ -116,17 +116,17 @@ class ShieldHit(Engine):
         icru_numbers = []
         with open(file_path, 'r') as mat_f:
             for line in mat_f.readlines():
-                _split_line = line.split()
-                if _split_line.__len__() > 1 and _split_line[0] == "ICRU":
-                    icru_numbers.append(_split_line[1])
+                split_line = line.split()
+                if len(split_line) > 1 and split_line[0] == "ICRU":
+                    icru_numbers.append(split_line[1])
         return icru_numbers
 
     @staticmethod
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
+        from json import load
         # load ICRU reference file, dirname(__file__) hack prevents CI errors
-        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'ICRU_table')
-        with open(icru_file_path, 'r') as table_f:
-            # first element of file is ICRU ID, second is file name it references
-            ref_dict = {line.split()[0]: line.split()[1] for line in table_f.readlines()}
+        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'ICRU_table.json')
+        with open(icru_file_path, 'r', encoding='utf-8') as table_f:
+            ref_dict = load(table_f)
         return [ref_dict[e] for e in numbers]
