@@ -98,7 +98,7 @@ class ShieldHit(Engine):
 
     @staticmethod
     def _parse_beam_file(file_path):
-        """Scan BEAM.dat file for references to external files and return them"""
+        """Scan SH12A BEAM file for references to external files and return them"""
         external_files = []
         with open(file_path, 'r') as beam_f:
             for line in beam_f.readlines():
@@ -115,6 +115,7 @@ class ShieldHit(Engine):
         return external_files
 
     def _parse_geo_file(self, file_path):
+        """Scan SH12A GEO file for references to external files (like voxelised geometry) and return them"""
         external_files = []
         with open(file_path, 'r') as geo_f:
             for line in geo_f.readlines():
@@ -132,7 +133,7 @@ class ShieldHit(Engine):
 
     @staticmethod
     def _parse_mat_file(file_path):
-        """Scan MAT.dat file for ICRU references to files and return found ICRU numbers"""
+        """Scan SH12A MAT file for ICRU references to files and return found numbers"""
         icru_numbers = []
         with open(file_path, 'r') as mat_f:
             for line in mat_f.readlines():
@@ -145,9 +146,8 @@ class ShieldHit(Engine):
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
         from json import load
-        import codecs
         # load ICRU reference file, dirname(__file__) hack prevents CI errors
         icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'SH12A_ICRU_table.json')
-        with codecs.open(icru_file_path, 'r', encoding='utf-8') as table_f:
+        with open(icru_file_path, 'r') as table_f:
             ref_dict = load(table_f)
         return [ref_dict[e] for e in numbers]
