@@ -125,8 +125,9 @@ class ShieldHit(Engine):
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
         from json import load
+        import codecs
         # load ICRU reference file, dirname(__file__) hack prevents CI errors
         icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'ICRU_table.json')
-        with open(icru_file_path, 'r', encoding='utf-8') as table_f:
+        with codecs.open(icru_file_path, 'r', encoding='utf-8') as table_f:
             ref_dict = load(table_f)
         return [ref_dict[e] for e in numbers]
