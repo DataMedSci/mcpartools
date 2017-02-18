@@ -5,7 +5,6 @@ import time
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
-from mcpartools.mcengine.shieldhit import ShieldHit
 
 logger = logging.getLogger(__name__)
 
@@ -177,7 +176,7 @@ class Generator:
     def symlink_external_files(self):
         # todo: additional files have to be symlinked to shieldhit run directory...
         external_files = self.mc_engine.find_external_files()
-        logger.info("SHIELDHIT external files found: {0}".format(external_files))
+        logger.info("External files found: {0}".format(external_files))
 
     def save_logs(self):
         pass

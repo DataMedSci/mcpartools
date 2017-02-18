@@ -127,7 +127,7 @@ class ShieldHit(Engine):
         from json import load
         import codecs
         # load ICRU reference file, dirname(__file__) hack prevents CI errors
-        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'ICRU_table.json')
+        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'SH12A_ICRU_numbers.json')
         with codecs.open(icru_file_path, 'r', encoding='utf-8') as table_f:
             ref_dict = load(table_f)
         return [ref_dict[e] for e in numbers]
