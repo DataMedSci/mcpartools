@@ -181,7 +181,10 @@ class Generator:
         for e_file in external_files:
             logger.info("Creating symlink from: {1} ---> {0}".format(
                         e_file, os.path.join(self.input_dir, os.path.split(e_file)[-1])))
-            os.symlink(e_file, os.path.join(self.input_dir, os.path.split(e_file)[-1]))
+            for jobid in range(self.options.jobs_no):
+                jobdir_name = "job_{0:04d}".format(jobid + 1)
+                jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
+                os.symlink(e_file, os.path.join(jobdir_path, os.path.split(e_file)[-1]))
 
     def save_logs(self):
         pass
