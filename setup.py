@@ -114,7 +114,7 @@ with open('README.rst') as readme_file:
 setuptools.setup(
     name='mcpartools',
     version=get_version(),
-    packages=setuptools.find_packages(exclude=["tests"]),
+    packages=setuptools.find_packages(where='.', exclude=("*.tests", "*.tests.*", "tests.*", "tests")),
     package_data={
         'mcpartools.mcengine.data': ['*.sh'],
         'mcpartools.scheduler.data': ['*.sh'],
