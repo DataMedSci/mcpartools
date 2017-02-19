@@ -1,10 +1,9 @@
-==============
-WHAT IS THIS ?
-==============
+mcpartools
+==========
 
 **mcpartools** is a software simplifying time consuming simulation of particle transport using Monte Carlo codes
 (Fluka, SHIELDHIT12A). We assume user has access to a computing cluster with batch processing software installed
-(i.e. slurm, torque) and wants to parallelize simulation by running it simultaneously on many computing nodes.
+(i.e. slurm, torque) and wants faster simulation by running it simultaneously on many computing nodes.
 **mcpartools** simplifies this process by generating necessary directory structures and scripts for starting calculations
 and collecting the results.
 

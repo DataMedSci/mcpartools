@@ -27,4 +27,50 @@ User's Guide
                 sample_fluka.inp
                 run.sh
 
-After executing submit.sh script, output files will be created
+After executing submit.sh script, output files will be created in the workspace directory.
+Each parallel job will store its output in separate directory::
+
+     run_20170219_122904
+        collect.sh
+        input
+            sample_fluka.inp
+        submit.sh
+        workspace
+            main_run.sh
+            job_0001
+                sample_fluka.inp
+                run.sh
+                TODO                  # TODO
+            job_0002
+                sample_fluka.inp
+                run.sh
+                TODO                  # TODO
+            job_0003
+                sample_fluka.inp
+                run.sh
+                TODO                  # TODO
+
+
+
+In order to collect all files in a single place,
+run `collect.sh` script. This will result in following new files::
+
+    run_20170219_122904
+        collect.sh
+        input
+            sample_fluka.inp
+        submit.sh
+        output                        # TODO
+            TODO                      # TODO
+        workspace
+            main_run.sh
+            job_0001
+                sample_fluka.inp
+                run.sh
+            job_0002
+                sample_fluka.inp
+                run.sh
+            job_0003
+                sample_fluka.inp
+                run.sh
+
