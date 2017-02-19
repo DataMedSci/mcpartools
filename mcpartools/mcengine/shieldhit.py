@@ -52,15 +52,19 @@ class ShieldHit(Engine):
     def save_run_script(self, output_dir, job_id):
         beam_file, geo_file, mat_file, detect_file = self.input_files
         abs_output_dir = os.path.abspath(output_dir)
+        # SH12A should use configs we copied/edited
+        # go up from 'workspace/job_xxxx' to 'run_xxxxxxxx' dir and add 'input/'
+        input_dir = os.path.join(abs_output_dir, '..', '..', 'input')
         contents = self.run_script_content.format(
             shieldhit_bin='shieldhit',
             working_directory=abs_output_dir,
             particle_no=self.particle_no,
             rnd_seed=self.rng_seed,
-            beam_file=beam_file,
-            geo_file=geo_file,
-            mat_file=mat_file,
-            detect_file=detect_file
+            # append config file name to run dir input directory path
+            beam_file=os.path.join(input_dir, os.path.basename(beam_file)),
+            geo_file=os.path.join(input_dir, os.path.basename(geo_file)),
+            mat_file=os.path.join(input_dir, os.path.basename(mat_file)),
+            detect_file=os.path.join(input_dir, os.path.basename(detect_file))
         )
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
@@ -83,7 +87,7 @@ class ShieldHit(Engine):
         """
         Scan all SHIELDHIT12A config files to find external files used and return them.
         Also change paths in config files to match convention that all resources are
-        symlinked in job_xxxx/../../input/symlink
+        symlinked in job_xxxx/symlink
         """
         beam_file, geo_file, mat_file, _ = self.input_files
         external_beam_files = self._parse_beam_file(beam_file, run_input_dir)
@@ -130,7 +134,7 @@ class ShieldHit(Engine):
         with open(file_path, 'r') as geo_f:
             for line in geo_f.readlines():
                 split_line = line.split()
-                if len(split_line) > 0:
+                if len(split_line) > 0 and not line.startswith("*"):
                     base_path = os.path.join(self.input_path, split_line[0])
                     if os.path.isfile(base_path + '.hed'):
                         logger.debug("Found ctx + hed files: {0}".format(base_path))
