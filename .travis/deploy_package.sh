@@ -60,3 +60,9 @@ generatemc --help
 if [[ $TRAVIS_TAG != "" ]]; then
     twine upload -r $PYPIREPO dist/*
 fi
+
+# make pyinstaller package
+pyinstaller main.spec
+ls -al ./generatemc
+./generatemc --version
+./generatemc --help
