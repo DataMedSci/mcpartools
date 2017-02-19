@@ -1,22 +1,15 @@
-Welcome to mcpartools's documentation!
-======================================
+mcpartools Documentation
+========================
 
 Contents:
 
 .. toctree::
    :maxdepth: 2
 
-   readme
-   install
-   contributing
-   technical
-   authors
+   getting_started.rst
+   user_guide.rst
+   install.rst
+   developer.rst
+   contributing.rst
 
-
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
+   
