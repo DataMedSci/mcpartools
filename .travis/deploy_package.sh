@@ -62,6 +62,7 @@ if [[ $TRAVIS_TAG != "" ]]; then
 fi
 
 # make pyinstaller package
+pip install pyinstaller
 pyinstaller main.spec
 ls -al ./generatemc
 ./generatemc --version
