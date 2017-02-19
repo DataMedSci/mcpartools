@@ -146,6 +146,6 @@ class ShieldHit(Engine):
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
         import json
-        icru_file = resource_string(__name__, 'data/SH12A_ICRU_table.json')
+        icru_file = resource_string(__name__, os.path.join('data', 'SH12A_ICRU_table.json'))
         ref_dict = json.loads(icru_file.decode('utf-8'))
         return [ref_dict[e] for e in numbers]
