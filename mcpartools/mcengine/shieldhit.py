@@ -104,13 +104,13 @@ class ShieldHit(Engine):
             for line in beam_f.readlines():
                 split_line = line.split()
                 # line length checking to prevent IndexError
-                if len(split_line) > 0 and split_line[0] == "USEBMOD":
+                if len(split_line) > 2 and split_line[0] == "USEBMOD":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
                                  split_line[0], split_line[2]))
                     external_files.append(split_line[2])
-                elif len(split_line) > 0 and split_line[0] == "USECBEAM":
+                elif len(split_line) > 1 and split_line[0] == "USECBEAM":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                        split_line[0], split_line[1]))
+                                 split_line[0], split_line[1]))
                     external_files.append(split_line[1])
         return external_files
 
@@ -145,9 +145,7 @@ class ShieldHit(Engine):
     @staticmethod
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
-        from json import load
-        # load ICRU reference file, dirname(__file__) hack prevents CI errors
-        icru_file_path = os.path.join(os.path.dirname(__file__), 'data', 'SH12A_ICRU_table.json')
-        with open(icru_file_path, 'r') as table_f:
-            ref_dict = load(table_f)
+        import json
+        icru_file = resource_string(__name__, 'data/SH12A_ICRU_table.json')
+        ref_dict = json.loads(icru_file.decode('utf-8'))
         return [ref_dict[e] for e in numbers]
