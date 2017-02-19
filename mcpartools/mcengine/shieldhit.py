@@ -92,7 +92,7 @@ class ShieldHit(Engine):
         if icru_numbers:
             icru_files = self._decrypt_icru_files(icru_numbers)
         geo_files = self._parse_geo_file(geo_file)
-        logger.info("External files in GEO file: {0}".format(geo_file))
+        logger.info("External files in GEO file: {0}".format(geo_files))
         external_files = external_beam_files + icru_files + geo_files
         return [os.path.join(self.input_path, e) for e in external_files]
 

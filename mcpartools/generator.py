@@ -174,9 +174,10 @@ class Generator:
             shutil.copyfile(f, dest_file)
 
     def symlink_external_files(self):
-        # todo: additional files have to be symlinked to run directory...
         external_files = self.mc_engine.find_external_files()
         logger.info("External files found: {0}".format(external_files))
+        if not external_files:
+            return
         for e_file in external_files:
             logger.info("Creating symlink from: {1} ---> {0}".format(
                         e_file, os.path.join(self.input_dir, os.path.split(e_file)[-1])))
