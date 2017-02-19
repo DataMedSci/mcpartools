@@ -79,11 +79,14 @@ class ShieldHit(Engine):
         out_fd.close()
         os.chmod(out_file_path, 0o750)
 
-    def find_external_files(self):
-        """Scan all SHIELDHIT12A config files to find external files used and return it"""
+    def find_external_files(self, run_input_dir):
+        """
+        Scan all SHIELDHIT12A config files to find external files used and return them.
+        Also change paths in config files to match convention that all resources are
+        symlinked in job_xxxx/../../input/symlink
+        """
         beam_file, geo_file, mat_file, _ = self.input_files
-        # abs_output_dir = os.path.abspath(output_dir)
-        external_beam_files = self._parse_beam_file(beam_file)
+        external_beam_files = self._parse_beam_file(beam_file, run_input_dir)
         logger.info("External files found in BEAM file: {0}".format(external_beam_files))
         icru_numbers = self._parse_mat_file(mat_file)
         logger.info("ICRU references found in MAT file: {0}".format(icru_numbers))
@@ -91,15 +94,15 @@ class ShieldHit(Engine):
         icru_files = []
         if icru_numbers:
             icru_files = self._decrypt_icru_files(icru_numbers)
-        geo_files = self._parse_geo_file(geo_file)
+        geo_files = self._parse_geo_file(geo_file, run_input_dir)
         logger.info("External files in GEO file: {0}".format(geo_files))
         external_files = external_beam_files + icru_files + geo_files
         return [os.path.join(self.input_path, e) for e in external_files]
 
-    @staticmethod
-    def _parse_beam_file(file_path):
+    def _parse_beam_file(self, file_path, run_input_dir):
         """Scan SH12A BEAM file for references to external files and return them"""
         external_files = []
+        paths_to_replace = []
         with open(file_path, 'r') as beam_f:
             for line in beam_f.readlines():
                 split_line = line.split()
@@ -108,15 +111,22 @@ class ShieldHit(Engine):
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
                                  split_line[0], split_line[2]))
                     external_files.append(split_line[2])
+                    paths_to_replace.append(split_line[2])
                 elif len(split_line) > 1 and split_line[0] == "USECBEAM":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
                                  split_line[0], split_line[1]))
                     external_files.append(split_line[1])
+                    paths_to_replace.append(split_line[1])
+        if paths_to_replace:
+            run_dir_config_file = os.path.join(run_input_dir, os.path.split(file_path)[-1])
+            logger.debug("Calling rewrite_paths method on file: {0}".format(run_dir_config_file))
+            self._rewrite_paths_in_file(run_dir_config_file, paths_to_replace)
         return external_files
 
-    def _parse_geo_file(self, file_path):
+    def _parse_geo_file(self, file_path, run_input_dir):
         """Scan SH12A GEO file for references to external files (like voxelised geometry) and return them"""
         external_files = []
+        paths_to_replace = []
         with open(file_path, 'r') as geo_f:
             for line in geo_f.readlines():
                 split_line = line.split()
@@ -125,10 +135,17 @@ class ShieldHit(Engine):
                     if os.path.isfile(base_path + '.hed'):
                         logger.debug("Found ctx + hed files: {0}".format(base_path))
                         external_files.append(base_path + '.hed')
+                        # try to find ctx file
                         if os.path.isfile(base_path + '.ctx'):
                             external_files.append(base_path + '.ctx')
                         elif os.path.isfile(base_path + '.ctx.gz'):
                             external_files.append(base_path + '.ctx.gz')
+                        # replace path to match symlink location
+                        paths_to_replace.append(split_line[0])
+        if paths_to_replace:
+            run_dir_config_file = os.path.join(run_input_dir, os.path.split(file_path)[-1])
+            logger.debug("Calling rewrite_paths method on file: {0}".format(run_dir_config_file))
+            self._rewrite_paths_in_file(run_dir_config_file, paths_to_replace)
         return external_files
 
     @staticmethod
@@ -149,3 +166,22 @@ class ShieldHit(Engine):
         icru_file = resource_string(__name__, os.path.join('data', 'SH12A_ICRU_table.json'))
         ref_dict = json.loads(icru_file.decode('utf-8'))
         return [ref_dict[e] for e in numbers]
+
+    @staticmethod
+    def _rewrite_paths_in_file(config_file, paths_to_replace):
+        """
+        Rewrite paths in config files to match convention job_xxxx/../../input/symlink
+        Requires path to run_xxxx/input/config_file and a list of paths_to_replace
+        """
+        lines = []
+        with open(config_file) as infile:
+            for line in infile:
+                for old_path in paths_to_replace:
+                    if line.__contains__(old_path):
+                        new_path = os.path.join('..', '..', 'input', os.path.split(old_path)[-1])
+                        line = line.replace(old_path, new_path)
+                        logger.debug("Changed path {0} ---> {1} in file {2}".format(old_path, new_path, config_file))
+                lines.append(line)
+        with open(config_file, 'w') as outfile:
+            for line in lines:
+                outfile.write(line)

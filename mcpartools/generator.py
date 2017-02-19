@@ -174,7 +174,7 @@ class Generator:
             shutil.copyfile(f, dest_file)
 
     def symlink_external_files(self):
-        external_files = self.mc_engine.find_external_files()
+        external_files = self.mc_engine.find_external_files(self.input_dir)
         logger.info("External files found: {0}".format(external_files))
         if not external_files:
             return
