@@ -152,11 +152,30 @@ class ShieldHit(Engine):
             self._rewrite_paths_in_file(run_dir_config_file, paths_to_replace)
         return external_files
 
-    @staticmethod
-    def _parse_mat_file(file_path):
-        """
-        Scan SH12A MAT file for ICRU+LOADEX pairs and return found ICRU numbers
+    def _parse_mat_file(self, file_path):
+        """Scan SH12A MAT file for ICRU+LOADEX pairs and return found ICRU numbers"""
+        mat_file_sections = self._extract_mat_sections(file_path)
+        return self._analyse_mat_sections(mat_file_sections)
 
+    @staticmethod
+    def _extract_mat_sections(file_path):
+        with open(file_path, 'r') as mat_f:
+            chunks = []
+            current_chunk = []
+            for line in mat_f:
+                if line.startswith("MEDIUM") and current_chunk:
+                    # if line starts with MEDIUM - new section, add all gathered data to chunks
+                    chunks.append(current_chunk[:])
+                    current_chunk = []
+                elif line.startswith("ICRU") or line.startswith("LOADDEDX"):
+                    # if line contains ICRU or LOADDEDX add it to current section chunk
+                    current_chunk.append(line.strip())
+            chunks.append(current_chunk)  # append the last chunk outside the loop
+        return chunks
+
+    @staticmethod
+    def _analyse_mat_sections(sections):
+        """
         Cases:
         - ICRU flag present, LOADDEDX flag missing -> data loaded from some data hardcoded in SH12A binary,
         no need to load external files
@@ -166,24 +185,23 @@ class ShieldHit(Engine):
         - ICRU flag missing, LOADDEDX flag missing -> nothing happens
         """
         icru_numbers = []
-        just_read = False
-        with open(file_path, 'r') as mat_f:
-            for line, next_line in pairwise(mat_f.readlines()):
-                split_line = line.split()
-                if len(split_line) > 1:
-                    if split_line[0] == "ICRU":
-                        next_split_line = next_line.split()
-                        if len(next_split_line) > 0 and next_split_line[0] == "LOADDEDX":
-                            just_read = True
-                            icru_numbers.append(split_line[1])
-                    elif split_line[0] == "LOADDEDX":
-                        if not just_read:
-                            just_read = True
-                            icru_numbers.append(split_line[1])
-                        else:
-                            just_read = False
-                    else:
-                        just_read = False
+        for section in sections:
+            load_present = False
+            load_value = False
+            icru_value = False
+            for e in section:
+                split_line = e.split()
+                if "LOADDEDX" in e:
+                    load_present = True
+                    if len(split_line) > 1:
+                        load_value = split_line[1] if "!" not in split_line[1] else False  # ignore ! comments
+                elif "ICRU" in e and len(split_line) > 1:
+                    icru_value = split_line[1] if "!" not in split_line[1] else False  # ignore ! comments
+            if load_present:  # LOADDEDX is present, so external file is required
+                if icru_value:  # if ICRU value was given
+                    icru_numbers.append(icru_value)
+                elif load_value:  # if only LOADDEDX with values was present in section
+                    icru_numbers.append(load_value)
         return icru_numbers
 
     @staticmethod
@@ -215,11 +233,3 @@ class ShieldHit(Engine):
         with open(config_file, 'w') as outfile:
             for line in lines:
                 outfile.write(line)
-
-
-def pairwise(iterable):
-    """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
-    from itertools import tee
-    a, b = tee(iterable)
-    next(b, None)
-    return zip(a, b)
