@@ -54,7 +54,7 @@ class ShieldHit(Engine):
         abs_output_dir = os.path.abspath(output_dir)
         # SH12A should use configs we copied/edited
         # go up from 'workspace/job_xxxx' to 'run_xxxxxxxx' dir and add 'input/'
-        input_dir = os.path.join(abs_output_dir, '..', '..', 'input')
+        input_dir = os.path.abspath(os.path.join(abs_output_dir, '..', '..', 'input'))
         contents = self.run_script_content.format(
             shieldhit_bin='shieldhit',
             working_directory=abs_output_dir,

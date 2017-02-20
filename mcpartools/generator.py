@@ -179,13 +179,14 @@ class Generator:
         if not external_files:
             return
         for e_file in external_files:
-            logger.info("Creating symlink for: {0}".format(e_file))
-            if not os.path.isfile(e_file):
-                raise OSError("There is no such file {0} to symlink.".format(e_file))
+            abs_path = os.path.abspath(e_file)
+            logger.info("Creating symlink for: {0}".format(abs_path))
+            if not os.path.isfile(abs_path):
+                raise OSError("There is no such file {0} to symlink.".format(abs_path))
             for jobid in range(self.options.jobs_no):
                 jobdir_name = "job_{0:04d}".format(jobid + 1)
                 jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
-                os.symlink(e_file, os.path.join(jobdir_path, os.path.split(e_file)[-1]))
+                os.symlink(abs_path, os.path.join(jobdir_path, os.path.split(abs_path)[-1]))
 
     def save_logs(self):
         pass
