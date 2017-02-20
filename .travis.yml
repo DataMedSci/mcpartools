@@ -61,7 +61,9 @@ deploy:
   provider: releases
   api_key:
     secure: vobq0zAt/xwn3qjqLMyqGiNCEYSg6Xah83ohK93UmIsMZtASQwLgioCDaqE1Lkmu5SwAYSUgyydo3JieEhFTImEx+9+tbwDPNNukosKMiMB6xzN7mCIRlYWL/FiMBvRQt4D8kxXjwUynvY/kDan9V+KIvCwH1+M3mMA96naYpwhn4xKn2PKxTR0wvecZw/hyZs+EucmeqyjmNr5ctFqTfIEVQee0u7aejJ4NXRlbNKrrLOw0eqjISJba3Ggr2JTnVK8H1d3yDIT/4iqUv01fzZTm6V+PgdGAAVtozpO83oun8qCN9Perme3xx0qpNl+qh18b7d/biRYDkti5fQVfzY8ocMAXgTh4fiSuOa9tumhAkZBVAW45eDTmYXZ6PZFFSFBpmR4S1J77kt+4EwrCky0hlNOZ89mIXqtE17X9r5f+pu6NI2re0MZo0oB8YeAKHb8/qxgAHdIFM9B4lxwteQ1sEI3R5HsLGOjB0QmiP9igu52lcJVGMnFXeSua7VmDYX+EHtK8fUkJnHPs9xaQ8jSMTYPdVP2znbp41MZH8bOC1Qm63XxPX/6dmSyThk03vfqFJ7sXOCiGuxhg8y9P9J0Z6BSXjBAHwP1SagT9ZJQV26+m3kJbOaNlpv+1OuLQ7XRb68OyEaD6EMDD8NjyQRy6YJGMy5mTPAv1n4QieJ8=
-  file: ./dist/generatemc
+  file: 
+   - ./dist/generatemc
+   - ./generatemc.pyz
   overwrite: true
   skip_cleanup: true
   on:
