@@ -36,6 +36,18 @@ if [ ! -e "${PYPIRC}" ]; then
 fi
 }
 
+# make pyinstaller package
+pip install pyinstaller
+pyinstaller main.spec
+ls -al dist
+./dist/generatemc --version
+./dist/generatemc --help
+
+# TODO fix generated version
+
+# TODO add uploading to Github releases, see
+#https://docs.travis-ci.com/user/deployment/releases/
+
 # write .pypirc file with pypi repository credentials
 set +x
 write_pypirc
@@ -61,12 +73,3 @@ if [[ $TRAVIS_TAG != "" ]]; then
     twine upload -r $PYPIREPO dist/*
 fi
 
-# make pyinstaller package
-pip install pyinstaller
-pyinstaller main.spec
-ls -al dist
-./dist/generatemc --version
-./dist/generatemc --help
-
-# todo add uploading to Github releases, see
-https://docs.travis-ci.com/user/deployment/releases/
