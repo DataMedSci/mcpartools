@@ -18,6 +18,7 @@
   include tests/manual/*.sh
   include *.sh
   include wercker.yml
+  include *.spec
 
   prune .travis
   exclude .gitkeep

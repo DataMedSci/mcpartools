@@ -16,8 +16,3 @@ pip install --upgrade virtualenv$VENVVER pip$PIPVER setuptools$STVER tox wheel
 pip --version
 
 pip install -r tests/requirements-test.txt
-
-versioneer install
-
-
-

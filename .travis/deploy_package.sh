@@ -36,6 +36,7 @@ if [ ! -e "${PYPIRC}" ]; then
 fi
 }
 
+
 # write .pypirc file with pypi repository credentials
 set +x
 write_pypirc
@@ -60,3 +61,12 @@ generatemc --help
 if [[ $TRAVIS_TAG != "" ]]; then
     twine upload -r $PYPIREPO dist/*
 fi
+
+# make pyinstaller package
+pip install pyinstaller
+pyinstaller main.spec
+# check if file was generated
+ls -al dist
+# check if generated command works
+./dist/generatemc --version
+./dist/generatemc --help
