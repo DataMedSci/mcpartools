@@ -91,15 +91,15 @@ class ShieldHit(Engine):
         """
         beam_file, geo_file, mat_file, _ = self.input_files
         external_beam_files = self._parse_beam_file(beam_file, run_input_dir)
-        logger.info("External files found in BEAM file: {0}".format(external_beam_files))
+        logger.info("External files from BEAM file: {0}".format(external_beam_files))
         icru_numbers = self._parse_mat_file(mat_file)
-        logger.info("ICRU references found in MAT file: {0}".format(icru_numbers))
-        # if ICRU references were found - get file names for material files
+        logger.info("External files from MAT file: {0}".format(icru_numbers))
+        # if ICRU+LOADEX pairs were found - get file names for external material files
         icru_files = []
         if icru_numbers:
             icru_files = self._decrypt_icru_files(icru_numbers)
         geo_files = self._parse_geo_file(geo_file, run_input_dir)
-        logger.info("External files in GEO file: {0}".format(geo_files))
+        logger.info("External files from GEO file: {0}".format(geo_files))
         external_files = external_beam_files + icru_files + geo_files
         return [os.path.join(self.input_path, e) for e in external_files]
 
@@ -154,13 +154,36 @@ class ShieldHit(Engine):
 
     @staticmethod
     def _parse_mat_file(file_path):
-        """Scan SH12A MAT file for ICRU references to files and return found numbers"""
+        """
+        Scan SH12A MAT file for ICRU+LOADEX pairs and return found ICRU numbers
+
+        Cases:
+        - ICRU flag present, LOADDEDX flag missing -> data loaded from some data hardcoded in SH12A binary,
+        no need to load external files
+        - ICRU flag present, LOADDEDX flag present -> data loaded from external files. ICRU number read from ICRU flag,
+        any number following LOADDEDX flag is ignored.
+        - ICRU flag missing, LOADDEDX flag present -> data loaded from external files. ICRU number read from LOADDEDX
+        - ICRU flag missing, LOADDEDX flag missing -> nothing happens
+        """
         icru_numbers = []
+        just_read = False
         with open(file_path, 'r') as mat_f:
-            for line in mat_f.readlines():
+            for line, next_line in pairwise(mat_f.readlines()):
                 split_line = line.split()
-                if len(split_line) > 1 and split_line[0] == "ICRU":
-                    icru_numbers.append(split_line[1])
+                if len(split_line) > 1:
+                    if split_line[0] == "ICRU":
+                        next_split_line = next_line.split()
+                        if len(next_split_line) > 0 and next_split_line[0] == "LOADDEDX":
+                            just_read = True
+                            icru_numbers.append(split_line[1])
+                    elif split_line[0] == "LOADDEDX":
+                        if not just_read:
+                            just_read = True
+                            icru_numbers.append(split_line[1])
+                        else:
+                            just_read = False
+                    else:
+                        just_read = False
         return icru_numbers
 
     @staticmethod
@@ -168,7 +191,7 @@ class ShieldHit(Engine):
         """Find matching file names for given ICRU numbers"""
         import json
         icru_file = resource_string(__name__, os.path.join('data', 'SH12A_ICRU_table.json'))
-        ref_dict = json.loads(icru_file.decode('utf-8'))
+        ref_dict = json.loads(icru_file.decode('ascii'))
         return [ref_dict[e] for e in numbers]
 
     @staticmethod
@@ -180,12 +203,11 @@ class ShieldHit(Engine):
         lines = []
         # make a copy of config
         import shutil
-        shutil.copyfile(config_file, str(config_file + '_old'))
+        shutil.copyfile(config_file, str(config_file + '_original'))
         with open(config_file) as infile:
             for line in infile:
                 for old_path in paths_to_replace:
-                    if line.__contains__(old_path):
-                        # new_path = os.path.join('..', '..', 'input', os.path.split(old_path)[-1])
+                    if old_path in line:
                         new_path = os.path.split(old_path)[-1]
                         line = line.replace(old_path, new_path)
                         logger.debug("Changed path {0} ---> {1} in file {2}".format(old_path, new_path, config_file))
@@ -193,3 +215,11 @@ class ShieldHit(Engine):
         with open(config_file, 'w') as outfile:
             for line in lines:
                 outfile.write(line)
+
+
+def pairwise(iterable):
+    """s -> (s0,s1), (s1,s2), (s2, s3), ..."""
+    from itertools import tee
+    a, b = tee(iterable)
+    next(b, None)
+    return zip(a, b)

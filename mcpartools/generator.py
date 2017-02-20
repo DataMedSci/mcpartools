@@ -175,11 +175,13 @@ class Generator:
 
     def symlink_external_files(self):
         external_files = self.mc_engine.find_external_files(self.input_dir)
-        logger.info("External files found: {0} in job_xxxx dirs.".format(external_files))
+        logger.debug("External files found: {0}".format(external_files))
         if not external_files:
             return
         for e_file in external_files:
             logger.info("Creating symlink for: {0}".format(e_file))
+            if not os.path.isfile(e_file):
+                raise OSError("There is no such file {0} to symlink.".format(e_file))
             for jobid in range(self.options.jobs_no):
                 jobdir_name = "job_{0:04d}".format(jobid + 1)
                 jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
