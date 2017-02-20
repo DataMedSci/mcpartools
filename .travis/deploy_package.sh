@@ -70,3 +70,6 @@ ls -al dist
 # check if generated command works
 ./dist/generatemc --version
 ./dist/generatemc --help
+
+# make nuitka files
+./make_single_executable.sh
