@@ -65,10 +65,8 @@ fi
 # make pyinstaller package
 pip install pyinstaller
 pyinstaller main.spec
-cat mcpartools/__init__.py
+# check if file was generated
 ls -al dist
+# check if generated command works
 ./dist/generatemc --version
 ./dist/generatemc --help
-
-# TODO add uploading to Github releases, see
-#https://docs.travis-ci.com/user/deployment/releases/
