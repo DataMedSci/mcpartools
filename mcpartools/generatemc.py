@@ -14,6 +14,9 @@ def main(args=sys.argv[1:]):
     """
     import mcpartools
     parser = argparse.ArgumentParser()
+    parser.add_argument('-V', '--version',
+                        action='version',
+                        version=mcpartools.__version__)
     parser.add_argument('-v', '--verbose',
                         action='count',
                         default=0,
@@ -23,22 +26,9 @@ def main(args=sys.argv[1:]):
                         action='count',
                         default=0,
                         help='Be silent')
-    parser.add_argument('-V', '--version',
-                        action='version',
-                        version=mcpartools.__version__)
-    parser.add_argument('-p', '--particle_no',
-                        dest='particle_no',
-                        metavar='particle_no',
-                        type=int,
-                        default=10000,
-                        help='number of primary particles per job')
-    parser.add_argument('-j', '--jobs_no',
-                        type=int,
-                        default=10,
-                        help='number of parallel jobs')
     parser.add_argument('-w', '--workspace',
                         type=str,
-                        help='directory to save workspace')
+                        help='workspace directory')
     parser.add_argument('-m', '--mc_run_template',
                         type=str,
                         default=None,
@@ -46,12 +36,22 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-s', '--scheduler_options',
                         type=str,
                         default=None,
-                        help='optional scheduler options path to file or list of options in square brackets')
+                        help='optional scheduler options: path to a file or list of options in square brackets')
     parser.add_argument('-b', '--batch',
                         type=str,
                         default=None,
                         choices=[b.id for b in SchedulerDiscover.supported],
                         help='Available batch systems: {}'.format([b.id for b in SchedulerDiscover.supported]))
+    parser.add_argument('-p', '--particle_no',
+                        dest='particle_no',
+                        metavar='particle_no',
+                        type=int,
+                        required=True,
+                        help='number of primary particles per job')
+    parser.add_argument('-j', '--jobs_no',
+                        type=int,
+                        required=True,
+                        help='number of parallel jobs')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
