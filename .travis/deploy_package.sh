@@ -65,6 +65,7 @@ fi
 # make pyinstaller package
 pip install pyinstaller
 pyinstaller main.spec
+cat mcpartools/__init__.py
 ls -al dist
 ./dist/generatemc --version
 ./dist/generatemc --help
