@@ -98,3 +98,6 @@ class Fluka(Engine):
         out_fd.write(contents)
         out_fd.close()
         os.chmod(out_file_path, 0o750)
+
+    def find_external_files(self, run_input_dir):
+        return None
