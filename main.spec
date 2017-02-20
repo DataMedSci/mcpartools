@@ -14,8 +14,6 @@ version = mcpartools.__version__
 with open(os.path.join('mcpartools', '__init__.py'), "a") as fd:
     fd.write("\n__version__ = \'{:s}\'".format(version))
 
-with open(os.path.join('mcpartools', '__init__.py'),'r') as f:
-    print(f.readlines())
 
 # one file installation, nice but application has a slow start as each execution is related to unpacking of ~10MB archive
 a = Analysis([os.path.join('mcpartools','generatemc.py')],
