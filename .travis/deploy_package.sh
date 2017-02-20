@@ -64,6 +64,9 @@ fi
 # make pyinstaller package
 pip install pyinstaller
 pyinstaller main.spec
-ls -al ./generatemc
-./generatemc --version
-./generatemc --help
+ls -al dist
+./dist/generatemc --version
+./dist/generatemc --help
+
+# todo add uploading to Github releases, see
+https://docs.travis-ci.com/user/deployment/releases/
