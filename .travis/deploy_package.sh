@@ -34,3 +34,4 @@ ls -al dist
 
 # make nuitka files
 ./make_single_executable.sh
+cp generatemc.pyz dist/
