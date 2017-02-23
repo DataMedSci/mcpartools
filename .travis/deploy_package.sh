@@ -38,7 +38,7 @@ ls -al dist
 # prepare for shipment
 mkdir -p release_files
 cp generatemc.pyz release_files/
-cp generatemc release_files/
+cp ./dist/generatemc release_files/
 
 # cleaning
 rm -rf dist
