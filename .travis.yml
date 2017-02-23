@@ -68,6 +68,7 @@ deploy:
     user: grzanka
     distributions: sdist bdist_wheel
     skip_cleanup: true
+    skip_upload_docs: true
     password:
       secure: bjHbQLyCSLiT8mqN4yYDBoV6eNvUAF+Ki+yJ5uc2zgqkqmG5BPRIbp8mr902OYbFEZou/+9qeoelHeU3Kjg4oYQ/BvAZgV8sUfhNVcpMc/QKvCyP7MdS+HZhXRy17zRMh9cY0esRk+CJe119nkB9mzPTbv7YgE8jHzCP8N19hwsIrS9fhJkkrsTAsAWdchlyPG4qVELR4AwJhUA0nzvg85M5oY7162fPxxSJg2a21bdbCbNHmuVNwwCOZLMnaie7CuLr1MCMvGGcheVukP/JhtuSx+Fy6SjBvmWLymalDGsf3O98VNeQweWvqmc2IWtGQ6eaRvEIEwrUa7jxiKlYLBellJhkA/1EBu/yKBHy5XMINWHzmfsRzWwC2xa08iU8dAq0fLpKms0P0Htii/AJctaVn+p/GTxzSjr2bOTXJiRpnO0jIexxQ9za0cOwX7EgE/psU0Uwb/LzIxdPv8LHinPiq3GVQdmRK1G/sMrRI31OTqVM6byEkL0F6D5U77CJtmtVyfcaBQCCxt8/kE/B0nw3Sbf3dSKtcTQ98073V2ElSTXc5vytTleNJaj5qY5NpQAdlrJyo/G2+GDZj/8dm4ghMdF/DEg+3lJXMLbal9rRQIfLIo1sGBDx+Gqd7Iwg1Sg0uXutyf/tUkrpUxUcqUXpf/U6u8jJEy1yWXhm+ZU=
     on:
