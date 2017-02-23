@@ -19,7 +19,7 @@ python setup.py sdist
 # install the package
 pip install dist/*whl
 
-# test if it works
+# test if installed package works
 generatemc --version
 generatemc --help
 
@@ -34,4 +34,12 @@ ls -al dist
 
 # make nuitka files
 ./make_single_executable.sh
-cp generatemc.pyz dist/
+
+# prepare for shipment
+mkdir -p release_files
+cp generatemc.pyz release_files/
+cp generatemc release_files/
+
+# cleaning
+rm -rf dist
+rm -rf build
