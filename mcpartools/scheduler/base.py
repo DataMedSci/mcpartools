@@ -12,12 +12,11 @@ class JobScheduler:
             self.options_args = ""
             logger.debug("No scheduler options")
         elif os.path.exists(scheduler_options):
-            opt_fd = open(scheduler_options, 'r')
-            options_file_content = opt_fd.read()
-            opt_fd.close()
-            self.options_header = options_file_content
+            with open(scheduler_options, 'r') as f:
+                options_file_content = f.read()
+                self.options_header = options_file_content
+                logger.debug("Scheduler options file:" + options_file_content)
             self.options_args = ""
-            logger.debug("Scheduler options file:" + options_file_content)
         else:
             self.options_header = "# no user options provided"
             self.options_args = scheduler_options[1:-1]
@@ -31,10 +30,15 @@ class JobScheduler:
         tpl = resource_string(__name__, self.submit_script_template)
         self.submit_script = tpl.decode('ascii')
 
+        log_dir = os.path.join(workspace_dir, "log")
+        if not os.path.exists(log_dir):
+            os.mkdir(log_dir)
+
         script_path = os.path.join(workspace_dir, "main_run.sh")
 
         return self.submit_script.format(options_args=self.options_args,
                                          jobs_no=jobs_no,
+                                         log_dir=log_dir,
                                          script_path=script_path)
 
     def main_run_script_body(self, jobs_no, workspace_dir):
@@ -46,10 +50,9 @@ class JobScheduler:
         return self.main_run_script
 
     def write_submit_script(self, script_path, jobs_no, workspace_dir):
-        fd = open(script_path, 'w')
         abs_path_workspace = os.path.abspath(workspace_dir)
-        fd.write(self.submit_script_body(jobs_no, abs_path_workspace))
-        fd.close()
+        with open(script_path, 'w') as f:
+            f.write(self.submit_script_body(jobs_no, abs_path_workspace))
         os.chmod(script_path, 0o750)
         logger.debug("Saved submit script: " + script_path)
         logger.debug("Jobs no " + str(jobs_no))
@@ -58,9 +61,8 @@ class JobScheduler:
     def write_main_run_script(self, jobs_no, output_dir):
         output_dir_abspath = os.path.abspath(output_dir)
         out_file_path = os.path.join(output_dir_abspath, self.main_run_script)
-        fd = open(out_file_path, 'w')
-        fd.write(self.main_run_script_body(jobs_no=jobs_no, workspace_dir=output_dir_abspath))
-        fd.close()
+        with open(out_file_path, 'w') as f:
+            f.write(self.main_run_script_body(jobs_no=jobs_no, workspace_dir=output_dir_abspath))
         os.chmod(out_file_path, 0o750)
         logger.debug("Saved main run script: " + out_file_path)
         logger.debug("Output dir " + output_dir)
