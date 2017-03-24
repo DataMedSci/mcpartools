@@ -31,10 +31,15 @@ class JobScheduler:
         tpl = resource_string(__name__, self.submit_script_template)
         self.submit_script = tpl.decode('ascii')
 
+        log_dir = os.path.join(workspace_dir, "log")
+        if not os.path.exists(log_dir):
+            os.mkdir(log_dir)
+
         script_path = os.path.join(workspace_dir, "main_run.sh")
 
         return self.submit_script.format(options_args=self.options_args,
                                          jobs_no=jobs_no,
+                                         log_dir=log_dir,
                                          script_path=script_path)
 
     def main_run_script_body(self, jobs_no, workspace_dir):
