@@ -42,6 +42,11 @@ def main(args=sys.argv[1:]):
                         default=None,
                         choices=[b.id for b in SchedulerDiscover.supported],
                         help='Available batch systems: {}'.format([b.id for b in SchedulerDiscover.supported]))
+    parser.add_argument('-c', '--collect',
+                        type=str,
+                        default='mv',
+                        choices=Options.collect_methods,
+                        help='Available collect methods')
     parser.add_argument('-p', '--particle_no',
                         dest='particle_no',
                         metavar='particle_no',

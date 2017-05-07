@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class Options:
+
+    collect_methods = ('mv', 'cp', 'plotdata', 'image')
+
     def __init__(self, args):
         self._valid = True
 
@@ -58,6 +61,9 @@ class Options:
                 logger.debug("scheduler options header file: " + str(self.scheduler_options))
 
         # no checks needed - argparse does it
+        self.collect = args.collect
+
+        # no checks needed - argparse does it
         self.batch = args.batch
 
     @property
@@ -68,7 +74,9 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path, self.options.mc_run_template)
+        self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
+                                                     mc_run_script=self.options.mc_run_template,
+                                                     collect_method=self.options.collect)
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
