@@ -1,5 +1,5 @@
   recursive-include mcpartools *.py *.sh *.json
-  exclude *.sh *.yml *.ini *.txt .gitkeep
+  exclude *.sh *.yml *.ini *.txt *.spec .gitkeep
   exclude versioneer.py LICENSE
   prune docs
   prune .travis
