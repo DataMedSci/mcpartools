@@ -10,6 +10,9 @@ logger = logging.getLogger(__name__)
 
 
 class Options:
+
+    collect_methods = ('mv', 'cp', 'plotdata', 'image')
+
     def __init__(self, args):
         self._valid = True
 
@@ -58,6 +61,9 @@ class Options:
                 logger.debug("scheduler options header file: " + str(self.scheduler_options))
 
         # no checks needed - argparse does it
+        self.collect = args.collect
+
+        # no checks needed - argparse does it
         self.batch = args.batch
 
     @property
@@ -68,7 +74,9 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        self.mc_engine = EngineDiscover.get_mcengine(self.options.input_path, self.options.mc_run_template)
+        self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
+                                                     mc_run_script=self.options.mc_run_template,
+                                                     collect_method=self.options.collect)
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
@@ -107,6 +115,9 @@ class Generator:
 
         # copy input files
         self.copy_input()
+
+        # make symlinks to external files found
+        self.symlink_external_files()
 
         # save logs
         self.save_logs()
@@ -169,6 +180,21 @@ class Generator:
             dest_file = os.path.join(self.input_dir, f_base_name)
             logger.debug("Copying " + f + " to " + dest_file)
             shutil.copyfile(f, dest_file)
+
+    def symlink_external_files(self):
+        external_files = self.mc_engine.find_external_files(self.input_dir)
+        logger.debug("External files found: {0}".format(external_files))
+        if not external_files:
+            return
+        for e_file in external_files:
+            abs_path = os.path.abspath(e_file)
+            logger.info("Creating symlink for: {0}".format(abs_path))
+            if not os.path.isfile(abs_path):
+                raise OSError("There is no such file {0} to symlink.".format(abs_path))
+            for jobid in range(self.options.jobs_no):
+                jobdir_name = "job_{0:04d}".format(jobid + 1)
+                jobdir_path = os.path.join(self.workspace_dir, jobdir_name)
+                os.symlink(abs_path, os.path.join(jobdir_path, os.path.split(abs_path)[-1]))
 
     def save_logs(self):
         pass

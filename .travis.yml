@@ -2,47 +2,41 @@
 
 language: python
 
-env:
-  global:
-    - PYPIUSER=grzanka
-    #  pypi secured password (PYPIPASS variable), you need to update it to your own if you want to use it
-    - secure: "Kh1OSmsGLxmiRrC8spNas4VRB4YU8hZ11FPmY6tiaBEdRnmC+GBtnjv5aEKTLhlMyY6uu+q+ksx772p6hbElTzs4qEqd2Oz8xs3Ra0Okbt2CVeKVRAGuT/eYTnrnVhFRqEsFOfCRlH1KLxQCy/aK0uS9fNA1tasFkWPrMVTvehMwXYzjZVZxKmUAgV9t2Tay1LkQryU2nZRfAotdp0gsWLs6SdtePVknwxJMXbeRs2VnvOkuXdJcVdjKI6bYriHvpjzZZM8SzJ8VTSqfil6lcmhwyhKMRzr73OYrpSPSzZk6imbEhlTLYtxKQS5tAn4bkwktVl/1hJOJfyO0cct+mlg6uDqL6I9xcB+422U6t6z0TeBWKDOy+FcyM/+4EmYqNZfGJNqOK1+Cnglj/SMIa6pfnXU8bElkjcWJ5FXfc+TOgsSAsd0UyCP3wlXhAVD5i1s3jEtyFz2mLDFn3CGPMh/DAzcCWvlA4l0Bl+EmCisQDr7/7cVn4cBjV7E3SAh41iUR/b4/zVFSSq1s6nYwJvzWEFx19vIaMRYCm65ZXC2QAEmQEGCaN4Sc/4L1BeBiC0SyJYCy+GamRdOBfwI4dIQOZ1O6RmGGior7PJqq4sNsW81jFerwgSrtiH9QpRsd71NSOgdWfcFeM/7NND9d5hf2TkGEligoW31CYFO+wy0="
-
 matrix:
-    include:
-        - python: 2.7
-          env: TOXENV=py27
-        - python: 2.7
-          env: TOXENV=coverage
-        - python: 3.2
-          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0" STVER="<30.0.0"
-        - python: 3.3
-          env: TOXENV=py33
-        - python: 3.4
-          env: TOXENV=py34
-        - python: 3.5
-          env: TOXENV=py35
-        - python: 3.5-dev
-          env: TOXENV=py35
-        - python: 3.6
-          env: TOXENV=py36
-        - python: 3.6-dev
-          env: TOXENV=py36
-        - python: nightly
-          env: TOXENV=py37
-        - python: 3.4
-          env: TOXENV=docs
-        - python: 2.7
-          env: TOXENV=pep8
-        - python: 3.4
-          env: TOXENV=pep8
-        - python: 3.5
-          env: TOXENV=packaging
-    allow_failures:
-        - python: 3.2
-          env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0" STVER="<30.0.0"
-        - python: nightly
-          env: TOXENV=py37
+  include:
+  - python: 2.7
+    env: TOXENV=py27
+  - python: 2.7
+    env: TOXENV=coverage
+  - python: 3.2
+    env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0" STVER="<30.0.0"
+  - python: 3.3
+    env: TOXENV=py33
+  - python: 3.4
+    env: TOXENV=py34
+  - python: 3.5
+    env: TOXENV=py35
+  - python: 3.5-dev
+    env: TOXENV=py35
+  - python: 3.6
+    env: TOXENV=py36
+  - python: 3.6-dev
+    env: TOXENV=py36
+  - python: nightly
+    env: TOXENV=py37
+  - python: 3.4
+    env: TOXENV=docs
+  - python: 2.7
+    env: TOXENV=pep8
+  - python: 3.4
+    env: TOXENV=pep8
+  - python: 3.5
+    env: TOXENV=packaging
+  allow_failures:
+  - python: 3.2
+    env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0" STVER="<30.0.0"
+  - python: nightly
+    env: TOXENV=py37
 
 # travis-ci runs by default on ancient Ubuntu 12.04 (precise)
 # following options will give us Ubuntu 14.04 (trusty)
@@ -50,9 +44,34 @@ sudo: required
 dist: trusty
 
 install:
-  - bash ./.travis/install_linux.sh
+- ./.travis/install_linux.sh
 
 script:
-  - tox --notest && travis_retry tox -- -n 8
-# in case all previous commands in script section succeeded, run deploy (if tag is present then upload)
-  - if [[ "$TRAVIS_TEST_RESULT" == "0" ]] && [[ $TOXENV == "packaging" ]]; then bash .travis/deploy_package.sh pypi ; fi
+- tox --notest && travis_retry tox -- -n 8
+- if [[ "$TRAVIS_TEST_RESULT" == "0" ]] && [[ $TOXENV == "packaging" ]]; then .travis/deploy_package.sh ; fi
+
+
+# automatic deploy to github releases and pypi    
+deploy:
+  - provider: releases
+    api_key:
+      secure: vobq0zAt/xwn3qjqLMyqGiNCEYSg6Xah83ohK93UmIsMZtASQwLgioCDaqE1Lkmu5SwAYSUgyydo3JieEhFTImEx+9+tbwDPNNukosKMiMB6xzN7mCIRlYWL/FiMBvRQt4D8kxXjwUynvY/kDan9V+KIvCwH1+M3mMA96naYpwhn4xKn2PKxTR0wvecZw/hyZs+EucmeqyjmNr5ctFqTfIEVQee0u7aejJ4NXRlbNKrrLOw0eqjISJba3Ggr2JTnVK8H1d3yDIT/4iqUv01fzZTm6V+PgdGAAVtozpO83oun8qCN9Perme3xx0qpNl+qh18b7d/biRYDkti5fQVfzY8ocMAXgTh4fiSuOa9tumhAkZBVAW45eDTmYXZ6PZFFSFBpmR4S1J77kt+4EwrCky0hlNOZ89mIXqtE17X9r5f+pu6NI2re0MZo0oB8YeAKHb8/qxgAHdIFM9B4lxwteQ1sEI3R5HsLGOjB0QmiP9igu52lcJVGMnFXeSua7VmDYX+EHtK8fUkJnHPs9xaQ8jSMTYPdVP2znbp41MZH8bOC1Qm63XxPX/6dmSyThk03vfqFJ7sXOCiGuxhg8y9P9J0Z6BSXjBAHwP1SagT9ZJQV26+m3kJbOaNlpv+1OuLQ7XRb68OyEaD6EMDD8NjyQRy6YJGMy5mTPAv1n4QieJ8=
+    file: "./release_files/*"
+    file_glob: true
+    overwrite: true
+    skip_cleanup: true
+    on:
+      repo: DataMedSci/mcpartools
+      tags: true
+      condition: $TOXENV == "packaging" && "$TRAVIS_TEST_RESULT" == "0"
+  - provider: pypi
+    user: grzanka
+    distributions: sdist bdist_wheel
+    skip_cleanup: true
+    skip_upload_docs: true
+    password:
+      secure: bjHbQLyCSLiT8mqN4yYDBoV6eNvUAF+Ki+yJ5uc2zgqkqmG5BPRIbp8mr902OYbFEZou/+9qeoelHeU3Kjg4oYQ/BvAZgV8sUfhNVcpMc/QKvCyP7MdS+HZhXRy17zRMh9cY0esRk+CJe119nkB9mzPTbv7YgE8jHzCP8N19hwsIrS9fhJkkrsTAsAWdchlyPG4qVELR4AwJhUA0nzvg85M5oY7162fPxxSJg2a21bdbCbNHmuVNwwCOZLMnaie7CuLr1MCMvGGcheVukP/JhtuSx+Fy6SjBvmWLymalDGsf3O98VNeQweWvqmc2IWtGQ6eaRvEIEwrUa7jxiKlYLBellJhkA/1EBu/yKBHy5XMINWHzmfsRzWwC2xa08iU8dAq0fLpKms0P0Htii/AJctaVn+p/GTxzSjr2bOTXJiRpnO0jIexxQ9za0cOwX7EgE/psU0Uwb/LzIxdPv8LHinPiq3GVQdmRK1G/sMrRI31OTqVM6byEkL0F6D5U77CJtmtVyfcaBQCCxt8/kE/B0nw3Sbf3dSKtcTQ98073V2ElSTXc5vytTleNJaj5qY5NpQAdlrJyo/G2+GDZj/8dm4ghMdF/DEg+3lJXMLbal9rRQIfLIo1sGBDx+Gqd7Iwg1Sg0uXutyf/tUkrpUxUcqUXpf/U6u8jJEy1yWXhm+ZU=
+    on:
+      repo: DataMedSci/mcpartools
+      tags: true
+      condition: $TOXENV == "packaging" && "$TRAVIS_TEST_RESULT" == "0"
