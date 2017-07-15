@@ -14,21 +14,25 @@
 *
 *----------------------------------------------------------------------*
 *                                                                      *
-*     Copyright (C) 1990-2006      by    Alfredo Ferrari & Paola Sala  *
+*     Copyright (C) 1990-2010      by    Alfredo Ferrari & Paola Sala  *
 *     All Rights Reserved.                                             *
 *                                                                      *
 *                                                                      *
-*     New source for FLUKA9x-FLUKA200x:                                *
+*     New source for FLUKA9x-FLUKA20xy:                                *
 *                                                                      *
-*     Created on 07 january 1990   by    Alfredo Ferrari & Paola Sala  *
+*     Created on 07 January 1990   by    Alfredo Ferrari & Paola Sala  *
 *                                                   Infn - Milan       *
 *                                                                      *
-*     Last change on 03-mar-06     by    Alfredo Ferrari               *
+*     Last change on  17-Oct-10    by    Alfredo Ferrari               *
 *                                                                      *
 *  This is just an example of a possible user written source routine.  *
 *  note that the beam card still has some meaning - in the scoring the *
 *  maximum momentum used in deciding the binning is taken from the     *
 *  beam momentum.  Other beam card parameters are obsolete.            *
+*                                                                      *
+*       Output variables:                                              *
+*                                                                      *
+*              Nomore = if > 0 the run will be terminated              *
 *                                                                      *
 *----------------------------------------------------------------------*
 *
@@ -72,7 +76,7 @@ c $FLUPRO/flutil/ldpm3qmd source_SAM.f -o flukadpm3_sam
          TKESUM = ZERZER
          LFIRST = .FALSE.
          LUSSRC = .TRUE.
-
+*  |  *** User initialization ***
 ccc only absolute path or
          OPEN(44, FILE = '../sobp.dat',
      $        STATUS = 'OLD')
@@ -182,6 +186,8 @@ ccc only absolute path or
          ILOFLK (NPFLKA) = IJHION
 *  |  Flag this is prompt radiation
          LRADDC (NPFLKA) = .FALSE.
+*  |  Group number for "low" energy neutrons, set to 0 anyway
+         IGROUP (NPFLKA) = 0
 *  |
 *  +-------------------------------------------------------------------*
 *  |  Normal hadron:
@@ -190,6 +196,8 @@ ccc only absolute path or
          ILOFLK (NPFLKA) = IJBEAM
 *  |  Flag this is prompt radiation
          LRADDC (NPFLKA) = .FALSE.
+*  |  Group number for "low" energy neutrons, set to 0 anyway
+         IGROUP (NPFLKA) = 0
       END IF
 *  |
 *  +-------------------------------------------------------------------*
@@ -198,6 +206,9 @@ ccc only absolute path or
       LOFLK  (NPFLKA) = 1
 * User dependent flag:
       LOUSE  (NPFLKA) = 0
+*  No channeling:
+      LCHFLK (NPFLKA) = .FALSE.
+      DCHFLK (NPFLKA) = ZERZER
 * User dependent spare variables:
       DO 100 ISPR = 1, MKBMX1
          SPAREK (ISPR,NPFLKA) = ZERZER

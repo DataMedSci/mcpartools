@@ -24,8 +24,8 @@ class Engine:
             self.engine_options = options_file_content
             logger.debug("Engine options file contents: " + options_file_content)
         else:
-            self.options_args = mc_engine_options[1:-1]
-            logger.debug("Scheduler options argument: " + self.options_args)
+            self.engine_options = mc_engine_options[1:-1]
+            logger.debug("Engine options arguments: " + self.engine_options)
 
     _collect_action = {
         'mv': """TRANSPORT_COMMAND=mv
