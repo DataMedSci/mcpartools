@@ -12,8 +12,8 @@ class ShieldHit(Engine):
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
     collect_script = os.path.join('data', 'collect_shieldhit.sh')
 
-    def __init__(self, input_path, mc_run_script, collect_method):
-        Engine.__init__(self, input_path, mc_run_script, collect_method)
+    def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
+        Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
@@ -57,6 +57,7 @@ class ShieldHit(Engine):
         input_dir = os.path.abspath(os.path.join(abs_output_dir, '..', '..', 'input'))
         contents = self.run_script_content.format(
             shieldhit_bin='shieldhit',
+            engine_options=self.engine_options,
             working_directory=abs_output_dir,
             particle_no=self.particle_no,
             rnd_seed=self.rng_seed,

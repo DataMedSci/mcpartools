@@ -13,8 +13,8 @@ class Fluka(Engine):
 
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
 
-    def __init__(self, input_path, mc_run_script, collect_method):
-        Engine.__init__(self, input_path, mc_run_script, collect_method)
+    def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
+        Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
@@ -79,10 +79,12 @@ class Fluka(Engine):
         input_base_name = os.path.basename(self.input_path)[:-4]
         output_dir_abs_path = os.path.abspath(output_dir)
         contents = self.run_script_content.format(
+            fluka_bin='rfluka',
+            engine_options=self.engine_options,
             working_directory=output_dir_abs_path,
             input_basename=input_base_name,
             job_id=jobid)
-        out_file_name = "run.sh"
+        out_file_name = 'run.sh'
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
         out_fd.write(contents)

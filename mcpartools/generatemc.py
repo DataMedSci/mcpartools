@@ -37,6 +37,10 @@ def main(args=sys.argv[1:]):
                         type=str,
                         default=None,
                         help='optional scheduler options: path to a file or list of options in square brackets')
+    parser.add_argument('-e', '--mc_engine_options',
+                        type=str,
+                        default=None,
+                        help='optional MC engine options: path to a file or list of options in square brackets')
     parser.add_argument('-b', '--batch',
                         type=str,
                         default=None,

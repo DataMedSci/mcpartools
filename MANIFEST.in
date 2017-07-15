@@ -4,4 +4,4 @@
   prune docs
   prune .travis
   prune tests
-  
+  prune examples

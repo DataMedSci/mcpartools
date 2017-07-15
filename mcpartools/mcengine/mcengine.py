@@ -5,10 +5,11 @@ class Engine:
     """
     TODO
     """
-    def __init__(self, input_path, mc_run_script, collect_method):
+    def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         self.input_path = input_path
         self.run_script_path = mc_run_script
         self.collect_method = collect_method
+        self.engine_options = mc_engine_options
 
     _collect_action = {
         'mv': """TRANSPORT_COMMAND=mv

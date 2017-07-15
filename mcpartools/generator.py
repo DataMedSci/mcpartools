@@ -60,6 +60,17 @@ class Options:
             else:
                 logger.debug("scheduler options header file: " + str(self.scheduler_options))
 
+        self.mc_engine_options = args.mc_engine_options
+        if self.mc_engine_options is not None:
+            if not os.path.exists(self.mc_engine_options):
+                if not (self.mc_engine_options[0] == '[' and self.mc_engine_options[-1] == ']'):
+                    logger.error("-e should be followed by a path or text enclosed in square brackets, i.e. [--help]")
+                    self._valid = False
+                else:
+                    logger.debug("MC engine options: " + str(self.mc_engine_options))
+            else:
+                logger.debug("MC engine options header file: " + str(self.mc_engine_options))
+
         # no checks needed - argparse does it
         self.collect = args.collect
 
@@ -76,7 +87,8 @@ class Generator:
         self.options = options
         self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
                                                      mc_run_script=self.options.mc_run_template,
-                                                     collect_method=self.options.collect)
+                                                     collect_method=self.options.collect,
+                                                     mc_engine_options=self.options.mc_engine_options)
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
