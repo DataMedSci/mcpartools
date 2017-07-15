@@ -1,15 +1,31 @@
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 
 class Engine:
     """
-    TODO
+    Base class for all MC engines
     """
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         self.input_path = input_path
         self.run_script_path = mc_run_script
         self.collect_method = collect_method
         self.engine_options = mc_engine_options
+        # check if user provided path to options file
+        if mc_engine_options is None:
+            self.engine_options = ""
+            logger.debug("No engine options")
+        elif os.path.exists(mc_engine_options):
+            opt_fd = open(mc_engine_options, 'r')
+            options_file_content = opt_fd.read()
+            opt_fd.close()
+            self.engine_options = options_file_content
+            logger.debug("Engine options file contents: " + options_file_content)
+        else:
+            self.options_args = mc_engine_options[1:-1]
+            logger.debug("Scheduler options argument: " + self.options_args)
 
     _collect_action = {
         'mv': """TRANSPORT_COMMAND=mv
