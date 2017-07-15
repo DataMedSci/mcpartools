@@ -4,8 +4,15 @@
 *     Currently hardcoded for C-12 ions. /NBassler
 *     Taken from https://github.com/DataMedSci/au-fluka-tools/blob/master/source_sampler.f
 *
+* To compile this code, run:
+* $FLUPRO/flutil/ldpm3qmd SOURCE_SOBP.F -o flukadpm3_sobp
+*
+* In order to use it, pass it as a parameter to rfluka executable:
+* rfluka -N0 -M1 -e flukadpm3_sobp your_input_file
+*
 *===  source ===========================================================*
 *
+
       SUBROUTINE SOURCE ( NOMORE )
 
       INCLUDE '(DBLPRC)'
@@ -47,7 +54,8 @@
 *
       INCLUDE '(CASLIM)'
 *
-c $FLUPRO/flutil/ldpm3qmd source_SAM.f -o flukadpm3_sam
+*
+*
       DOUBLE PRECISION ENERGY(65000), XPOS(65000), YPOS(65000)
       DOUBLE PRECISION FWHM(65000), PART(65000)
       INTEGER NWEIGHT
@@ -72,7 +80,7 @@ c $FLUPRO/flutil/ldpm3qmd source_SAM.f -o flukadpm3_sam
 *  |  First call initializations:
       IF ( LFIRST ) THEN
 *  |  *** The following 3 cards are mandatory ***
-	 WRITE(LUNOUT,*) ' NB SOURCE_SAM4 INVOKED'
+	 WRITE(LUNOUT,*) 'SOBP SOURCE INVOKED'
          TKESUM = ZERZER
          LFIRST = .FALSE.
          LUSSRC = .TRUE.
@@ -80,7 +88,7 @@ c $FLUPRO/flutil/ldpm3qmd source_SAM.f -o flukadpm3_sam
 ccc only absolute path or
          OPEN(44, FILE = '../sobp.dat',
      $        STATUS = 'OLD')
-         WRITE(LUNOUT,*) 'NB SOURCE ZPOS fixed to', ZBEAM
+         WRITE(LUNOUT,*) 'SOBP SOURCE ZPOS fixed to', ZBEAM
 
 
          NWEIGHT = 0
@@ -89,7 +97,7 @@ ccc only absolute path or
 *  fortran arrays start with 1
             NWEIGHT = NWEIGHT + 1
             IF (NWEIGHT .GT. 65000) THEN
-               WRITE(LUNOUT,*) 'NB SOURCE ERROR: too many beamlets'
+               WRITE(LUNOUT,*) 'SOBP SOURCE ERROR: too many beamlets'
             ENDIF
 
             READ (44, 3, END=10 ) ENERGY(NWEIGHT),
@@ -102,15 +110,15 @@ ccc only absolute path or
  10      CONTINUE
 *        fix index
 	 NWEIGHT = NWEIGHT - 1
-         WRITE(LUNOUT,*) 'NB SOURCE beamlets found:', NWEIGHT
-         WRITE(LUNOUT,*) 'NB SOURCE Particle sum (float) :', WSUM
-         WRITE(LUNOUT,*) 'NB SOURCE TODO: particle sum is not exact.'
+         WRITE(LUNOUT,*) 'SOBP SOURCE beamlets found:', NWEIGHT
+         WRITE(LUNOUT,*) 'SOBP SOURCE Particle sum (float) :', WSUM
+         WRITE(LUNOUT,*) 'SOBP SOURCE TODO: particle sum is not exact.'
 
 * check for gaussian, for future implementation
          IF ((Ldygss) .AND. (Ldxgss)) THEN
-            WRITE(LUNOUT,*) 'NB SOURCE GAUSSIAN: TRUE'
+            WRITE(LUNOUT,*) 'SOBP SOURCE GAUSSIAN: TRUE'
          ELSE
-            WRITE(LUNOUT,*) 'NB SOURCE GAUSSIAN: FALSE'
+            WRITE(LUNOUT,*) 'SOBP SOURCE GAUSSIAN: FALSE'
          ENDIF
 
       END IF
@@ -130,7 +138,7 @@ ccc only absolute path or
 *     (rand(0)*(y-x))+x
 
       IF ((NRAN .GT. NWEIGHT) .OR. (NRAN .LT. 1)) THEN
-         WRITE(LUNOUT,*) 'NB SOURCE BOUND ERROR. NRAN, RAN:', NRAN, RAN
+         WRITE(LUNOUT,*) 'SOBP SOURCE ERROR. NRAN, RAN:', NRAN, RAN
       END IF
 
       ENK = ENERGY(NRAN)
@@ -138,9 +146,6 @@ ccc only absolute path or
       YBEAM = YPOS(NRAN)
       XSPOT = FWHM(NRAN)/2.35482
       YSPOT = XSPOT
-
-*      WRITE(LUNOUT,*) 'NB SOURCE SAM:', RAN,NRAN, ENK, XBEAM, YBEAM
-*      WRITE(LUNOUT,*) 'NB SOURCE SAM2:', XSPOT,YSPOT, PART(NRAN)
 
 *** End of beamlet sample ********************************************
 
@@ -238,18 +243,18 @@ ccc only absolute path or
       YFLK   (NPFLKA) = YBEAM + YSPOT * RGAUS2
       ZFLK   (NPFLKA) = ZBEAM
 
-*      WRITE(LUNOUT,*) 'NB SOURCE gaussian sampled'
+*      WRITE(LUNOUT,*) 'SOBP SOURCE gaussian sampled'
 
 * Cosines (tx,ty,tz) (fix along z axis)
 
       TXFLK  (NPFLKA) = ZERZER
       TYFLK  (NPFLKA) = ZERZER
       TZFLK  (NPFLKA) = ONEONE
-*      WRITE(LUNOUT,*) 'NB SOURCE cosines set'
+*      WRITE(LUNOUT,*) 'SOBP SOURCE cosines set'
 *********************************************************************
 * Particle momentum
 *      PMOFLK (NPFLKA) = PBEAM
-*      WRITE(LUNOUT,*) 'NB SOURCE mark',AM (IONID)
+*      WRITE(LUNOUT,*) 'SOBP SOURCE mark',AM (IONID)
        CALL FLNRRN(RGAUSS)
        PMOFLK (NPFLKA) = SQRT ( ENK* ( ENK
      &     + TWOTWO * AM (IONID) ))
@@ -261,14 +266,14 @@ ccc only absolute path or
       TKEFLK (NPFLKA) = SQRT(PMOFLK(NPFLKA)**2 + AM(IONID)**2)
      &      -AM(IONID)
 
-*      WRITE(LUNOUT,*) 'NB SOURCE set ekin'
+*      WRITE(LUNOUT,*) 'SOBP SOURCE set ekin'
 
 
 * Polarization cosines:
       TXPOL  (NPFLKA) = -TWOTWO
       TYPOL  (NPFLKA) = +ZERZER
       TZPOL  (NPFLKA) = +ZERZER
-*      WRITE(LUNOUT,*) 'NB SOURCE pol set'
+*      WRITE(LUNOUT,*) 'SOBP SOURCE pol set'
 *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 *++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 *  Calculate the total kinetic energy of the primaries: don't change
@@ -283,8 +288,6 @@ ccc only absolute path or
       END IF
       RADDLY (NPFLKA) = ZERZER
 
-*      WRITE(LUNOUT,*) 'NB SOURCE mark'
-
 *  Here we ask for the region number of the hitting point.
 *     NREG (NPFLKA) = ...
 *  The following line makes the starting region search much more
@@ -292,7 +295,6 @@ ccc only absolute path or
       CALL GEOCRS ( TXFLK (NPFLKA), TYFLK (NPFLKA), TZFLK (NPFLKA) )
       CALL GEOREG ( XFLK  (NPFLKA), YFLK  (NPFLKA), ZFLK  (NPFLKA),
      &              NRGFLK(NPFLKA), IDISC )
-*      WRITE(LUNOUT,*) 'NB SOURCE mark2'
 *  Do not change these cards:
       CALL GEOHSM ( NHSPNT (NPFLKA), 1, -11, MLATTC )
       NLATTC (NPFLKA) = MLATTC
@@ -300,7 +302,7 @@ ccc only absolute path or
       CALL SOEVSV
 
 
-*      WRITE(LUNOUT,*) 'NB SOURCE END'
+*      WRITE(LUNOUT,*) 'SOBP SOURCE END'
       CLOSE(44)
       RETURN
 *=== End of subroutine Source =========================================*
