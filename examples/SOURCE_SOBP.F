@@ -1,7 +1,6 @@
 *$ CREATE SOURCE.FOR
 *COPY SOURCE
 *
-*     Currently hardcoded for C-12 ions. /NBassler
 *     Taken from https://github.com/DataMedSci/au-fluka-tools/blob/master/source_sampler.f
 *
 * To compile this code, run:
@@ -10,6 +9,9 @@
 * In order to use it, pass it as a parameter to rfluka executable:
 * rfluka -N0 -M1 -e flukadpm3_sobp your_input_file
 *
+* Documentation of the SOURCE is here http://www.fluka.org/fluka.php?id=man_onl&sub=71
+* example source card:
+* SOURCE          11.0      12.0      13.0      14.0      15.0      16.0sobp.dat
 *===  source ===========================================================*
 *
 
@@ -85,11 +87,25 @@
          LFIRST = .FALSE.
          LUSSRC = .TRUE.
 *  |  *** User initialization ***
-ccc only absolute path or
-         OPEN(44, FILE = '../sobp.dat',
+         OPEN(44, FILE = SDUSUO,
      $        STATUS = 'OLD')
          WRITE(LUNOUT,*) 'SOBP SOURCE ZPOS fixed to', ZBEAM
 
+         IF ( IJBEAM .EQ. -2 .AND. LRDBEA ) THEN
+          IJHION = IPROZ  * 1000 + IPROA
+          IJHION = IJHION * 100 + KXHEAV
+          IONID  = IJHION
+*  +-------------------------------------------------------------------*
+*  |  Heavy ion:
+         ELSE IF ( IJBEAM .EQ. -2 ) THEN
+          IJHION = IPROZ  * 1000 + IPROA
+          IJHION = IJHION * 100 + KXHEAV
+          IONID  = IJHION
+*  +-------------------------------------------------------------------*
+*  |  Normal hadron:
+         ELSE
+          IONID = IJBEAM
+         END IF
 
          NWEIGHT = 0
          WSUM = 0.0
@@ -105,7 +121,7 @@ ccc only absolute path or
      $           FWHM(NWEIGHT), PART(NWEIGHT)
  3          FORMAT(F10.4,F10.4,F10.4,F10.4,E10.4)
             WSUM = WSUM + PART(NWEIGHT)
-            ENERGY(NWEIGHT) = ENERGY(NWEIGHT) * 12 ! FIX ME (c12 hardcoded)
+            ENERGY(NWEIGHT) = ENERGY(NWEIGHT) * AM(IONID)
          ENDDO
  10      CONTINUE
 *        fix index
