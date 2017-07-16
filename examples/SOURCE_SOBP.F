@@ -87,7 +87,9 @@
          LFIRST = .FALSE.
          LUSSRC = .TRUE.
 *  |  *** User initialization ***
-         OPEN(44, FILE = SDUSUO,
+* Fluka run happens in a temporary directory, created in same level as input file
+* sobp.dat is not copied there, so reach one level up to get it
+         OPEN(44, FILE = '../sobp.dat',
      $        STATUS = 'OLD')
          WRITE(LUNOUT,*) 'SOBP SOURCE ZPOS fixed to', ZBEAM
 
@@ -109,19 +111,30 @@
 
          NWEIGHT = 0
          WSUM = 0.0
+
          DO
 *  fortran arrays start with 1
+
             NWEIGHT = NWEIGHT + 1
             IF (NWEIGHT .GT. 65000) THEN
                WRITE(LUNOUT,*) 'SOBP SOURCE ERROR: too many beamlets'
             ENDIF
 
-            READ (44, 3, END=10 ) ENERGY(NWEIGHT),
-     $           XPOS(NWEIGHT), YPOS(NWEIGHT),
-     $           FWHM(NWEIGHT), PART(NWEIGHT)
- 3          FORMAT(F10.4,F10.4,F10.4,F10.4,E10.4)
+            READ(44,*,END=10) ENERGY(NWEIGHT),XPOS(NWEIGHT),
+     $            YPOS(NWEIGHT),FWHM(NWEIGHT),PART(NWEIGHT)
+
             WSUM = WSUM + PART(NWEIGHT)
-            ENERGY(NWEIGHT) = ENERGY(NWEIGHT) * AM(IONID)
+*
+* In sobp.dat file energy is saved in MeV/amu, while
+* in Fluka we need it in not per amu, but simply in MeV
+* To achieve this we multiply energy by mass number A
+* Fluka doesn't have any consistent method of calculating
+* mass number (number of nucleons) for simple particles
+* (such as protons and alphas) and heavy ions
+* we use a method IBARCH to get baryonic charge which
+* reduces to mass number for particles of interest
+           ENERGY(NWEIGHT) = ENERGY(NWEIGHT) * IBARCH(IONID)
+
          ENDDO
  10      CONTINUE
 *        fix index
