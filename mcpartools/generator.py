@@ -60,6 +60,25 @@ class Options:
             else:
                 logger.debug("scheduler options header file: " + str(self.scheduler_options))
 
+        self.mc_engine_options = args.mc_engine_options
+        if self.mc_engine_options is not None:
+            if not os.path.exists(self.mc_engine_options):
+                if not (self.mc_engine_options[0] == '[' and self.mc_engine_options[-1] == ']'):
+                    logger.error("-e should be followed by a path or text enclosed in square brackets, i.e. [--help]")
+                    self._valid = False
+                else:
+                    logger.debug("MC engine options: " + str(self.mc_engine_options))
+            else:
+                logger.debug("MC engine options header file: " + str(self.mc_engine_options))
+
+        self.external_files = args.external_files
+        if self.external_files is not None:
+            logger.info("Files : {}".format(self.external_files))
+            for file_path in self.external_files:
+                if not os.path.exists(file_path):
+                    logger.error("External file {:s} doesn't exists".format(file_path))
+                    self._valid = False
+
         # no checks needed - argparse does it
         self.collect = args.collect
 
@@ -76,7 +95,8 @@ class Generator:
         self.options = options
         self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
                                                      mc_run_script=self.options.mc_run_template,
-                                                     collect_method=self.options.collect)
+                                                     collect_method=self.options.collect,
+                                                     mc_engine_options=self.options.mc_engine_options)
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
@@ -182,7 +202,15 @@ class Generator:
             shutil.copyfile(f, dest_file)
 
     def symlink_external_files(self):
-        external_files = self.mc_engine.find_external_files(self.input_dir)
+
+        external_files = []
+
+        if self.options.external_files:
+            external_files.extend(self.options.external_files)
+
+        discovered_files = self.mc_engine.find_external_files(self.input_dir)
+        if discovered_files:
+            external_files.extend(discovered_files)
         logger.debug("External files found: {0}".format(external_files))
         if not external_files:
             return

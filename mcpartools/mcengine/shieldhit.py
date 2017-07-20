@@ -12,8 +12,8 @@ class ShieldHit(Engine):
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
     collect_script = os.path.join('data', 'collect_shieldhit.sh')
 
-    def __init__(self, input_path, mc_run_script, collect_method):
-        Engine.__init__(self, input_path, mc_run_script, collect_method)
+    def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
+        Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
@@ -47,7 +47,7 @@ class ShieldHit(Engine):
         self.particle_no = particle_no
 
     def save_input(self, output_dir):
-        logger.info("input files are not modified, we will used shieldhit switches instead")
+        logger.debug("input files are not modified, we will used shieldhit switches instead")
 
     def save_run_script(self, output_dir, job_id):
         beam_file, geo_file, mat_file, detect_file = self.input_files
@@ -57,6 +57,7 @@ class ShieldHit(Engine):
         input_dir = os.path.abspath(os.path.join(abs_output_dir, '..', '..', 'input'))
         contents = self.run_script_content.format(
             shieldhit_bin='shieldhit',
+            engine_options=self.engine_options,
             working_directory=abs_output_dir,
             particle_no=self.particle_no,
             rnd_seed=self.rng_seed,
@@ -80,16 +81,32 @@ class ShieldHit(Engine):
         symlinked in job_xxxx/symlink
         """
         beam_file, geo_file, mat_file, _ = self.input_files
+
+        # check for external files in BEAM input file
         external_beam_files = self._parse_beam_file(beam_file, run_input_dir)
-        logger.info("External files from BEAM file: {0}".format(external_beam_files))
+        if external_beam_files:
+            logger.info("External files from BEAM file: {0}".format(external_beam_files))
+        else:
+            logger.debug("No external files from BEAM file")
+
+        # check for external files in MAT input file
         icru_numbers = self._parse_mat_file(mat_file)
-        logger.info("External files from MAT file: {0}".format(icru_numbers))
+        if icru_numbers:
+            logger.info("External files from MAT file: {0}".format(icru_numbers))
+        else:
+            logger.debug("No external files from MAT file")
         # if ICRU+LOADEX pairs were found - get file names for external material files
         icru_files = []
         if icru_numbers:
             icru_files = self._decrypt_icru_files(icru_numbers)
+
+        # check for external files in GEO input file
         geo_files = self._parse_geo_file(geo_file, run_input_dir)
-        logger.info("External files from GEO file: {0}".format(geo_files))
+        if geo_files:
+            logger.info("External files from GEO file: {0}".format(geo_files))
+        else:
+            logger.debug("No external files from GEO file")
+
         external_files = external_beam_files + icru_files + geo_files
         return [os.path.join(self.input_path, e) for e in external_files]
 
