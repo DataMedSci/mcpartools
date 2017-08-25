@@ -2,6 +2,9 @@ import os
 import logging
 import shutil
 import time
+import sys
+import getpass
+import socket
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
@@ -139,6 +142,9 @@ class Generator:
         # make symlinks to external files found
         self.symlink_external_files()
 
+        # store information about command line arguments, date, time, user and hostname into generatemc.log
+        self.log()
+        
         # save logs
         self.save_logs()
 
@@ -226,3 +232,12 @@ class Generator:
 
     def save_logs(self):
         pass
+
+    def log(self):
+        with open(os.path.join(self.main_dir, "generatemc.log"), 'a') as LOG_FILE:
+            for arg in sys.argv:
+                LOG_FILE.write(arg + " ")
+            LOG_FILE.write("\n")
+            LOG_FILE.write(time.strftime("%Y-%m-%d %H:%M:%S\n"))
+            LOG_FILE.write(getpass.getuser() + '@' + socket.gethostname() + "\n")
+        
