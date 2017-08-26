@@ -143,9 +143,6 @@ class Generator:
         self.symlink_external_files()
 
         # store information about command line arguments, date, time, user and hostname into generatemc.log
-        self.log()
-
-        # save logs
         self.save_logs()
 
         return 0
@@ -231,13 +228,10 @@ class Generator:
                 os.symlink(abs_path, os.path.join(jobdir_path, os.path.split(abs_path)[-1]))
 
     def save_logs(self):
-        pass
-
-    def log(self):
-        with open(os.path.join(self.main_dir, "generatemc.log"), 'a') as LOG_FILE:
+        with open(os.path.join(self.main_dir, "generatemc.log"), 'a') as log_file:
             for arg in sys.argv:
-                LOG_FILE.write(arg + " ")
-            LOG_FILE.write("\n")
-            LOG_FILE.write(time.strftime("%Y-%m-%d %H:%M:%S\n"))
-            LOG_FILE.write(getpass.getuser() + '@' + socket.gethostname() + "\n")
-            LOG_FILE.write(os.getcwd() + "\n")
+                log_file.write(arg + " ")
+            log_file.write("\n")
+            log_file.write(time.strftime("%Y-%m-%d %H:%M:%S\n"))
+            log_file.write(getpass.getuser() + '@' + socket.gethostname() + "\n")
+            log_file.write(os.getcwd() + "\n")
