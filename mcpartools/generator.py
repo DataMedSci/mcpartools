@@ -240,4 +240,5 @@ class Generator:
             LOG_FILE.write("\n")
             LOG_FILE.write(time.strftime("%Y-%m-%d %H:%M:%S\n"))
             LOG_FILE.write(getpass.getuser() + '@' + socket.gethostname() + "\n")
+            LOG_FILE.write(os.getcwd() + "\n")
         
