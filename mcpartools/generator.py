@@ -144,7 +144,7 @@ class Generator:
 
         # store information about command line arguments, date, time, user and hostname into generatemc.log
         self.log()
-        
+
         # save logs
         self.save_logs()
 
@@ -241,4 +241,3 @@ class Generator:
             LOG_FILE.write(time.strftime("%Y-%m-%d %H:%M:%S\n"))
             LOG_FILE.write(getpass.getuser() + '@' + socket.gethostname() + "\n")
             LOG_FILE.write(os.getcwd() + "\n")
-        
