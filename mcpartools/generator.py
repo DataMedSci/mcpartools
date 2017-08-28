@@ -10,7 +10,10 @@ from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
 
 logger = logging.getLogger(__name__)
+
 generatemc_logger = logging.getLogger('generatemc.log')
+generatemc_logger.setLevel(logging.INFO)
+generatemc_logger.propagate = False
 
 
 class Options:
@@ -162,8 +165,8 @@ class Generator:
 
         os.mkdir(dir_path)
         self.main_dir = dir_path
-        
-        generatemc_logger.addHandler(os.path.join(dir_path, "generatemc.log"), mode='w+')
+
+        generatemc_logger.addHandler(logging.FileHandler(os.path.join(dir_path, "generatemc.log"), mode='w+'))
 
     def generate_workspace(self):
         wspdir_name = 'workspace'
@@ -231,7 +234,7 @@ class Generator:
                 os.symlink(abs_path, os.path.join(jobdir_path, os.path.split(abs_path)[-1]))
 
     def save_logs(self):
-        generatemc_logger.info('Executed command' + ' '.join(sys.argv))
-        generatemc_logger.info('Date and time:' + time.strftime("%Y-%m-%d %H:%M:%S"))
-        generatemc_logger.info('username@hostname' + getpass.getuser() + '@' + socket.gethostname())
-        generatemc_logger.info('Current working directory:' + os.getcwd())
+        generatemc_logger.info('Executed command: ' + ' '.join(sys.argv))
+        generatemc_logger.info('Date and time: ' + time.strftime("%Y-%m-%d %H:%M:%S"))
+        generatemc_logger.info('username@hostname: ' + getpass.getuser() + '@' + socket.gethostname())
+        generatemc_logger.info('Current working directory: ' + os.getcwd())
