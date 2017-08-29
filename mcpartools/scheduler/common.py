@@ -17,13 +17,15 @@ class SchedulerDiscover:
     def get_scheduler(cls, scheduler_options, log_location):
         file_logger = logging.getLogger('file_logger')
         try:
-            file_logger.info(check_output(['srun --version'], shell=True))
+            srun_output = check_output(['srun --version'], shell=True)
+            file_logger.info("srun output: {}".format(srun_output[:-1]))
             logger.debug("Discovered job scheduler SLURM")
             return Slurm(scheduler_options)
         except CalledProcessError as e:
             logger.debug("Slurm not found: %s", e)
         try:
-            file_logger.info(check_output(['qsub --version'], shell=True))
+            qsub_output = check_output(['qsub --version'], shell=True)
+            file_logger.info("qsub output: {}".format(qsub_output[:-1]))
             logger.debug("Discovered job scheduler Torque")
             return Torque(scheduler_options)
         except CalledProcessError as e:
