@@ -1,12 +1,19 @@
-import os
+import getpass
 import logging
+import os
 import shutil
+import socket
+import sys
 import time
 
 from mcpartools.mcengine.common import EngineDiscover
 from mcpartools.scheduler.common import SchedulerDiscover
 
 logger = logging.getLogger(__name__)
+
+file_logger = logging.getLogger('file_logger')
+file_logger.setLevel(logging.INFO)
+file_logger.propagate = False
 
 
 class Options:
@@ -139,7 +146,7 @@ class Generator:
         # make symlinks to external files found
         self.symlink_external_files()
 
-        # save logs
+        # store information about command line arguments, date, time, user and hostname into generatemc.log
         self.save_logs()
 
         return 0
@@ -158,6 +165,8 @@ class Generator:
 
         os.mkdir(dir_path)
         self.main_dir = dir_path
+
+        file_logger.addHandler(logging.FileHandler(os.path.join(dir_path, "generatemc.log"), mode='w+'))
 
     def generate_workspace(self):
         wspdir_name = 'workspace'
@@ -225,4 +234,7 @@ class Generator:
                 os.symlink(abs_path, os.path.join(jobdir_path, os.path.split(abs_path)[-1]))
 
     def save_logs(self):
-        pass
+        file_logger.info('Executed command: ' + ' '.join(sys.argv))
+        file_logger.info('Date and time: ' + time.strftime("%Y-%m-%d %H:%M:%S"))
+        file_logger.info('username@hostname: ' + getpass.getuser() + '@' + socket.gethostname())
+        file_logger.info('Current working directory: ' + os.getcwd())

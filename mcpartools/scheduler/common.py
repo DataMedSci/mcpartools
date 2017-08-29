@@ -1,6 +1,5 @@
 import logging
-import os
-from subprocess import check_call, CalledProcessError
+from subprocess import check_output, CalledProcessError
 
 from mcpartools.scheduler.slurm import Slurm
 from mcpartools.scheduler.torque import Torque
@@ -16,17 +15,19 @@ class SchedulerDiscover:
 
     @classmethod
     def get_scheduler(cls, scheduler_options, log_location):
-        with open(os.path.join(log_location, "generatemc.log"), 'w+') as LOG_FILE:
-            try:
-                check_call(['srun --version'], stdout=LOG_FILE, stderr=LOG_FILE, shell=True)
-                logger.debug("Discovered job scheduler SLURM")
-                return Slurm(scheduler_options)
-            except CalledProcessError as e:
-                logger.debug("Slurm not found: %s", e)
-            try:
-                check_call(['qsub --version'], stdout=LOG_FILE, stderr=LOG_FILE, shell=True)
-                logger.debug("Discovered job scheduler Torque")
-                return Torque(scheduler_options)
-            except CalledProcessError as e:
-                logger.debug("Torque not found: %s", e)
+        file_logger = logging.getLogger('file_logger')
+        try:
+            srun_output = check_output(['srun --version'], shell=True)
+            file_logger.info("srun output: {}".format(srun_output[:-1]))
+            logger.debug("Discovered job scheduler SLURM")
+            return Slurm(scheduler_options)
+        except CalledProcessError as e:
+            logger.debug("Slurm not found: %s", e)
+        try:
+            qsub_output = check_output(['qsub --version'], shell=True)
+            file_logger.info("qsub output: {}".format(qsub_output[:-1]))
+            logger.debug("Discovered job scheduler Torque")
+            return Torque(scheduler_options)
+        except CalledProcessError as e:
+            logger.debug("Torque not found: %s", e)
         raise SystemError("No known batch system found!")
