@@ -7,6 +7,7 @@ echo -n "" > "$LOGFILE"
 
 OUT=`mktemp`
 ERR=`mktemp`
+trap "rm -f $OUT $ERR" EXIT
 sbatch {options_args:s} --array=1-{jobs_no:d} --output="{log_dir:s}/output_%j_%a.log" --error="{log_dir:s}/error_%j_%a.log" --parsable {script_path:s} > $OUT 2>$ERR
 
 echo "Saving logs to $LOGFILE"
@@ -24,6 +25,3 @@ if [ "`cat $ERR`" != "" ] ; then
 	echo "---------------------" >> "$LOGFILE"
 	cat $ERR >> "$LOGFILE"
 fi
-
-rm $OUT
-rm $ERR

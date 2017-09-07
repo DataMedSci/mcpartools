@@ -7,6 +7,7 @@ echo -n "" > "$LOGFILE"
 
 OUT=`mktemp`
 ERR=`mktemp`
+trap "rm -f $OUT $ERR" EXIT
 qsub {options_args:s} -t 1-{jobs_no:d} -o {log_dir:s} -e {log_dir:s} -terse {script_path:s} > $OUT 2> $ERR
 
 echo "Saving logs to $LOGFILE"
@@ -24,6 +25,3 @@ if [ "`cat $ERR`" != "" ] ; then
         echo "---------------------" >> "$LOGFILE"
         cat $ERR >> "$LOGFILE"
 fi
-
-rm $OUT
-rm $ERR
