@@ -17,7 +17,7 @@ echo "Saving logs to $LOGFILE"
 
 # If sbatch command ended with a success log following info
 if [ $? -eq 0 ] ; then
-	CALC_JOBID = `cat $OUT | cut -d ";" -f 1`
+	CALC_JOBID=`cat $OUT | cut -d ";" -f 1`
 	echo "MC calculation job ID: $CALC_JOBID" > "$LOGFILE"
 	echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
 fi
@@ -36,7 +36,7 @@ if [ -n "$CALC_JOBID" ] ; then
 
     # If sbatch command ended with a success log following info
     if [ $? -eq 0 ] ; then
-        COLLECT_JOBID = `cat $OUT | cut -d ";" -f 1`
+        COLLECT_JOBID=`cat $OUT | cut -d ";" -f 1`
         echo "Result collection Job ID: COLLECT_JOBID" > "$LOGFILE"
         echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
     fi
