@@ -196,9 +196,9 @@ class Generator:
         logger.debug("Preparation to generate " + script_path)
         logger.debug("Jobs no " + str(self.options.jobs_no))
         self.scheduler.write_submit_script(
-            main_dir = self.main_dir,
-            script_basename = self.scheduler.submit_script,
-            jobs_no = self.options.jobs_no,
+            main_dir=self.main_dir,
+            script_basename=self.scheduler.submit_script,
+            jobs_no=self.options.jobs_no,
             workspace_dir=self.workspace_dir)
 
     def copy_input(self):
