@@ -35,12 +35,12 @@ class JobScheduler:
         if not os.path.exists(log_dir):
             os.mkdir(log_dir)
 
-        script_path = os.path.join(workspace_dir, "main_run.sh")
-
         return self.submit_script.format(options_args=self.options_args,
                                          jobs_no=jobs_no,
                                          log_dir=log_dir,
-                                         script_path=script_path)
+                                         script_dir=workspace_dir,
+                                         calculate_script_name='main_run.sh',
+                                         collect_script_name='collect.sh')
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
