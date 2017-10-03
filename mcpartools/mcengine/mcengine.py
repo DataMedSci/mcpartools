@@ -11,6 +11,10 @@ class Engine:
 
     collect_script = os.path.join('data', 'collect.sh')
 
+    @property
+    def output_wildcard(self):
+        raise NotImplementedError
+
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         """
         :param input_path: Path to the input file(s): to the directory or to a single file
