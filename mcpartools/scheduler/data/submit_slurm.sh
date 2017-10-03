@@ -32,7 +32,7 @@ fi
 
 # If parallel calculation submission was successful, we proceed to submit collect script
 if [ -n "$CALC_JOBID" ] ; then
-    sbatch {options_args:s} --dependency=afterany:$CALC_JOBID --output="{log_dir:s}/output_%j_%a.log" --error="{log_dir:s}/error_%j_%a.log" --parsable {script_dir:s}/{collect_script_name:s} > $OUT 2> $ERR
+    sbatch {options_args:s} --dependency=afterany:$CALC_JOBID --output="{log_dir:s}/output_%j_%a.log" --error="{log_dir:s}/error_%j_%a.log" --parsable {main_dir:s}/{collect_script_name:s} > $OUT 2> $ERR
 
     # If sbatch command ended with a success log following info
     if [ $? -eq 0 ] ; then
