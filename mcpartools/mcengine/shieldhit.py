@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class ShieldHit(Engine):
 
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
-    output_wildcard = "*_fort*"
+    output_wildcard = "*.bdo"
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
