@@ -30,14 +30,14 @@ if [ "`cat $ERR`" != "" ] ; then
 	cat $ERR >> "$LOGFILE"
 fi
 
-# If parallel calculation submission was succesful, we proceed to submit collect script
+# If parallel calculation submission was successful, we proceed to submit collect script
 if [ -n "$CALC_JOBID" ] ; then
-    sbatch {options_args:s} --dependency=afterany:$JOB {script_dir:s}/{collect_script_name:s} > $OUT 2> $ERR
+    sbatch {options_args:s} --dependency=afterany:$CALC_JOBID {script_dir:s}/{collect_script_name:s} > $OUT 2> $ERR
 
     # If sbatch command ended with a success log following info
     if [ $? -eq 0 ] ; then
         COLLECT_JOBID=`cat $OUT | cut -d ";" -f 1`
-        echo "Result collection Job ID: COLLECT_JOBID" > "$LOGFILE"
+        echo "Result collection Job ID: COLLECT_JOBID" >> "$LOGFILE"
         echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
     fi
 
