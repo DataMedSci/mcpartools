@@ -11,7 +11,7 @@ set -o pipefail # Return value of a pipeline as the value of the last command to
 # print platform version
 python -c "import platform; print(platform.python_version());"
 
-pip install --upgrade virtualenv$VENVVER pip$PIPVER setuptools$STVER tox wheel "py<1.5.2"
+pip install --upgrade virtualenv$VENVVER pip$PIPVER setuptools$STVER tox wheel "py<1.5"
 
 pip --version
 
