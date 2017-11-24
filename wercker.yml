@@ -99,7 +99,6 @@ test_debian_8_jessie_py3:
           generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
           ls -al fluka
 
-
 # ---------------------------------- debian testing -----------------------------------------------
 
 test_debian_testing_py3:
