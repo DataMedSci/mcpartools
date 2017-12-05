@@ -1,12 +1,12 @@
 # micro-language and markers are described here: https://www.python.org/dev/peps/pep-0496/
 versioneer<0.18
-# pytest v 3.0, released in 08.2016 doesn't work well with Python 3.2
-pytest<3.0 ; python_version >= '3.2' and python_version < '3.3' # py 3.2
-pytest ; python_version < '3.0' or python_version >= '3.3' # py different than 3.2
-pytest-capturelog
+# pytest v 3.0, released in 08.2016 doesn't work well with Python 3.2 and 3.3
+pytest<3.0 ; python_version >= '3.2' and python_version < '3.4' # py 3.2 and 3.3
+pytest ; python_version < '3.0' or python_version >= '3.4' # py different than 3.2 and 3.3
+pytest-catchlog
 pytest-timeout
-pytest-xdist ; (python_version < '3.0' or python_version >= '3.3') and os_name != 'nt' # py different than 3.2
-pytest-xdist<1.18.0  ; python_version >= '3.2' and python_version < '3.3' or os_name == 'nt' # py 3.2 or Windows
-pytest-cov<2.0 ; python_version >= '3.2' and python_version < '3.3' # some annotation fails for py3.2
-pytest-cov ; python_version < '3.0' or python_version >= '3.3' # other than py3.2
+pytest-xdist ; (python_version < '3.0' or python_version >= '3.4') # py different than 3.2 and 3.3
+pytest-xdist<1.18.0  ; python_version >= '3.2' and python_version < '3.4' # py3.2, 3.3
+pytest-cov<2.0 ; python_version >= '3.2' and python_version < '3.4' # some annotation fails for py3.2
+pytest-cov ; (python_version < '3.0' or python_version >= '3.4')
 tox
