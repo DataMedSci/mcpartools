@@ -105,14 +105,12 @@ Not additional square brackets added to distringuish between generatemc and sche
 
 
 One could also specify additional options to Monte-Carlo binary files. For example to add an user-defined
-particle source in Fluka one can use its "-e" option::
+particle source in Fluka one can use its `-e` option. If the `flukadpm3_sobp` file is not present
+in the PATH enviromental variable, then its location needs to be known. This may
+be achieved by a mechanism of creating a link to an external file. Such links
+can be created by using `-x` switch, here we provide an example in which
+an external source is enabled by `-e` switch and two external files are linked (`sobp.dat` and `flukadpm3_sobp`)::
 
-   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp --mc_engine_options "[-e flukadpm3_sobp]"
+   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp --mc_engine_options "[-e flukadpm3_sobp]" -x ./sobp.dat ./flukadpm3_sobp
 
-
-If the Monte-Carlo input file contains links to external file (i.e. `sobp.dat` file required by `flukadpm3_sobp`
-then the simulation will run only if links to these external files are created in the workspace.
-To do so, please specify in such case list of these external files using `-x` switch::
-
-   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp --mc_engine_options "[-e flukadpm3_sobp]" -x ./sobp.dat
-
+When using `-x` option you may also set the absolute paths to the linked files.
