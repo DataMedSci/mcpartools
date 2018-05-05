@@ -7,6 +7,6 @@ pytest-catchlog==1.2.2
 pytest-timeout==1.2.1
 pytest-xdist==1.22.2; (python_version < '3.0' or python_version >= '3.4') # py different than 3.2 and 3.3
 pytest-xdist==1.22.2; python_version >= '3.2' and python_version < '3.4' # py3.2, 3.3
-pytest-cov<2.0 ; python_version >= '3.2' and python_version < '3.4' # some annotation fails for py3.2
+pytest-cov==2.5.1; python_version >= '3.2' and python_version < '3.4' # some annotation fails for py3.2
 pytest-cov ; (python_version < '3.0' or python_version >= '3.4')
 tox
