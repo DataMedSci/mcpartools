@@ -103,6 +103,10 @@ The first one can be used i.e. to specify directly the walltime for job executio
 
 Not additional square brackets added to distringuish between generatemc and scheduler options.
 
+There is also a possibility to do automatic collection of data after calculation. User can also specify desired format of collected data::
+ 
+   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp -c image 
+
 
 One could also specify additional options to Monte-Carlo binary files. For example to add an user-defined
 particle source in Fluka one can use its `-e` option. If the `flukadpm3_sobp` file is not present
