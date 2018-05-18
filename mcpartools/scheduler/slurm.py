@@ -13,3 +13,5 @@ class Slurm(JobScheduler):
     submit_script_template = os.path.join('data', 'submit_slurm.sh')
 
     main_run_script_template = os.path.join('data', 'run_slurm.sh')
+
+    kill_script_template = os.path.join('data', 'kill_slurm.sh')

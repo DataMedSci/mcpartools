@@ -140,6 +140,9 @@ class Generator:
         # generate submit script
         self.generate_submit_script()
 
+        # generate kill script
+        self.generate_kill_script()
+
         # copy input files
         self.copy_input()
 
@@ -196,6 +199,11 @@ class Generator:
         logger.debug("Preparation to generate " + script_path)
         logger.debug("Jobs no " + str(self.options.jobs_no))
         self.scheduler.write_submit_script(script_path, self.options.jobs_no, self.workspace_dir)
+
+    def generate_kill_script(self):
+        script_path = os.path.join(self.main_dir, self.scheduler.kill_script)
+        logger.debug("Preparation to generate " + script_path)
+        self.scheduler.write_kill_script(script_path)
 
     def copy_input(self):
         indir_name = 'input'
