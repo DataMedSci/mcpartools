@@ -91,7 +91,7 @@ def get_version():
     import versioneer
     version = versioneer.get_version()
     parsed_version = parse_version(version)
-    if '*@' in parsed_version[1]:
+    if '*@' in str(parsed_version):
         import time
         version += str(int(time.time()))
     return version
@@ -130,7 +130,7 @@ setuptools.setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
 
         'Topic :: Software Development :: Build Tools',
         # Indicate who your project is intended for
@@ -151,7 +151,6 @@ setuptools.setup(
         # that you indicate whether you support Python 2, Python 3 or both.
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -162,5 +161,5 @@ setuptools.setup(
         ],
     },
     cmdclass=get_cmdclass(),
-
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.3.*',
 )
