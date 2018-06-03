@@ -26,21 +26,37 @@ class JobScheduler:
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
 
-    def submit_script_body(self, jobs_no, workspace_dir):
+    def submit_script_body(self, jobs_no, workspace_dir, is_smart):
         from pkg_resources import resource_string
-        tpl = resource_string(__name__, self.submit_script_template)
-        self.submit_script = tpl.decode('ascii')
+        from jinja2.environment import Template
 
         log_dir = os.path.join(workspace_dir, "log")
         if not os.path.exists(log_dir):
             os.mkdir(log_dir)
 
-        script_path = os.path.join(workspace_dir, "main_run.sh")
+        if is_smart:
+            tpl = resource_string(__name__, self.smart_submit_script_template)
 
-        return self.submit_script.format(options_args=self.options_args,
-                                         jobs_no=jobs_no,
-                                         log_dir=log_dir,
-                                         script_path=script_path)
+            self.submit_script = tpl.decode('ascii')
+            script_path = os.path.join(workspace_dir, "main_run.sh")
+
+            nodes_id = range(0, 10)
+
+            return Template(self.submit_script).render(options_args=self.options_args,
+                                                       jobs_no=jobs_no,
+                                                       log_dir=log_dir,
+                                                       script_path=script_path,
+                                                       nodes=nodes_id)
+        else:
+            tpl = resource_string(__name__, self.submit_script_template)
+
+            self.submit_script = tpl.decode('ascii')
+            script_path = os.path.join(workspace_dir, "main_run.sh")
+
+            return self.submit_script.format(options_args=self.options_args,
+                                             jobs_no=jobs_no,
+                                             log_dir=log_dir,
+                                             script_path=script_path)
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
@@ -50,10 +66,10 @@ class JobScheduler:
                                                           jobs_no=jobs_no)
         return self.main_run_script
 
-    def write_submit_script(self, script_path, jobs_no, workspace_dir):
+    def write_submit_script(self, script_path, jobs_no, workspace_dir, is_smart):
         fd = open(script_path, 'w')
         abs_path_workspace = os.path.abspath(workspace_dir)
-        fd.write(self.submit_script_body(jobs_no, abs_path_workspace))
+        fd.write(self.submit_script_body(jobs_no, abs_path_workspace, is_smart))
         fd.close()
         os.chmod(script_path, 0o750)
         logger.debug("Saved submit script: " + script_path)

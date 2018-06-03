@@ -29,6 +29,9 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-w', '--workspace',
                         type=str,
                         help='workspace directory')
+    parser.add_argument('--smart',
+                        action='store_true',
+                        help='smart mode on (only for slurm)')
     parser.add_argument('-m', '--mc_run_template',
                         type=str,
                         default=None,
