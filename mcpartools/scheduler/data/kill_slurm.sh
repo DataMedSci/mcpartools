@@ -20,8 +20,12 @@ fi
 # if job id is empty probably submit script was not run properly
 if [ -n "$JOB_ID" ]
 then
-    scancel $JOB_ID
-    echo "Jobs with id: $JOB_ID was successfully canceled"
+    scancel ${JOB_ID}
+    if [ $? -eq 0 ]; then
+    echo "Jobs with id: $JOB_ID canceled successfully"
+    else
+        echo "Unable to cancel jobs"
+    fi
 else
     echo "Cannot extract job id from $LOGFILE"
     echo "Make sure submit was run without errors, check log file"
