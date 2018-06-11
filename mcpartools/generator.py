@@ -197,8 +197,9 @@ class Generator:
 
     def generate_submit_script(self, is_smart=False):
         if is_smart:
-            from mcpartools.scheduler.smart.slurm import gather_cluster_state
-            cluster_state = gather_cluster_state()
+            from mcpartools.scheduler.smart.slurm import get_cluster_state_from_os
+            cluster_state = get_cluster_state_from_os()
+            logger.debug("Cluster state: " + cluster_state)
 
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
