@@ -26,7 +26,7 @@ class JobScheduler:
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
 
-    def submit_script_body(self, jobs_no, workspace_dir, is_smart):
+    def submit_script_body(self, jobs_no, workspace_dir, is_smart=False, nodes=[]):
         from pkg_resources import resource_string
         from jinja2.environment import Template
 
@@ -40,13 +40,11 @@ class JobScheduler:
             self.submit_script = tpl.decode('ascii')
             script_path = os.path.join(workspace_dir, "main_run.sh")
 
-            nodes_id = range(0, 10)
-
             return Template(self.submit_script).render(options_args=self.options_args,
                                                        jobs_no=jobs_no,
                                                        log_dir=log_dir,
                                                        script_path=script_path,
-                                                       nodes=nodes_id)
+                                                       nodes=nodes)
         else:
             tpl = resource_string(__name__, self.submit_script_template)
 
@@ -66,10 +64,10 @@ class JobScheduler:
                                                           jobs_no=jobs_no)
         return self.main_run_script
 
-    def write_submit_script(self, script_path, jobs_no, workspace_dir, is_smart):
+    def write_submit_script(self, script_path, jobs_no, workspace_dir, is_smart, nodes):
         fd = open(script_path, 'w')
         abs_path_workspace = os.path.abspath(workspace_dir)
-        fd.write(self.submit_script_body(jobs_no, abs_path_workspace, is_smart))
+        fd.write(self.submit_script_body(jobs_no, abs_path_workspace, is_smart, nodes))
         fd.close()
         os.chmod(script_path, 0o750)
         logger.debug("Saved submit script: " + script_path)

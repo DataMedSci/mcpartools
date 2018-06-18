@@ -12,7 +12,7 @@ from mcpartools.scheduler.common import SchedulerDiscover
 logger = logging.getLogger(__name__)
 
 file_logger = logging.getLogger('file_logger')
-file_logger.setLevel(logging.INFO)
+file_logger.setLevel(logging.DEBUG)
 file_logger.propagate = False
 
 
@@ -199,12 +199,12 @@ class Generator:
         if is_smart:
             from mcpartools.scheduler.smart.slurm import get_cluster_state_from_os
             cluster_state = get_cluster_state_from_os()
-            logger.debug("Cluster state: " + cluster_state)
+            nodes = cluster_state.get_nodes_for_scheduling(int(self.options.jobs_no))
 
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
         logger.debug("Jobs no " + str(self.options.jobs_no))
-        self.scheduler.write_submit_script(script_path, self.options.jobs_no, self.workspace_dir, is_smart)
+        self.scheduler.write_submit_script(script_path, self.options.jobs_no, self.workspace_dir, is_smart, nodes)
 
     def copy_input(self):
         indir_name = 'input'
