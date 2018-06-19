@@ -8,6 +8,13 @@ class Engine:
     """
     Base class for all MC engines
     """
+
+    collect_script = os.path.join('data', 'collect.sh')
+
+    @property
+    def output_wildcard(self):
+        raise NotImplementedError
+
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         """
         :param input_path: Path to the input file(s): to the directory or to a single file
@@ -52,7 +59,8 @@ done""",
 
         collect_action = self._collect_action.get(self.collect_method, "")
         contents = self.collect_script_content.format(output_dir=output_dir_abs_path,
-                                                      collect_action=collect_action)
+                                                      collect_action=collect_action,
+                                                      wildcard=self.output_wildcard)
         out_file_name = "collect.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')

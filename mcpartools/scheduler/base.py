@@ -26,21 +26,22 @@ class JobScheduler:
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
 
-    def submit_script_body(self, jobs_no, workspace_dir):
+    def submit_script_body(self, jobs_no, main_dir, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.submit_script_template)
         self.submit_script = tpl.decode('ascii')
 
-        log_dir = os.path.join(workspace_dir, "log")
+        log_dir = os.path.join(main_dir, "log")
         if not os.path.exists(log_dir):
             os.mkdir(log_dir)
-
-        script_path = os.path.join(workspace_dir, "main_run.sh")
 
         return self.submit_script.format(options_args=self.options_args,
                                          jobs_no=jobs_no,
                                          log_dir=log_dir,
-                                         script_path=script_path)
+                                         script_dir=workspace_dir,
+                                         calculate_script_name='main_run.sh',
+                                         main_dir=main_dir,
+                                         collect_script_name='collect.sh')
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
@@ -50,10 +51,12 @@ class JobScheduler:
                                                           jobs_no=jobs_no)
         return self.main_run_script
 
-    def write_submit_script(self, script_path, jobs_no, workspace_dir):
+    def write_submit_script(self, main_dir, script_basename, jobs_no, workspace_dir):
+        script_path = os.path.join(main_dir, script_basename)
         fd = open(script_path, 'w')
         abs_path_workspace = os.path.abspath(workspace_dir)
-        fd.write(self.submit_script_body(jobs_no, abs_path_workspace))
+        abs_path_main_dir = os.path.abspath(main_dir)
+        fd.write(self.submit_script_body(jobs_no, abs_path_main_dir, abs_path_workspace))
         fd.close()
         os.chmod(script_path, 0o750)
         logger.debug("Saved submit script: " + script_path)

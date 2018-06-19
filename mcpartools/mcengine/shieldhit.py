@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 class ShieldHit(Engine):
 
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
-    collect_script = os.path.join('data', 'collect_shieldhit.sh')
+    output_wildcard = "*.bdo"
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
@@ -34,8 +34,6 @@ class ShieldHit(Engine):
     @property
     def input_files(self):
         base = os.path.abspath(self.input_path)
-        # TODO add *.txt files with stopping power
-        # TODO add *.ctx/.hed files with CT scans
         files = ('beam.dat', 'geo.dat', 'mat.dat', 'detect.dat')
         result = (os.path.join(base, f) for f in files)
         return result
