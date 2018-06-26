@@ -89,6 +89,6 @@ def get_cluster_state_from_os():
     from subprocess import check_output, STDOUT
     from shlex import split
     command = "sinfo --states='idle,mixed' --partition=plgrid --format='%n %P %O %T %C'"
-    output = check_output(split(command), shell=True, stderr=STDOUT)
+    output = check_output(split(command), shell=False, stderr=STDOUT)
     cluster_info = cluster_status_from_raw_stdout(output)
     return cluster_info
