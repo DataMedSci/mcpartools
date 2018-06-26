@@ -74,7 +74,13 @@ class ClusterState:
 
 def cluster_status_from_raw_stdout(std_out):
     splitted_output = std_out.split("\n")[1:]
-    nodes = [NodeInfo(line) for line in splitted_output if line is not ""]
+    nodes = []
+    for line in splitted_output:
+        try:
+            nodeinfo = NodeInfo(line)
+            nodes.append(nodeinfo)
+        except StandardError:
+            logger.info("Error while parsing line, skipping: " + line)
     cluster_info = ClusterState(nodes)
     return cluster_info
 
