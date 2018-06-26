@@ -200,6 +200,8 @@ class Generator:
             from mcpartools.scheduler.smart.slurm import get_cluster_state_from_os
             cluster_state = get_cluster_state_from_os()
             nodes = cluster_state.get_nodes_for_scheduling(int(self.options.jobs_no))
+        else:
+            nodes = []
 
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
