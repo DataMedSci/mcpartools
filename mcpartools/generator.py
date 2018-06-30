@@ -12,11 +12,12 @@ from mcpartools.scheduler.common import SchedulerDiscover
 logger = logging.getLogger(__name__)
 
 file_logger = logging.getLogger('file_logger')
-file_logger.setLevel(logging.DEBUG)
+file_logger.setLevel(logging.INFO)
 file_logger.propagate = False
 
 
 class Options:
+
     collect_methods = ('mv', 'cp', 'plotdata', 'image')
 
     def __init__(self, args):
@@ -206,7 +207,13 @@ class Generator:
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
         logger.debug("Jobs no " + str(self.options.jobs_no))
-        self.scheduler.write_submit_script(script_path, self.options.jobs_no, self.workspace_dir, is_smart, nodes)
+        self.scheduler.write_submit_script(
+            main_dir=self.main_dir,
+            script_basename=self.scheduler.submit_script,
+            jobs_no=self.options.jobs_no,
+            workspace_dir=self.workspace_dir,
+            is_smart=is_smart,
+            nodes=nodes)
 
     def copy_input(self):
         indir_name = 'input'

@@ -1,5 +1,6 @@
 import logging
 import os
+
 from pkg_resources import resource_string
 
 from mcpartools.mcengine.mcengine import Engine
@@ -9,9 +10,8 @@ logger = logging.getLogger(__name__)
 
 class Fluka(Engine):
 
-    collect_script = os.path.join('data', 'collect_fluka.sh')
-
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
+    output_wildcard = "*_fort*"
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
