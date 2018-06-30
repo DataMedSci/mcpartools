@@ -1,6 +1,5 @@
 import logging
 import os
-
 from pkg_resources import resource_string
 
 from mcpartools.mcengine.mcengine import Engine
