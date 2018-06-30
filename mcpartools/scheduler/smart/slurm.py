@@ -45,6 +45,7 @@ class ClusterState:
 
     def max_capacity(self):
         capacities = [node.cpu_idle for node in self.nodes_info]
+        from functools import reduce
         return reduce((lambda x, y: x + y), capacities)
 
     def get_nodes_for_scheduling(self, jobs_no):
