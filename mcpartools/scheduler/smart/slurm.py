@@ -80,7 +80,7 @@ def cluster_status_from_raw_stdout(std_out):
             nodeinfo = NodeInfo(line)
             nodes.append(nodeinfo)
         except StandardError:
-            logger.info("Error while parsing line, skipping: " + line)
+            logger.info("Unable to parse line, skipping: " + line)
     cluster_info = ClusterState(nodes)
     return cluster_info
 
