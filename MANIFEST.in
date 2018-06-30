@@ -1,4 +1,4 @@
-  recursive-include mcpartools *.py *.sh *.json
+  recursive-include mcpartools *.py *.sh *.j2 *.json
   exclude *.sh *.yml *.ini *.txt *.spec .gitkeep
   exclude versioneer.py LICENSE CODE_OF_CONDUCT.md
   prune docs

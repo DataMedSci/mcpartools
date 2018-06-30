@@ -61,9 +61,9 @@ class ClusterState:
             ratio = 1
 
         node_ids = []
+        from itertools import repeat
         for node in nodes_sorted:
             count = int(round(node.cpu_idle * ratio))
-            from itertools import repeat
             node_ids.extend(repeat(node.node_id, times=count))
 
         return node_ids[:jobs_no]
