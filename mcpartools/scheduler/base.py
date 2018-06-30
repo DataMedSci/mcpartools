@@ -43,7 +43,7 @@ class JobScheduler:
             return Template(self.submit_script).render(options_args=self.options_args,
                                                        jobs_no=jobs_no,
                                                        log_dir=log_dir,
-                                                       script_path=script_path,
+                                                       workspace_dir=workspace_dir,
                                                        nodes=nodes)
         else:
             tpl = resource_string(__name__, self.submit_script_template)
