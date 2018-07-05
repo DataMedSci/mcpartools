@@ -1,8 +1,8 @@
 # micro-language and markers are described here: https://www.python.org/dev/peps/pep-0496/
 versioneer<0.18
 # pytest v 3.0, released in 08.2016 doesn't work well with Python 3.2 and 3.3
-pytest<3.0 ; python_version >= '3.2' and python_version < '3.4' # py 3.2 and 3.3
-pytest ; python_version < '3.0' or python_version >= '3.4' # py different than 3.2 and 3.3
+pytest==3.6.3; python_version >= '3.2' and python_version < '3.4' # py 3.2 and 3.3
+pytest==3.6.3; python_version < '3.0' or python_version >= '3.4' # py different than 3.2 and 3.3
 pytest-catchlog==1.2.2
 pytest-timeout
 pytest-xdist ; (python_version < '3.0' or python_version >= '3.4') # py different than 3.2 and 3.3
