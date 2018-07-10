@@ -61,7 +61,7 @@ done""",
         if 'custom' in self.collect_method:
             env_var_name = 'CUSTOM_COLLECT'
             if env_var_name not in os.environ:
-                logger.error("Expected {:s} to be set, but it is missing".format(env_var_name))
+                logger.error("Expected environmental variable {:s} to be set, but it is missing".format(env_var_name))
                 return
             if not os.path.exists(os.environ[env_var_name]):
                 logger.error("File {:s} doesn't exists".format(os.environ[env_var_name]))
