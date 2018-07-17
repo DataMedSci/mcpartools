@@ -16,6 +16,7 @@ class SchedulerDiscover:
     @classmethod
     def get_scheduler(cls, scheduler_options, log_location):
         file_logger = logging.getLogger('file_logger')
+
         try:
             srun_output = check_output(['srun --version'], shell=True)
             file_logger.info("srun version: {}".format(srun_output[:-1]))

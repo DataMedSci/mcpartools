@@ -146,6 +146,9 @@ class Generator:
         # make symlinks to external files found
         self.symlink_external_files()
 
+        # generate script merging info logs
+        self.generate_merge_logs_script()
+
         # store information about command line arguments, date, time, user and hostname into generatemc.log
         self.save_logs()
 
@@ -242,3 +245,8 @@ class Generator:
         file_logger.info('Date and time: ' + time.strftime("%Y-%m-%d %H:%M:%S"))
         file_logger.info('username@hostname: ' + getpass.getuser() + '@' + socket.gethostname())
         file_logger.info('Current working directory: ' + os.getcwd())
+
+    def generate_merge_logs_script(self):
+        wspdir_name = 'workspace'
+        wspdir_path = os.path.join(self.main_dir, wspdir_name)
+        self.scheduler.write_merge_logs_script(wspdir_path)
