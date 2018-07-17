@@ -11,13 +11,14 @@ ERR=`mktemp`
 # On exit or if the script is interrupted (i.e. by receiving SIGINT signal) delete temporary files
 trap "rm -f $OUT $ERR" EXIT
 
-qsub {options_args:s} -t 1-{jobs_no:d} -o {log_dir:s} -e {log_dir:s} -terse {script_dir:s}/{calculate_script_name:s} > $OUT 2> $ERR
+qsub {options_args:s} -t 1-{jobs_no:d} -o {log_dir:s} -e {log_dir:s} {script_dir:s}/{calculate_script_name:s} > $OUT 2> $ERR
 
 echo "Saving logs to $LOGFILE"
 
 # If qsub command ended with a success log following info
 if [ $? -eq 0 ] ; then
-        echo "Job ID: `cat $OUT | cut -d ";" -f 1`" > "$LOGFILE"
+    	CALC_JOBID=`cat $OUT | cut -d ";" -f 1`
+        echo "Job ID: $CALC_JOBID" > "$LOGFILE"
         echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
 fi
 
@@ -27,4 +28,30 @@ if [ "`cat $ERR`" != "" ] ; then
         echo "ERROR MESSAGE" >>"$LOGFILE"
         echo "---------------------" >> "$LOGFILE"
         cat $ERR >> "$LOGFILE"
+fi
+
+# If parallel calculation submission was successful, we proceed to submit collect script and the create a log file
+if [ -n "$CALC_JOBID" ] ; then
+
+    MERGE_LOGS_CMD="qsub  -W depend=afterany:$CALC_JOBID -o {log_dir:s} -e {log_dir:s} {script_dir:s}/merge_logs.sh -s > $OUT 2> $ERR"
+    eval $MERGE_LOGS_CMD
+
+    echo "" >> "$LOGFILE"
+    echo "Merge logs" >> "$LOGFILE"
+    echo "Merge command: $MERGE_LOGS_CMD" >> "$LOGFILE"
+
+    # If sbatch command ended with a success log following info
+    if [ $? -eq 0 ] ; then
+        MERGE__JOBID=`cat $OUT | cut -d ";" -f 1`
+        echo "Job ID: $MERGE__JOBID" >> "$LOGFILE"
+        echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
+    fi
+
+    # If output from stderr isn't an empty string then log it as well to submit.log
+    if [ "`cat $ERR`" != "" ] ; then
+        echo "---------------------" >> "$LOGFILE"
+        echo "ERROR MESSAGE" >>"$LOGFILE"
+        echo "---------------------" >> "$LOGFILE"
+        cat $ERR >> "$LOGFILE"
+    fi
 fi
