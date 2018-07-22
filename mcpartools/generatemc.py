@@ -65,6 +65,9 @@ def main(args=sys.argv[1:]):
                         type=int,
                         required=True,
                         help='number of parallel jobs')
+    parser.add_argument('-D', '--dump',
+                        action='store_true',
+                        help='Generate dumping script')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')

@@ -10,7 +10,7 @@ FLUKA_BIN={fluka_bin:s}
 cd {working_directory:s}
 
 # run rfluka
-$FLUKA_BIN -N0 -M1 {engine_options:s} {input_basename:s}
+$FLUKA_BIN -N0 -M1 {engine_options:s} {input_basename:s} 
 
 # each fluka run will save files with same name, in order to distinguish output from multiple runs
 # we rename output files, appending suffix with jobid to each of them
