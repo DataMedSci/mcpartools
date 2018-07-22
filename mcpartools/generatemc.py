@@ -82,6 +82,9 @@ def main(args=sys.argv[1:]):
     smart_args.add_argument('--smart',
                             action='store_true',
                             help='smart mode on (only for slurm)')
+    smart_args.add_argument('--partition',
+                            default="plgrid",
+                            help='partition (default: %(default)s)')
     smart_args.add_argument('--utilisation',
                             type=float,
                             default=0.5,

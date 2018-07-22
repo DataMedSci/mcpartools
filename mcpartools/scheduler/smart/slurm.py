@@ -91,10 +91,11 @@ def cluster_status_from_raw_stdout(std_out):
     return cluster_info
 
 
-def get_cluster_state_from_os():
+def get_cluster_state_from_os(partition):
     from subprocess import check_output, STDOUT
     from shlex import split
-    command = "sinfo --states='idle,mixed' --partition=plgrid --format='%n %P %O %T %C'"
+    command = "sinfo --states='idle,mixed' --partition={partition} --format='%n %P %O %T %C'" \
+        .format(partition=partition)
     output = check_output(split(command), shell=False, stderr=STDOUT)
     cluster_info = cluster_status_from_raw_stdout(output)
     return cluster_info

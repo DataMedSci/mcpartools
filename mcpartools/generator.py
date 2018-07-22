@@ -105,7 +105,8 @@ class SmartOptions:
     def __init__(self, args):
         self.is_smart = args.smart
         self.utilisation = args.utilisation
-        self.ratio = args.utilisation
+        self.ratio = args.ratio
+        self.partition = args.partition
         self.nodes = None
 
     def is_smart_enabled(self):
@@ -215,7 +216,7 @@ class Generator:
     def generate_submit_script(self, smart):
         if smart.is_smart_enabled():
             from mcpartools.scheduler.smart.slurm import get_cluster_state_from_os
-            cluster_state = get_cluster_state_from_os()
+            cluster_state = get_cluster_state_from_os(partition=smart.partition)
             smart.set_nodes(
                 cluster_state.get_nodes_for_scheduling(
                     int(self.options.jobs_no), smart.utilisation, smart.ratio))
