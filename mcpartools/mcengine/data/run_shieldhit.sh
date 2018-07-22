@@ -25,5 +25,7 @@ DETECT_FILE={detect_file:s}
 cd {working_directory:s}
 
 # execute simulation
-$SHIELDHIT_BIN --beamfile=$BEAM_FILE --geofile=$GEO_FILE --matfile=$MAT_FILE --detectfile=$DETECT_FILE -n $PARTICLE_NO -N $RNG_SEED {engine_options:s} $WORK_DIR
+$SHIELDHIT_BIN --beamfile=$BEAM_FILE --geofile=$GEO_FILE --matfile=$MAT_FILE --detectfile=$DETECT_FILE -n $PARTICLE_NO -N $RNG_SEED {engine_options:s} $WORK_DIR &
 
+# save PID of SHIELDHIT proces so it can be read by main_run script
+PID=$!
