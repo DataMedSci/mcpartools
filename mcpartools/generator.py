@@ -17,13 +17,10 @@ file_logger.propagate = False
 
 
 class Options:
-
     collect_methods = ('mv', 'cp', 'plotdata', 'image')
 
     def __init__(self, args):
         self._valid = True
-
-        self.is_smart = args.smart
 
         self.particle_no = args.particle_no
         if self.particle_no < 1:
@@ -94,9 +91,28 @@ class Options:
         # no checks needed - argparse does it
         self.batch = args.batch
 
+        self.smart_options = SmartOptions(args)
+
+    def is_smart_enabled(self):
+        return self.smart_options.is_smart_enabled()
+
     @property
     def valid(self):
         return self._valid
+
+
+class SmartOptions:
+    def __init__(self, args):
+        self.is_smart = args.smart
+        self.utilisation = args.utilisation
+        self.ratio = args.utilisation
+        self.nodes = None
+
+    def is_smart_enabled(self):
+        return self.is_smart is True
+
+    def set_nodes(self, nodes):
+        self.nodes = nodes
 
 
 class Generator:
@@ -130,7 +146,7 @@ class Generator:
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
                 self.scheduler = scheduler_class[0](self.options.scheduler_options)
-                if self.options.is_smart:
+                if self.options.is_smart_enabled():
                     logger.info("Using: " + self.scheduler.id + " (smart mode)")
                 else:
                     logger.info("Using: " + self.scheduler.id)
@@ -143,7 +159,7 @@ class Generator:
         self.generate_workspace()
 
         # generate submit script
-        self.generate_submit_script(is_smart=self.options.is_smart)
+        self.generate_submit_script(smart=self.options.smart_options)
 
         # copy input files
         self.copy_input()
@@ -196,13 +212,13 @@ class Generator:
         self.scheduler.write_main_run_script(jobs_no=self.options.jobs_no, output_dir=self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
 
-    def generate_submit_script(self, is_smart=False):
-        if is_smart:
+    def generate_submit_script(self, smart):
+        if smart.is_smart_enabled():
             from mcpartools.scheduler.smart.slurm import get_cluster_state_from_os
             cluster_state = get_cluster_state_from_os()
-            nodes = cluster_state.get_nodes_for_scheduling(int(self.options.jobs_no))
-        else:
-            nodes = []
+            smart.set_nodes(
+                cluster_state.get_nodes_for_scheduling(
+                    int(self.options.jobs_no), smart.utilisation, smart.ratio))
 
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
@@ -212,8 +228,7 @@ class Generator:
             script_basename=self.scheduler.submit_script,
             jobs_no=self.options.jobs_no,
             workspace_dir=self.workspace_dir,
-            is_smart=is_smart,
-            nodes=nodes)
+            smart=smart)
 
     def copy_input(self):
         indir_name = 'input'

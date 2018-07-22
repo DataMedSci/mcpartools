@@ -16,6 +16,8 @@ p0620 plgrid* 0.41 idle 0/24/0/24
 p0627 plgrid* 4.00 mixed 16/8/0/24
 
 """
+    utilisation = 0.5
+    ratio = 1.08
 
     def test_cluster_status_from_raw_stdout(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
@@ -43,12 +45,12 @@ p0627 plgrid* 4.00 mixed 16/8/0/24
 
     def test_get_nodes_for_scheduling_1(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
-        nodes = cluster_status.get_nodes_for_scheduling(5)
+        nodes = cluster_status.get_nodes_for_scheduling(5, self.utilisation, self.ratio)
         self.assertEquals(nodes, ['p0620', 'p0620', 'p0620', 'p0620', 'p0620'])
 
     def test_get_nodes_for_scheduling_2(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
-        nodes = cluster_status.get_nodes_for_scheduling(20)
+        nodes = cluster_status.get_nodes_for_scheduling(20, self.utilisation, self.ratio)
         expected = []
         expected.extend(repeat('p0620', 12))
         expected.extend(repeat('p0615', 4))
@@ -57,7 +59,7 @@ p0627 plgrid* 4.00 mixed 16/8/0/24
 
     def test_get_nodes_for_scheduling_3(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
-        nodes = cluster_status.get_nodes_for_scheduling(30)
+        nodes = cluster_status.get_nodes_for_scheduling(30, self.utilisation, self.ratio)
         expected = []
         expected.extend(repeat('p0620', 19))
         expected.extend(repeat('p0615', 6))
@@ -66,7 +68,7 @@ p0627 plgrid* 4.00 mixed 16/8/0/24
 
     def test_get_nodes_for_scheduling_4(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
-        nodes = cluster_status.get_nodes_for_scheduling(31)
+        nodes = cluster_status.get_nodes_for_scheduling(31, self.utilisation, self.ratio)
         expected = []
         expected.extend(repeat('p0620', 19))
         expected.extend(repeat('p0615', 6))
@@ -75,7 +77,7 @@ p0627 plgrid* 4.00 mixed 16/8/0/24
 
     def test_get_nodes_for_scheduling_5(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
-        nodes = cluster_status.get_nodes_for_scheduling(39)
+        nodes = cluster_status.get_nodes_for_scheduling(39, self.utilisation, self.ratio)
         expected = []
         expected.extend(repeat('p0620', 24))
         expected.extend(repeat('p0615', 8))
@@ -84,7 +86,7 @@ p0627 plgrid* 4.00 mixed 16/8/0/24
 
     def test_get_nodes_for_scheduling_6(self):
         cluster_status = cluster_status_from_raw_stdout(self.raw_stdout)
-        nodes = cluster_status.get_nodes_for_scheduling(40)
+        nodes = cluster_status.get_nodes_for_scheduling(40, self.utilisation, self.ratio)
         expected = []
         expected.extend(repeat('p0620', 24))
         expected.extend(repeat('p0615', 8))

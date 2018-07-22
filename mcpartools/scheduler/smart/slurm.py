@@ -28,9 +28,6 @@ class NodeInfo:
 
 
 class ClusterState:
-    efficiency_ratio = 0.5
-    step = 1.08
-
     def __init__(self, nodes_info):
         """
         :type nodes_info: list of NodeInfo
@@ -48,22 +45,30 @@ class ClusterState:
         from functools import reduce
         return reduce((lambda x, y: x + y), capacities)
 
-    def get_nodes_for_scheduling(self, jobs_no):
+    def get_nodes_for_scheduling(self, jobs_no, utilisation, ratio):
         if jobs_no > self.max_capacity():
             raise AssertionError("Jobs count exceeds maximum cluster capacity.")
         nodes_sorted = self.__sort(self.nodes_info)
 
-        ratio = self.efficiency_ratio
-        while int(self.max_capacity() * ratio) < jobs_no:
-            ratio = ratio * self.step
+        '''
+        Iteratively increase cluster nodes utilisation based on given params.
+        If, for the given initial utilisation, it is impossible to contain all required jobs, 
+        multiply utilisation by given ratio.
+        In other words, utilisation 0.5 means that at minimum half of the available cores on single node 
+        will be used (if necessary). Ratio 1.08 means that if initial utilisation is not enough, in the next iteration
+        algorithm will try to use utilisation of 0.5*1.08 = 0.54 (8% bigger).
+        '''
+        util = utilisation
+        while int(self.max_capacity() * util) < jobs_no:
+            util = util * ratio
 
-        if ratio > 1:
-            ratio = 1
+        if util > 1:
+            util = 1
 
         node_ids = []
         from itertools import repeat
         for node in nodes_sorted:
-            count = int(round(node.cpu_idle * ratio))
+            count = int(round(node.cpu_idle * util))
             node_ids.extend(repeat(node.node_id, times=count))
 
         return node_ids[:jobs_no]
