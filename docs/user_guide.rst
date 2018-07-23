@@ -94,25 +94,27 @@ A directory `tests/res/run_20170717_195410` will be created. Now providing a wor
 
 will result in new directory `mydir/run_20170717_195557`
 
-
-
 Another useful option is the ability to provide additional options for scheduler and for Monte-Carlo binary.
 The first one can be used i.e. to specify directly the walltime for job execution::
 
    generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp --scheduler_options "[--walltime=2:00:00]"
 
-Not additional square brackets added to distringuish between generatemc and scheduler options.
+Note additional square brackets added to distinguish between `generatemc` and scheduler options.
 
-There is also a possibility to do automatic collection of data after calculation. User can also specify desired format of collected data::
- 
-   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp -c image 
+There is also a possibility to do automatic collection of data after calculation.
+User can also specify desired format of collected data::
 
-Data will be collected automatically after calculation (in this example to the images) so there is no need to run additional *./collect.sh* script. Right now available options are *mv, cp, image* and *plotdata*.
+   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp -c image
 
+Data will be collected automatically after calculation (in this example to the images) so there is no need to run additional *./collect.sh* script.
+Right now available options are *mv, cp, image, plotdata* and *custom*. User could also provide his own script for collecting the data.
+In such case the program can be run in following way::
+
+   CUSTOM_COLLECT=usercollect.sh generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp -c custom
 
 One could also specify additional options to Monte-Carlo binary files. For example to add an user-defined
 particle source in Fluka one can use its `-e` option. If the `flukadpm3_sobp` file is not present
-in the PATH enviromental variable, then its location needs to be known. This may
+in the PATH environmental variable, then its location needs to be known. This may
 be achieved by a mechanism of creating a link to an external file. Such links
 can be created by using `-x` switch, here we provide an example in which
 an external source is enabled by `-e` switch and two external files are linked (`sobp.dat` and `flukadpm3_sobp`)::
