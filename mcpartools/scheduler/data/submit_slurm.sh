@@ -5,6 +5,9 @@
 LOGFILE="$(cd $(dirname $0) && pwd)/submit.log"
 echo -n "" > "$LOGFILE"
 
+#Submit script will change PID variable in dump script
+DUMPSCRIPT="$(cd $(dirname $0) && pwd)/dump.sh"
+
 # Create temporary files for parsing stdout and stderr output from sbatch command before storing them in submit.log
 OUT=`mktemp`
 ERR=`mktemp`
@@ -25,6 +28,7 @@ if [ $? -eq 0 ] ; then
 	CALC_JOBID=`cat $OUT | cut -d ";" -f 1`
 	echo "Job ID: $CALC_JOBID" >> "$LOGFILE"
 	echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
+	sed -i "s/PID='[0-9]*'/PID='$CALC_JOBID'/g" $DUMPSCRIPT
 fi
 
 # If output from stderr isn't an empty string then log it as well to submit.log
