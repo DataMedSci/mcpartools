@@ -140,6 +140,9 @@ class Generator:
         # generate submit script
         self.generate_submit_script()
 
+        # generate dump script
+        self.generate_dump_script()
+
         # copy input files
         self.copy_input()
 
@@ -200,6 +203,16 @@ class Generator:
             script_basename=self.scheduler.submit_script,
             jobs_no=self.options.jobs_no,
             workspace_dir=self.workspace_dir)
+
+    def generate_dump_script(self):
+        script_path = os.path.join(self.main_dir, self.scheduler.dump_script)
+        logger.debug("Preparation to generate " + script_path)
+        self.scheduler.write_dump_script(
+            main_dir=self.main_dir,
+            script_basename=self.scheduler.dump_script,
+            jobs_no=self.options.jobs_no,
+            workspace_dir=self.workspace_dir,
+            dump_function=self.mc_engine.dump_function)
 
     def copy_input(self):
         indir_name = 'input'

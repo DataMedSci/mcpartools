@@ -25,6 +25,7 @@ class JobScheduler:
 
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
+    dump_script = 'dump.sh'
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
         from pkg_resources import resource_string
@@ -42,6 +43,19 @@ class JobScheduler:
                                          calculate_script_name='main_run.sh',
                                          main_dir=main_dir,
                                          collect_script_name='collect.sh')
+
+    def dump_script_body(self, jobs_no, main_dir, workspace_dir, dump_function):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.dump_script_template)
+        self.dump_script = tpl.decode('ascii')
+
+        return self.dump_script.format(options_args=self.options_args,
+                                       jobs_no=jobs_no,
+                                       workspace_dir=workspace_dir,
+                                       calculate_script_name='main_run.sh',
+                                       main_dir=main_dir,
+                                       collect_script_name='collect.sh',
+                                       dump_function=dump_function)
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
@@ -62,6 +76,16 @@ class JobScheduler:
         logger.debug("Saved submit script: " + script_path)
         logger.debug("Jobs no " + str(jobs_no))
         logger.debug("Workspace " + abs_path_workspace)
+
+    def write_dump_script(self, main_dir, script_basename, jobs_no, workspace_dir, dump_function):
+        script_path = os.path.join(main_dir, script_basename)
+        fd = open(script_path, 'w')
+        abs_path_workspace = os.path.abspath(workspace_dir)
+        abs_path_main_dir = os.path.abspath(main_dir)
+        fd.write(self.dump_script_body(jobs_no, abs_path_main_dir, abs_path_workspace, dump_function))
+        fd.close()
+        os.chmod(script_path, 0o750)
+        logger.debug("Saved dump script: " + script_path)
 
     def write_main_run_script(self, jobs_no, output_dir):
         output_dir_abspath = os.path.abspath(output_dir)
