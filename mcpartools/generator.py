@@ -220,10 +220,7 @@ class Generator:
             smart.set_nodes(
                 cluster_state.get_nodes_for_scheduling(
                     int(self.options.jobs_no), smart.utilisation, smart.ratio))
-            logger.info("Nodes selected for smart mode submit:")
-            nodes_tuple = tuple(smart.nodes)
-            for node in set(smart.nodes):
-                logger.info("Node " + node + " used " + str(nodes_tuple.count(node)) + " times")
+            self._log_selected_nodes(smart)
 
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
@@ -234,6 +231,12 @@ class Generator:
             jobs_no=self.options.jobs_no,
             workspace_dir=self.workspace_dir,
             smart=smart)
+
+    def _log_selected_nodes(self, smart):
+        logger.info("Nodes selected for smart mode submit:")
+        nodes_tuple = tuple(smart.nodes)
+        for node in sorted(set(smart.nodes)):
+            logger.info("Node " + node + " used " + str(nodes_tuple.count(node)) + " times")
 
     def copy_input(self):
         indir_name = 'input'
