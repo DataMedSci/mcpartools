@@ -43,7 +43,8 @@ class JobScheduler:
                                                        jobs_no=jobs_no,
                                                        log_dir=log_dir,
                                                        workspace_dir=workspace_dir,
-                                                       nodes=smart.nodes)
+                                                       nodes=smart.nodes,
+                                                       partition=smart.partition)
         else:
             tpl = resource_string(__name__, self.submit_script_template)
 
