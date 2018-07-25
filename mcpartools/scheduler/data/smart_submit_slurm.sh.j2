@@ -11,7 +11,7 @@ ERR=`mktemp`
 # On exit or if the script is interrupted (i.e. by receiving SIGINT signal) delete temporary files
 trap "rm -f $OUT $ERR" EXIT
 {% for node_id in nodes %}
-sbatch {{options_args}} --partition={{partition}} --nodelist={{node_id}} -n1 --output="{{log_dir}}/output_{{loop.index0}}_{{node_id}}.log" --error="{{log_dir}}/error_{{loop.index0}}_{{node_id}}.log" --parsable {{workspace_dir}}/{{"job_{0:04d}".format(loop.index)}}/run.sh > $OUT 2> $ERR
+sbatch {{options_args}} --partition={{partition}} --nodelist={{node_id}} -n1 --output="{{log_dir}}/output_{{loop.index0}}_{{node_id}}.log" --error="{{log_dir}}/error_{{loop.index0}}_{{node_id}}.log" --parsable {{workspace_dir}}/{{"job_{0:04d}".format(loop.index)}}/run.sh >> $OUT 2>> $ERR
 {% endfor %}
 echo "Saving logs to $LOGFILE"
 
