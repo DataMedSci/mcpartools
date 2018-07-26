@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 class Fluka(Engine):
 
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
+    default_dump_function_path = os.path.join('data', 'dump_function_fluka.sh')
     output_wildcard = "*_fort*"
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
@@ -31,6 +32,8 @@ class Fluka(Engine):
         in_fd.close()
 
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
+        self.dump_function = resource_string(__name__, self.default_dump_function_path).decode('ascii')
+        self.dump_signal = 'None'
 
     @property
     def input_files(self):

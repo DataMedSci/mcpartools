@@ -212,7 +212,8 @@ class Generator:
             script_basename=self.scheduler.dump_script,
             jobs_no=self.options.jobs_no,
             workspace_dir=self.workspace_dir,
-            dump_function=self.mc_engine.dump_function)
+            dump_function=self.mc_engine.dump_function,
+            dump_signal=self.mc_engine.dump_signal)
 
     def copy_input(self):
         indir_name = 'input'

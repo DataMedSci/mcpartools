@@ -32,6 +32,7 @@ class ShieldHit(Engine):
         self.dump_function = resource_string(__name__, self.default_dump_function_path).decode('ascii')
         self.particle_no = 1
         self.rng_seed = 1
+        self.dump_signal = 'USR1'
 
     @property
     def input_files(self):

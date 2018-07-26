@@ -56,7 +56,7 @@ done
 {dump_function:s}
 
 SIG_SENDER='scancel -b -s'
-SIGNAL='USR1'
+SIGNAL='{dump_signal:s}'
 PID=''
 
 

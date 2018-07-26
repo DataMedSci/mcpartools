@@ -44,7 +44,7 @@ class JobScheduler:
                                          main_dir=main_dir,
                                          collect_script_name='collect.sh')
 
-    def dump_script_body(self, jobs_no, main_dir, workspace_dir, dump_function):
+    def dump_script_body(self, jobs_no, main_dir, workspace_dir, dump_function, dump_signal):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.dump_script_template)
         self.dump_script = tpl.decode('ascii')
@@ -55,7 +55,8 @@ class JobScheduler:
                                        calculate_script_name='main_run.sh',
                                        main_dir=main_dir,
                                        collect_script_name='collect.sh',
-                                       dump_function=dump_function)
+                                       dump_function=dump_function,
+                                       dump_signal=dump_signal)
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
@@ -77,12 +78,12 @@ class JobScheduler:
         logger.debug("Jobs no " + str(jobs_no))
         logger.debug("Workspace " + abs_path_workspace)
 
-    def write_dump_script(self, main_dir, script_basename, jobs_no, workspace_dir, dump_function):
+    def write_dump_script(self, main_dir, script_basename, jobs_no, workspace_dir, dump_function, dump_signal):
         script_path = os.path.join(main_dir, script_basename)
         fd = open(script_path, 'w')
         abs_path_workspace = os.path.abspath(workspace_dir)
         abs_path_main_dir = os.path.abspath(main_dir)
-        fd.write(self.dump_script_body(jobs_no, abs_path_main_dir, abs_path_workspace, dump_function))
+        fd.write(self.dump_script_body(jobs_no, abs_path_main_dir, abs_path_workspace, dump_function, dump_signal))
         fd.close()
         os.chmod(script_path, 0o750)
         logger.debug("Saved dump script: " + script_path)
