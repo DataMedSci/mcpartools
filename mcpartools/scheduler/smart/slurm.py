@@ -79,7 +79,7 @@ class ClusterState:
 
 
 def cluster_status_from_raw_stdout(std_out):
-    splitted_output = std_out.split("\n")[1:]
+    splitted_output = std_out.decode("ascii").split("\n")[1:]
     nodes = []
     for line in splitted_output:
         try:
