@@ -5,7 +5,7 @@ from mcpartools.scheduler.smart.slurm import cluster_status_from_raw_stdout
 
 
 class TestClusterInfo(TestCase):
-    raw_stdout = """HOSTNAMES PARTITION NODES CPU_LOAD STATE CPUS(A/I/O/T)
+    raw_stdout = b"""HOSTNAMES PARTITION NODES CPU_LOAD STATE CPUS(A/I/O/T)
 p0615 plgrid* 3.92 mixed 16/8/0/24
 p0620 plgrid* 0.41 idle 0/24/0/24
 p0627 plgrid* 4.00 mixed 16/8/0/24"""
