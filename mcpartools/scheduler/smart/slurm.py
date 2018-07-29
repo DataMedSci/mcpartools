@@ -78,13 +78,8 @@ class ClusterState:
         return sorted(nodes, key=attrgetter('state', 'load', 'cpu_idle'))
 
 
-def cluster_status_from_raw_stdout(std_out):
-    import sys
-    if sys.version_info[0] < 3:
-        output = std_out.decode("UTF-8")
-    else:
-        output = std_out
-    splitted_output = output.split("\n")[1:]
+def cluster_status_from_stdout(std_out):
+    splitted_output = std_out.split("\n")[1:]
     nodes = []
     for line in splitted_output:
         try:
@@ -101,6 +96,6 @@ def get_cluster_state_from_os(partition):
     from shlex import split
     command = "sinfo --states='idle,mixed' --partition={partition} --format='%n %P %O %T %C'" \
         .format(partition=partition)
-    output = check_output(split(command), shell=False, stderr=STDOUT)
-    cluster_info = cluster_status_from_raw_stdout(output)
+    output = check_output(split(command), shell=False, stderr=STDOUT).decode("UTF-8")
+    cluster_info = cluster_status_from_stdout(output)
     return cluster_info
