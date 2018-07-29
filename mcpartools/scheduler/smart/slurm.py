@@ -52,9 +52,9 @@ class ClusterState:
 
         '''
         Iteratively increase cluster nodes utilisation based on given params.
-        If, for the given initial utilisation, it is impossible to contain all required jobs, 
+        If, for the given initial utilisation, it is impossible to contain all required jobs,
         multiply utilisation by given ratio.
-        In other words, utilisation 0.5 means that at minimum half of the available cores on single node 
+        In other words, utilisation 0.5 means that at minimum half of the available cores on single node
         will be used (if necessary). Ratio 1.08 means that if initial utilisation is not enough, in the next iteration
         algorithm will try to use utilisation of 0.5*1.08 = 0.54 (8% bigger).
         '''
@@ -79,7 +79,12 @@ class ClusterState:
 
 
 def cluster_status_from_raw_stdout(std_out):
-    splitted_output = std_out.decode("ascii").split("\n")[1:]
+    import sys
+    if sys.version_info[0] < 3:
+        output = std_out.decode("UTF-8")
+    else:
+        output = std_out
+    splitted_output = output.split("\n")[1:]
     nodes = []
     for line in splitted_output:
         try:
