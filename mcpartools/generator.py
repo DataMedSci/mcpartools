@@ -92,9 +92,29 @@ class Options:
         # no checks needed - argparse does it
         self.batch = args.batch
 
+        self.smart_options = SmartOptions(args)
+
+    def is_smart_enabled(self):
+        return self.smart_options.is_smart_enabled()
+
     @property
     def valid(self):
         return self._valid
+
+
+class SmartOptions:
+    def __init__(self, args):
+        self.is_smart = args.smart
+        self.utilisation = args.utilisation
+        self.ratio = args.ratio
+        self.partition = args.partition
+        self.nodes = None
+
+    def is_smart_enabled(self):
+        return self.is_smart is True
+
+    def set_nodes(self, nodes):
+        self.nodes = nodes
 
 
 class Generator:
@@ -128,7 +148,10 @@ class Generator:
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
                 self.scheduler = scheduler_class[0](self.options.scheduler_options)
-                logger.info("Using: " + self.scheduler.id)
+                if self.options.is_smart_enabled():
+                    logger.info("Using: " + self.scheduler.id + " (smart mode)")
+                else:
+                    logger.info("Using: " + self.scheduler.id)
             else:
                 logger.error("Given scheduler: \'%s\' is not on the list of supported batch systems: %s",
                              self.options.batch, [supported.id for supported in SchedulerDiscover.supported])
@@ -138,7 +161,7 @@ class Generator:
         self.generate_workspace()
 
         # generate submit script
-        self.generate_submit_script()
+        self.generate_submit_script(smart=self.options.smart_options)
 
         # copy input files
         self.copy_input()
@@ -191,7 +214,15 @@ class Generator:
         self.scheduler.write_main_run_script(jobs_no=self.options.jobs_no, output_dir=self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
 
-    def generate_submit_script(self):
+    def generate_submit_script(self, smart):
+        if smart.is_smart_enabled():
+            from mcpartools.scheduler.smart.slurm import get_cluster_state_from_os
+            cluster_state = get_cluster_state_from_os(partition=smart.partition)
+            smart.set_nodes(
+                cluster_state.get_nodes_for_scheduling(
+                    int(self.options.jobs_no), smart.utilisation, smart.ratio))
+            self._log_selected_nodes(smart)
+
         script_path = os.path.join(self.main_dir, self.scheduler.submit_script)
         logger.debug("Preparation to generate " + script_path)
         logger.debug("Jobs no " + str(self.options.jobs_no))
@@ -199,7 +230,14 @@ class Generator:
             main_dir=self.main_dir,
             script_basename=self.scheduler.submit_script,
             jobs_no=self.options.jobs_no,
-            workspace_dir=self.workspace_dir)
+            workspace_dir=self.workspace_dir,
+            smart=smart)
+
+    def _log_selected_nodes(self, smart):
+        logger.info("Nodes selected for smart mode submit:")
+        nodes_tuple = tuple(smart.nodes)
+        for node in sorted(set(smart.nodes)):
+            logger.info("Node " + node + " used " + str(nodes_tuple.count(node)) + " times")
 
     def copy_input(self):
         indir_name = 'input'
