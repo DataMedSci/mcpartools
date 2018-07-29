@@ -6,6 +6,9 @@ set -e
 INPUT_WILDCARD={output_dir:s}/workspace/job_*/{wildcard:s}
 OUTPUT_DIRECTORY={output_dir:s}/output
 
+# change working directory
+cd {output_dir:s}
+
 # make output folder
 mkdir -p $OUTPUT_DIRECTORY
 

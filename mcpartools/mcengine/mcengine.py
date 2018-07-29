@@ -58,6 +58,15 @@ done""",
         output_dir_abs_path = os.path.abspath(output_dir)
 
         collect_action = self._collect_action.get(self.collect_method, "")
+        if 'custom' in self.collect_method:
+            env_var_name = 'CUSTOM_COLLECT'
+            if env_var_name not in os.environ:
+                logger.error("Expected environmental variable {:s} to be set, but it is missing".format(env_var_name))
+                return
+            if not os.path.exists(os.environ[env_var_name]):
+                logger.error("File {:s} doesn't exists".format(os.environ[env_var_name]))
+            with open(os.environ[env_var_name]) as f:
+                collect_action = os.linesep.join(f.readlines())
         contents = self.collect_script_content.format(output_dir=output_dir_abs_path,
                                                       collect_action=collect_action,
                                                       wildcard=self.output_wildcard)

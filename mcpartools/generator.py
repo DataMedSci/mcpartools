@@ -17,7 +17,8 @@ file_logger.propagate = False
 
 
 class Options:
-    collect_methods = ('mv', 'cp', 'plotdata', 'image')
+
+    collect_methods = ('mv', 'cp', 'plotdata', 'image', 'custom')
 
     def __init__(self, args):
         self._valid = True
