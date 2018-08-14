@@ -84,6 +84,11 @@ function writeTimeInSeconds(){{
 
         TASK_NUMBER=$((TASK_NUMBER + 1))
 
+#        check if status is a number
+        if ! [[ ${{STATUS}} =~ ^[0-9]+$ ]] ; then
+           continue
+        fi
+
         if [[ ${{STATUS}} -ne 0 ]]
         then
             FAILED=$((FAILED + 1))
@@ -126,9 +131,22 @@ function appendCollectInfo() {{
     fi
 }}
 
-JOBS_LOG_FILE="info.log"
 WORKSPACE={workspace_dir:s}
-LOG_FILE=${{WORKSPACE}}/${{JOBS_LOG_FILE}}
+MAIN_DIR={main_dir:s}
+
+if [ $# -eq 0 ]
+  then
+    FILE_NAME=status_`date +%Y%m%d_%H%M%S`.log
+    LOG_FILE=${{MAIN_DIR}}/${{FILE_NAME}}
+  else
+    LOG_FILE=$1
+fi
+
+if [ ! -f ${{MAIN_DIR}}/submit.log ]; then
+    exit 1
+fi
+
+JOBS_LOG_FILE="info.log"
 JOB_ID_REGEX="#+ DETAILED INFORMATION ABOUT JOB\s+([0-9]*)"
 START_REGEX="# START\s+=\s(.{{19}})"
 END_REGEX="# END\s+=\s(.{{19}})"

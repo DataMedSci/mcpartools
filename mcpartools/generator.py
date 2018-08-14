@@ -149,6 +149,9 @@ class Generator:
         # generate script merging info logs
         self.generate_merge_logs_script()
 
+        # generate status script
+        self.generate_status_script()
+
         # store information about command line arguments, date, time, user and hostname into generatemc.log
         self.save_logs()
 
@@ -248,5 +251,12 @@ class Generator:
 
     def generate_merge_logs_script(self):
         wspdir_name = 'workspace'
+        output_name = 'output'
         wspdir_path = os.path.join(self.main_dir, wspdir_name)
-        self.scheduler.write_merge_logs_script(wspdir_path)
+        collect_path = os.path.join(self.main_dir, output_name)
+        self.scheduler.write_merge_logs_script(wspdir_path, collect_path, self.main_dir)
+
+    def generate_status_script(self):
+        wspdir_name = 'workspace'
+        wspdir_path = os.path.join(self.main_dir, wspdir_name)
+        self.scheduler.write_status_script(self.main_dir, wspdir_path)

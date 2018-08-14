@@ -45,10 +45,12 @@ if [ -n "$CALC_JOBID" ] ; then
     echo "Result collection" >> "$LOGFILE"
     echo "Submission command: $COLLECT_CMD" >> "$LOGFILE"
 
+    LAST_JOB_ID=$CALC_JOBID
+
     # If sbatch command ended with a success log following info
     if [ $? -eq 0 ] ; then
-        COLLECT_JOBID=`cat $OUT | cut -d ";" -f 1`
-        echo "Job ID: $COLLECT_JOBID" >> "$LOGFILE"
+        LAST_JOB_ID=`cat $OUT | cut -d ";" -f 1`
+        echo "Job ID: $LAST_JOB_ID" >> "$LOGFILE"
         echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
     fi
 
@@ -60,7 +62,7 @@ if [ -n "$CALC_JOBID" ] ; then
         cat $ERR >> "$LOGFILE"
     fi
 
-    MERGE_LOGS_CMD="sbatch  --dependency=afterany:$COLLECT_JOBID {main_dir:s}/workspace/merge_logs.sh > $OUT 2> $ERR"
+    MERGE_LOGS_CMD="sbatch  --dependency=afterany:$LAST_JOB_ID --output='{log_dir:s}/output_%j_merge_logs.log' --error='{log_dir:s}/error_%j_merge_logs.log' --parsable {main_dir:s}/workspace/merge_logs.sh > $OUT 2> $ERR"
     eval $MERGE_LOGS_CMD
 
     echo "" >> "$LOGFILE"

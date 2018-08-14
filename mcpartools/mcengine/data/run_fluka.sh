@@ -22,7 +22,7 @@ echo "# START           = `date +"%Y-%m-%d %H:%M:%S"`" >> $LOG_FILE
 echo "# END             =                   -" >> $LOG_FILE
 echo "# TIME IN SECONDS =                   -" >> $LOG_FILE
 echo "# NO OF PARTICLES =`printf "%20d" $PARTICLE_NO`" >> $LOG_FILE
-echo "# STATUS          =                   1" >> $LOG_FILE
+echo "# STATUS          =                   -" >> $LOG_FILE
 echo "#" >> $LOG_FILE
 
 # run rfluka
