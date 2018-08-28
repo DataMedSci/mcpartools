@@ -27,6 +27,7 @@ class JobScheduler:
     main_run_script = 'main_run.sh'
     merge_logs_script = 'merge_logs.sh'
     status_script = 'status.sh'
+    kill_script = 'kill.sh'
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
         from pkg_resources import resource_string
@@ -64,6 +65,12 @@ class JobScheduler:
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.status_script_template)
         return tpl.decode("ascii").format(merge_script_path=merge_script_path)
+
+    def submit_kill_body(self, ):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.kill_script_template)
+        self.kill_script = tpl.decode('ascii')
+        return self.kill_script
 
     def write_submit_script(self, main_dir, script_basename, jobs_no, workspace_dir):
         script_path = os.path.join(main_dir, script_basename)
@@ -112,3 +119,10 @@ class JobScheduler:
         fd.close()
         os.chmod(out_file_path, 0o750)
         logger.debug("Saved status script: " + out_file_path)
+
+    def write_kill_script(self, script_path):
+        fd = open(script_path, 'w')
+        fd.write(self.submit_kill_body())
+        fd.close()
+        os.chmod(script_path, 0o750)
+        logger.debug("Saved kill script: " + script_path)
