@@ -11,7 +11,7 @@ ERR=`mktemp`
 # On exit or if the script is interrupted (i.e. by receiving SIGINT signal) delete temporary files
 trap "rm -f $OUT $ERR" EXIT
 
-qsub {options_args:s} -J 1-{jobs_no:d} -o {log_dir:s} -e {log_dir:s} {script_dir:s}/{calculate_script_name:s} > $OUT 2> $ERR
+qsub {options_args:s} -t 1-{jobs_no:d} -o {log_dir:s} -e {log_dir:s} {script_dir:s}/{calculate_script_name:s} > $OUT 2> $ERR
 
 echo "Saving logs to $LOGFILE"
 
