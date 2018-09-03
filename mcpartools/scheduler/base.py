@@ -25,6 +25,7 @@ class JobScheduler:
 
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
+    kill_script = 'cancel.sh'
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
         from pkg_resources import resource_string
@@ -51,6 +52,12 @@ class JobScheduler:
                                                           jobs_no=jobs_no)
         return self.main_run_script
 
+    def submit_kill_body(self, ):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.kill_script_template)
+        self.kill_script = tpl.decode('ascii')
+        return self.kill_script
+
     def write_submit_script(self, main_dir, script_basename, jobs_no, workspace_dir):
         script_path = os.path.join(main_dir, script_basename)
         fd = open(script_path, 'w')
@@ -72,3 +79,10 @@ class JobScheduler:
         os.chmod(out_file_path, 0o750)
         logger.debug("Saved main run script: " + out_file_path)
         logger.debug("Output dir " + output_dir)
+
+    def write_kill_script(self, script_path):
+        fd = open(script_path, 'w')
+        fd.write(self.submit_kill_body())
+        fd.close()
+        os.chmod(script_path, 0o750)
+        logger.debug("Saved kill script: " + script_path)
