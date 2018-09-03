@@ -27,7 +27,7 @@ class JobScheduler:
     main_run_script = 'main_run.sh'
     merge_logs_script = 'merge_logs.sh'
     status_script = 'status.sh'
-    kill_script = 'kill.sh'
+    kill_script = 'cancel.sh'
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
         from pkg_resources import resource_string

@@ -17,3 +17,5 @@ class Torque(JobScheduler):
     merge_logs_script_template = os.path.join('data', 'merge_logs.sh')
 
     status_script_template = os.path.join('data', 'status.sh')
+
+    kill_script_template = os.path.join('data', 'kill_torque.sh')
