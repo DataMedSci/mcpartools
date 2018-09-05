@@ -1,4 +1,9 @@
 function dump_function(){
+  echo -e "\n\t##############################\n"
+  echo "THIS FUTURE WILL ONLY WORK CORRECTLY WHEN SECOND ARGUMENT OF NSTAT"
+  echo "(Step of saving) IN FILE input/beam.dat IS SET TO -1"
+  echo -e "\n\t##############################\n"
+  sleep 5
   RETRY_MAX=5
   ERR="Will check correctness of directories and files"
   COUNT=1
