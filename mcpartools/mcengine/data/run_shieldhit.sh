@@ -3,6 +3,7 @@
 # Exit immediately if a simple command exits with a non-zero status.
 set -e
 
+# location of SHIELD-HIT12A binary file
 
 START=$(date +%s)
 
@@ -18,11 +19,14 @@ PARTICLE_NO={particle_no:d}
 # seed of RNG
 RNG_SEED={rnd_seed:d}
 
-# main SHIELDHIT12A input files
+# main SHIELD-HIT12A input files
 BEAM_FILE={beam_file:s}
 GEO_FILE={geo_file:s}
 MAT_FILE={mat_file:s}
 DETECT_FILE={detect_file:s}
+
+# go to working directory
+cd {working_directory:s}
 
 LOG_FILE=$WORK_DIR"/info.log"
 
