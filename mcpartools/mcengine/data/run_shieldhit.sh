@@ -6,7 +6,7 @@ set -e
 
 START=$(date +%s)
 
-# location of SHIELDHIT binary file
+# location of SHIELD-HIT12A binary file
 SHIELDHIT_BIN={shieldhit_bin:s}
 
 # working directory, output files will be saved here
@@ -18,7 +18,7 @@ PARTICLE_NO={particle_no:d}
 # seed of RNG
 RNG_SEED={rnd_seed:d}
 
-# main SHIELDHIT12A input files
+# main SHIELD-HIT12A input files
 BEAM_FILE={beam_file:s}
 GEO_FILE={geo_file:s}
 MAT_FILE={mat_file:s}
@@ -36,6 +36,9 @@ echo "# TIME IN SECONDS =                   -" >> $LOG_FILE
 echo "# NO OF PARTICLES =`printf "%20d" $PARTICLE_NO`" >> $LOG_FILE
 echo "# STATUS          =                   -" >> $LOG_FILE
 echo "#" >> $LOG_FILE
+
+# go to working directory
+cd {working_directory:s}
 
 # execute simulation
 $SHIELDHIT_BIN --beamfile=$BEAM_FILE --geofile=$GEO_FILE --matfile=$MAT_FILE --detectfile=$DETECT_FILE -n $PARTICLE_NO -N $RNG_SEED {engine_options:s} $WORK_DIR
