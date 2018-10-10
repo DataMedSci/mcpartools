@@ -4,7 +4,6 @@ from mcpartools.scheduler.base import JobScheduler
 
 
 class Torque(JobScheduler):
-
     id = "torque"
 
     def __init__(self, options_content):
