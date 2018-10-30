@@ -1,6 +1,9 @@
 [run]
-    omit = *tests/*,
-            setup.py,
-            tests/__init__.py
-            mcpartools/__init__.py
-    parallel=True
+source = .
+branch = true
+disable_warnings = include-ignored
+parallel = true
+
+[report]
+show_missing = true
+include = mcpartools/*,tests/*
