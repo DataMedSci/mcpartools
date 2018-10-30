@@ -35,7 +35,7 @@ matrix:
     dist: trusty
 
 # travis-ci runs by default on ancient Ubuntu 12.04 (precise)
-# following options will give us Ubuntu 14.04 (trusty)
+# following options will give us Ubuntu 14.04 (trusty) x
 sudo: false
 dist: xenial
 
