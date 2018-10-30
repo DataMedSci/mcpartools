@@ -1,0 +1,6 @@
+[run]
+    omit = *tests/*,
+            setup.py,
+            tests/__init__.py
+            mcpartools/__init__.py
+

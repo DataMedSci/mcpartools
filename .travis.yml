@@ -6,7 +6,7 @@ matrix:
   include:
   - python: 2.7
     env: TOXENV=py27
-  - python: 2.7
+  - python: 3.6
     env: TOXENV=coverage
   - python: 3.2
     env: TOXENV=py32 VENVVER="<14.0.0" PIPVER="<8.0.0" STVER="<30.0.0"
