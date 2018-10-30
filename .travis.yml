@@ -43,7 +43,7 @@ install:
 - ./.travis/install_linux.sh
 
 script:
-- tox --notest && travis_retry tox -- -n 8
+- tox --notest && travis_retry tox --
 - if [[ "$TRAVIS_TEST_RESULT" == "0" ]] && [[ $TOXENV == "packaging" ]]; then .travis/deploy_package.sh ; fi
 
 
