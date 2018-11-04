@@ -8,6 +8,12 @@ START=$(date +%s)
 # location of FLUKA binary file
 FLUKA_BIN={fluka_bin:s}
 
+# number of particles per job
+PARTICLE_NO={particle_no:d}
+
+# seed of RNG
+RNG_SEED={job_id:d}
+
 WORK_DIR={working_directory:s}
 # go to working directory
 cd $WORK_DIR
