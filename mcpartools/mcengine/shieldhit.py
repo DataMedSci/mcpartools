@@ -1,5 +1,7 @@
 import logging
 import os
+import numpy as np
+from configparser import ConfigParser
 from pkg_resources import resource_string
 
 from mcpartools.mcengine.mcengine import Engine
@@ -8,9 +10,10 @@ logger = logging.getLogger(__name__)
 
 
 class ShieldHit(Engine):
-
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
+    regression_cfg_path = os.path.join('data', 'regression.ini')
     output_wildcard = "*.bdo"
+    max_predicted_job_number = 750
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
@@ -26,10 +29,41 @@ class ShieldHit(Engine):
             tpl_fd.close()
             logger.debug("Using user run script: " + self.run_script_path)
 
+        self.config = self.regression_config
+        if self.config is None:
+            logger.warning("Could not properly parse configuration file for prediction feature")
+        else:
+            try:
+                self.jobs_and_particles_regression = float(self.config["JOBS_AND_PARTICLES"])
+                self.jobs_and_size_regression = [float(self.config["JOBS_AND_SIZE_A"]),
+                                                 float(self.config["JOBS_AND_SIZE_B"])]
+                self.files_and_size_regression = [float(self.config["FILES_AND_SIZE_A"]), float(self.config["FILES_AND_SIZE_B"]),
+                                                  float(self.config["FILES_AND_SIZE_C"])]
+                self.density_and_size_regression = float(self.config["DENSITY_AND_SIZE"])
+                self.collect_std_deviation = float(self.config['COLLECT_STANDARD_DEVIATION'])
+                self.calculation_std_deviation = float(self.config['CALCULATION_STANDARD_DEVIATION'])
+                logger.debug("Regressions from config file:")
+                logger.debug("JOBS_AND_PARTICLES = {0}".format(self.jobs_and_particles_regression))
+                logger.debug("JOBS_AND_SIZE = {0}".format(self.jobs_and_size_regression))
+                logger.debug("DENSITY_AND_SIZE = {0}".format(self.density_and_size_regression))
+            except ValueError:
+                logger.warning("Config file could not be read properly! Probably coefficients are not floats")
+            except KeyError:
+                logger.warning("Config file could not be read properly! Probably missing some variables")
+
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
+
+        self.files_size = self.calculate_size()
+        self.files_no_multiplier = 1 if self.files_size[0] == 0 else (self.files_size[1] / 10.0) * \
+                                        self.files_and_size_regression[0] * \
+                                        (self.files_size[0] - self.files_and_size_regression[1]) ** 2 + \
+                                        self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
 
         self.particle_no = 1
         self.rng_seed = 1
+
+    def __str__(self):
+        return "ShieldHit"
 
     @property
     def input_files(self):
@@ -37,6 +71,17 @@ class ShieldHit(Engine):
         files = ('beam.dat', 'geo.dat', 'mat.dat', 'detect.dat')
         result = (os.path.join(base, f) for f in files)
         return result
+
+    @property
+    def regression_config(self):
+        config = ConfigParser()
+        cfg_rs = resource_string(__name__, self.regression_cfg_path)
+        config_string = cfg_rs.decode('ascii')
+        config.read_string(config_string)
+        try:
+            return config["SHIELDHIT"]
+        except KeyError:
+            return None
 
     def randomize(self, new_seed, output_dir=None):
         self.rng_seed = new_seed
@@ -118,12 +163,12 @@ class ShieldHit(Engine):
                 # line length checking to prevent IndexError
                 if len(split_line) > 2 and split_line[0] == "USEBMOD":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                                 split_line[0], split_line[2]))
+                        split_line[0], split_line[2]))
                     external_files.append(split_line[2])
                     paths_to_replace.append(split_line[2])
                 elif len(split_line) > 1 and split_line[0] == "USECBEAM":
                     logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                                 split_line[0], split_line[1]))
+                        split_line[0], split_line[1]))
                     external_files.append(split_line[1])
                     paths_to_replace.append(split_line[1])
         if paths_to_replace:
@@ -242,3 +287,93 @@ class ShieldHit(Engine):
         with open(config_file, 'w') as outfile:
             for line in lines:
                 outfile.write(line)
+
+    def predict_best(self, total_particle_no, collect_type):
+        try:
+            if collect_type == "mv":
+                return self.max_predicted_job_number
+            elif self.files_size[0] < 10:
+                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) * (3 * 15 / 125000000.0),
+                         0, 0, 0, -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
+            else:
+                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) *
+                         (self.jobs_and_size_regression[1] * self.files_size[0] ** 2 +
+                         self.jobs_and_size_regression[0] * self.files_size[0]), 0,
+                         -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
+            results = [int(x.real) for x in np.roots(coeff) if np.isreal(x) and x.real > 0]
+            result = sorted([(x, self._calculation_time(total_particle_no, x, collect_type)) for x in results],
+                            key=lambda x: x[1])[0][0]
+
+            result = self.max_predicted_job_number if result > self.max_predicted_job_number else result
+        except ZeroDivisionError:
+            result = self.max_predicted_job_number
+        except AttributeError:
+            logger.error("Could not predict configuration! Check correctness of config file for prediction feature")
+            return None
+        return result
+
+    def calculate_size(self):
+        try:
+            beam_file, geo_file, mat_file, detect_file = self.input_files
+            count = True
+            a = self.density_and_size_regression
+            files_size = 0
+            i = 0
+            counter = 0
+            with open(detect_file, 'r') as detect:
+                for line in detect:
+                    if line[0] == "*":
+                        i = 0
+                    if i % 4 == 1:
+                        count = True
+                        scoring = line.split()[0]
+                        logger.debug("Found {0} in detect.dat".format(scoring))
+                        if scoring == "GEOMAP":
+                            count = False
+                    if i % 4 == 2 and count:
+                        x, y, z = [int(j) for j in line.split()[0:3]]
+                        files_size += a * (x * y * z) / 1000000
+                        counter += 1
+                        logger.debug("x = {0}, y = {1}, z = {2}, files_size = {3} ".format(x, y, z, files_size))
+                    i += 1
+            return files_size, counter
+        except AttributeError:
+            logger.error("Could not calculate size of files! Check correctness of config file for prediction feature")
+            return None
+
+    def calculation_time(self, particles_no_per_job, jobs_no, collect_type):
+        return self._calculation_time(particles_no_per_job * jobs_no, jobs_no, collect_type)
+
+    def _calculation_time(self, total_particles_no, jobs_no, collect_type):
+        try:
+            if collect_type == "mv":
+                collect_time = float(self.config['MV_COLLECT_TIME'])
+            elif self.files_size[0] < 10:
+                collect_time = 5 + 15 * (jobs_no ** 3) / 125000000
+            else:
+                collect_time = self.jobs_and_size_regression[0] * self.files_size[0] * jobs_no + \
+                               self.jobs_and_size_regression[1] * jobs_no * self.files_size[0] ** 2
+
+            calc_time = self.jobs_and_particles_regression * (1 / float(jobs_no)) * total_particles_no
+            collect_time *= self.files_no_multiplier * self.collect_std_deviation
+            collect_coef = self.collect_coefficient(collect_type)
+            if collect_coef > 0:
+                collect_time *= collect_coef
+
+            calc_time *= self.calculation_std_deviation
+
+            return collect_time + calc_time
+        except AttributeError:
+            logger.error("Could not estimate calculation time! Check correctness of config file for prediction feature")
+            return None
+
+    def collect_coefficient(self, collect_option):
+        collect_coef = {
+            'mv': self.config['MV_COLLECT_COEF'],
+            'cp': self.config['CP_COLLECT_COEF'],
+            'plotdata': self.config['PLOTDATA_COLLECT_COEF'],
+            'image': self.config['IMAGE_COLLECT_COEF'],
+            'custom': self.config['CUSTOM_COLLECT_COEF'],
+        }[collect_option]
+
+        return float(collect_coef)

@@ -32,6 +32,9 @@ class Fluka(Engine):
 
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
+    def __str__(self):
+        return "Fluka"
+
     @property
     def input_files(self):
         # TODO check if additional files are needed

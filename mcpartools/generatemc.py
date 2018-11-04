@@ -65,6 +65,12 @@ def main(args=sys.argv[1:]):
                         type=int,
                         required=True,
                         help='number of parallel jobs')
+    parser.add_argument('-P', '--prediction',
+                        action='store_true',
+                        help='Calculate best configuration')
+    parser.add_argument('-d', '--dry_run',
+                        action='store_true',
+                        help='Dry run without creating a workspace')
     parser.add_argument('input',
                         type=str,
                         help='path to input configuration')
