@@ -98,6 +98,8 @@ class Options:
 
 
 class Generator:
+    wspdir_name = 'workspace'
+
     def __init__(self, options):
         self.options = options
         self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
@@ -175,8 +177,7 @@ class Generator:
         file_logger.addHandler(logging.FileHandler(os.path.join(dir_path, "generatemc.log"), mode='w+'))
 
     def generate_workspace(self):
-        wspdir_name = 'workspace'
-        wspdir_path = os.path.join(self.main_dir, wspdir_name)
+        wspdir_path = os.path.join(self.main_dir, self.wspdir_name)
         logger.debug("Generated workspace directory path: " + wspdir_path)
         os.mkdir(wspdir_path)
         self.workspace_dir = wspdir_path
@@ -250,13 +251,11 @@ class Generator:
         file_logger.info('Current working directory: ' + os.getcwd())
 
     def generate_merge_logs_script(self):
-        wspdir_name = 'workspace'
         output_name = 'output'
-        wspdir_path = os.path.join(self.main_dir, wspdir_name)
+        wspdir_path = os.path.join(self.main_dir, self.wspdir_name)
         collect_path = os.path.join(self.main_dir, output_name)
         self.scheduler.write_merge_logs_script(wspdir_path, collect_path, self.main_dir)
 
     def generate_status_script(self):
-        wspdir_name = 'workspace'
-        wspdir_path = os.path.join(self.main_dir, wspdir_name)
+        wspdir_path = os.path.join(self.main_dir, self.wspdir_name)
         self.scheduler.write_status_script(self.main_dir, wspdir_path)
