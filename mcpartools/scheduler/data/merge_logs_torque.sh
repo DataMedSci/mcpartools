@@ -142,12 +142,7 @@ function writeJobsDetailInformation(){{
         EXECUTION_TIME=${{JOB_EXECUTION_TIME[(($JOB_ID - 1))]}}
         SIMULATION_STATUS=${{JOB_STATUSES[(($JOB_ID - 1))]}}
 
-        #    collapsed time is in line number 7
-        sed -i "7s/.*/# TIME IN SECONDS =`printf "%20d" $EXECUTION_TIME`/" $INFO_FILE
-        #    status is in line number 9
-        sed -i "9s/.*/# STATUS          =`printf "%20s" $SIMULATION_STATUS`/" $INFO_FILE
-
-        cat $INFO_FILE >> ${{LOG_FILE}}
+        cat $INFO_FILE | sed "7s/.*/# TIME IN SECONDS =`printf "%20d" $EXECUTION_TIME`/" | sed "9s/.*/# STATUS          =`printf "%20s" $SIMULATION_STATUS`/" >> ${{LOG_FILE}}
     done
 }}
 

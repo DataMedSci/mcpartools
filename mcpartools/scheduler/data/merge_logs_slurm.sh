@@ -82,7 +82,7 @@ function writeLogHeader(){{
         then
             SUCCESSES=$((SUCCESSES + 1))
             TOTAL_TIME=$((TOTAL_TIME + $COLLAPSED_TIME))
-        elif [[ ${{STATUS}} != "R" && ${{STATUS}} != "PD" && ${{STATUS}} != "S" ]]
+        elif [[ ${{STATUS}} != "R" && ${{STATUS}} != "PD" && ${{STATUS}} != "S" && ${{STATUS}} != "CG" && ${{STATUS}} != "CF" ]]
         then
             FAILED=$((FAILED + 1))
         fi
@@ -111,7 +111,6 @@ function writeTimeInSeconds(){{
 
     for i in `seq 1 $TASK_NUMBER`;
     do
-
         echo "  `printf "%5d" $i` `printf "%20d" ${{JOB_EXECUTION_TIME[(($i - 1))]}}`  `printf "%10s" ${{JOB_STATUSES[(($i - 1))]}}`" >> ${{LOG_FILE}}
     done
     echo "#" >> ${{LOG_FILE}}
@@ -142,12 +141,8 @@ function writeJobsDetailInformation(){{
         EXECUTION_TIME=${{JOB_EXECUTION_TIME[(($JOB_ID - 1))]}}
         SIMULATION_STATUS=${{JOB_STATUSES[(($JOB_ID - 1))]}}
 
-        #    collapsed time is in line number 7
-        sed -i "7s/.*/# TIME IN SECONDS =`printf "%20d" $EXECUTION_TIME`/" $INFO_FILE
-        #    status is in line number 9
-        sed -i "9s/.*/# STATUS          =`printf "%20s" $SIMULATION_STATUS`/" $INFO_FILE
+        cat $INFO_FILE | sed "7s/.*/# TIME IN SECONDS =`printf "%20d" $EXECUTION_TIME`/" | sed "9s/.*/# STATUS          =`printf "%20s" $SIMULATION_STATUS`/" >> ${{LOG_FILE}}
 
-        cat $INFO_FILE >> ${{LOG_FILE}}
     done
 }}
 
@@ -222,6 +217,6 @@ fi
 
 writeLogHeader
 writeTimeInSeconds
-writeJobsDetailInformation
+#writeJobsDetailInformation
 appendCollectInfo
 writeSummary
