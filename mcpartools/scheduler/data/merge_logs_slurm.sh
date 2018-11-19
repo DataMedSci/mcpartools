@@ -146,6 +146,16 @@ function writeJobsDetailInformation(){{
     done
 }}
 
+function createLinkToJobLog(){{
+    I=1
+    mkdir -p $JOB_LOG_LINK_DIR
+    for FILE in ${{WORKSPACE}}/job_*/${{JOBS_LOG_FILE}};
+    do
+        ln -f $FILE $JOB_LOG_LINK_DIR/`printf "job_%04d.log" $I`
+        I=$((I + 1))
+    done
+}}
+
 function writeSummary(){{
     echo "###########################################################" >> ${{LOG_FILE}}
     echo "######################## SUMMARY ##########################" >> ${{LOG_FILE}}
@@ -198,25 +208,26 @@ MAX_TIME=0
 TOTAL_TIME=0
 JOB_STATUSES=()
 JOB_EXECUTION_TIME=()
-
-LOGFILE="${{MAIN_DIR}}/submit.log"
+JOB_LOG_LINK_DIR=${{MAIN_DIR}}/log/jobs_log
+SUBMIT_LOG_FILE="${{MAIN_DIR}}/submit.log"
 
 RE="Job ID: ([0-9]*)"
 
 # no log file. Probably submit.sh not run
-if [ ! -f $LOGFILE ]; then
-    echo "File not found: $LOGFILE"
+if [ ! -f $SUBMIT_LOG_FILE ]; then
+    echo "File not found: $SUBMIT_LOG_FILE"
     echo "Make sure you run submit script"
     exit 1
 fi
 
-if [[ $(cat $LOGFILE) =~ $RE ]];
+if [[ $(cat $SUBMIT_LOG_FILE) =~ $RE ]];
 then
     ARRAY_JOB_ID=${{BASH_REMATCH[1]}};
 fi
 
 writeLogHeader
 writeTimeInSeconds
-#writeJobsDetailInformation
+writeJobsDetailInformation
+createLinkToJobLog
 appendCollectInfo
 writeSummary
