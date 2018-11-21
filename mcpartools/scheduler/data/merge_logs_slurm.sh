@@ -48,16 +48,24 @@ function writeLogHeader(){{
             if [[ $(cat $INFO_FILE) =~ $STATUS_REGEX ]];
             then
                 STATUS=${{BASH_REMATCH[1]}};
+                if [ -z "$STATUS" ];
+                then
+                    STATUS="-"
+                fi
             else
-                echo "Cannot get status from $i file"
+                echo "Cannot get status from $INFO_FILE file"
                 continue
             fi
 
             if [[ $(cat $INFO_FILE) =~ $COLLAPSED_TIME_REGEX ]];
             then
                 COLLAPSED_TIME=${{BASH_REMATCH[1]}};
+                if [ -z "$COLLAPSED_TIME" ];
+                then
+                    COLLAPSED_TIME=0
+                fi
             else
-                echo "Cannot get collapsed time from $i file"
+                echo "Cannot get collapsed time from $INFO_FILE file"
                 continue
             fi
 
@@ -151,7 +159,10 @@ function createLinkToJobLog(){{
     mkdir -p $JOB_LOG_LINK_DIR
     for FILE in ${{WORKSPACE}}/job_*/${{JOBS_LOG_FILE}};
     do
-        ln -f $FILE $JOB_LOG_LINK_DIR/`printf "job_%04d.log" $I`
+        if [ -f $FILE ]
+        then
+            ln -f $FILE $JOB_LOG_LINK_DIR/`printf "job_%04d.log" $I`
+        fi
         I=$((I + 1))
     done
 }}
@@ -218,6 +229,11 @@ if [ ! -f $SUBMIT_LOG_FILE ]; then
     echo "File not found: $SUBMIT_LOG_FILE"
     echo "Make sure you run submit script"
     exit 1
+else
+    touch $LOG_FILE
+    if [ ! -f $LOG_FILE ]; then
+        exit 2
+    fi
 fi
 
 if [[ $(cat $SUBMIT_LOG_FILE) =~ $RE ]];
