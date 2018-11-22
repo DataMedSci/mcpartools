@@ -1,6 +1,5 @@
 import logging
 import os
-import numpy as np
 from configparser import ConfigParser
 from pkg_resources import resource_string
 
@@ -14,6 +13,7 @@ class ShieldHit(Engine):
     regression_cfg_path = os.path.join('data', 'regression.ini')
     output_wildcard = "*.bdo"
     max_predicted_job_number = 750
+    smallCollectFileCoef = (3 * 15 / 125000000.0)
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
@@ -290,22 +290,36 @@ class ShieldHit(Engine):
 
     def predict_best(self, total_particle_no, collect_type):
         try:
+            import numpy as np
+        except ImportError as e:
+            logger.error("Numpy not found. Please install numpy or avoid -P option")
+            raise e
+
+        try:
+
+            # This type of collect almost not affect calculation time
             if collect_type == "mv":
                 return self.max_predicted_job_number
+
+            # The coefficients correspond to the derivative function. That function was found experimentally
+            # For small output file, collect behave differently than for big ones
             elif self.files_size[0] < 10:
-                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) * (3 * 15 / 125000000.0),
+                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) * self.smallCollectFileCoef,
                          0, 0, 0, -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
             else:
                 coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) *
                          (self.jobs_and_size_regression[1] * self.files_size[0] ** 2 +
                          self.jobs_and_size_regression[0] * self.files_size[0]), 0,
                          -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
+
+            # smallest, real solution
             results = [int(x.real) for x in np.roots(coeff) if np.isreal(x) and x.real > 0]
             result = sorted([(x, self._calculation_time(total_particle_no, x, collect_type)) for x in results],
                             key=lambda x: x[1])[0][0]
 
             result = self.max_predicted_job_number if result > self.max_predicted_job_number else result
         except ZeroDivisionError:
+            # output file is extremely small
             result = self.max_predicted_job_number
         except AttributeError:
             logger.error("Could not predict configuration! Check correctness of config file for prediction feature")
@@ -346,6 +360,7 @@ class ShieldHit(Engine):
 
     def _calculation_time(self, total_particles_no, jobs_no, collect_type):
         try:
+            # This type of collect has constant execution time
             if collect_type == "mv":
                 collect_time = float(self.config['MV_COLLECT_TIME'])
             elif self.files_size[0] < 10:
