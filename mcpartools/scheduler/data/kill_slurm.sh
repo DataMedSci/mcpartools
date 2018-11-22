@@ -12,22 +12,19 @@ if [ ! -f $LOGFILE ]; then
     exit 1
 fi
 
-if [[ $(cat $LOGFILE) =~ $RE ]];
-then
-    JOB_ID=${BASH_REMATCH[1]};
-fi
-
-# if job id is empty probably submit script was not run properly
-if [ -n "$JOB_ID" ]
-then
-    scancel ${JOB_ID}
-    if [ $? -eq 0 ]; then
-    echo "Jobs with id: $JOB_ID canceled successfully"
-    else
-        echo "Unable to cancel jobs"
+cat ${LOGFILE} | while read line
+do
+    if [[ ${line} =~ $RE ]];
+    then
+        JOB_ID=${BASH_REMATCH[1]};
+        if [ -n "$JOB_ID" ]
+        then
+            scancel ${JOB_ID}
+            if [ $? -eq 0 ]; then
+                echo "Job with id: $JOB_ID canceled successfully"
+            else
+                echo "Unable to cancel job: $JOB_ID"
+            fi
+        fi
     fi
-else
-    echo "Cannot extract job id from $LOGFILE"
-    echo "Make sure submit was run without errors, check log file"
-    exit 2
-fi
+done
