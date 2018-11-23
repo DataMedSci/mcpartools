@@ -32,8 +32,6 @@ class Fluka(Engine):
 
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
-        self.particle_no = 1
-
     @property
     def input_files(self):
         # TODO check if additional files are needed
@@ -56,7 +54,6 @@ class Fluka(Engine):
         self.input_lines = result
 
     def set_particle_no(self, particle_no):
-        self.particle_no = particle_no
         result = []
         for l in self.input_lines:
             # TODO better discovery needed
@@ -85,7 +82,6 @@ class Fluka(Engine):
             engine_options=self.engine_options,
             working_directory=output_dir_abs_path,
             input_basename=input_base_name,
-            particle_no=self.particle_no,
             job_id=jobid)
         out_file_name = 'run.sh'
         out_file_path = os.path.join(output_dir, out_file_name)

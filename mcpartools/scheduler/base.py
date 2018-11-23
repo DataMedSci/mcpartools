@@ -45,12 +45,12 @@ class JobScheduler:
                                          main_dir=main_dir,
                                          collect_script_name='collect.sh')
 
-    def main_run_script_body(self, jobs_no, workspace_dir):
+    def main_run_script_body(self, particle_no, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.main_run_script_template)
         self.main_run_script = tpl.decode('ascii').format(options_header=self.options_header,
                                                           workspace_dir=workspace_dir,
-                                                          jobs_no=jobs_no)
+                                                          particle_no=particle_no)
         return self.main_run_script
 
     def merge_logs_body(self, workspace_dir, collect_dir, main_dir):
@@ -77,11 +77,11 @@ class JobScheduler:
         logger.debug("Jobs no " + str(jobs_no))
         logger.debug("Workspace " + abs_path_workspace)
 
-    def write_main_run_script(self, jobs_no, output_dir):
+    def write_main_run_script(self, particle_no, output_dir):
         output_dir_abspath = os.path.abspath(output_dir)
         out_file_path = os.path.join(output_dir_abspath, self.main_run_script)
         fd = open(out_file_path, 'w')
-        fd.write(self.main_run_script_body(jobs_no=jobs_no, workspace_dir=output_dir_abspath))
+        fd.write(self.main_run_script_body(particle_no=particle_no, workspace_dir=output_dir_abspath))
         fd.close()
         os.chmod(out_file_path, 0o750)
         logger.debug("Saved main run script: " + out_file_path)

@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
 function writeLogHeader(){{
-    echo "###########################################################" >> ${{LOG_FILE}}
-    echo "############ START AND END OF JOBS EXECUTION ##############" >> ${{LOG_FILE}}
-    echo "###########################################################" >> ${{LOG_FILE}}
-    echo "#" >> ${{LOG_FILE}}
-    echo "#    ID                START                  END     STATUS   TIME" >> ${{LOG_FILE}}
+    if [[ $SAVE_TO_FILE_FLAG = true ]]
+    then
+        echo "###########################################################" >> ${{LOG_FILE}}
+        echo "############ START AND END OF JOBS EXECUTION ##############" >> ${{LOG_FILE}}
+        echo "###########################################################" >> ${{LOG_FILE}}
+        echo "#" >> ${{LOG_FILE}}
+        echo "#    ID                START                  END     STATUS   TIME" >> ${{LOG_FILE}}
+    fi
     echo "    ID                START                  END     STATUS   TIME"
 
     for i in ${{WORKSPACE}}/job_*;
@@ -102,10 +105,18 @@ function writeLogHeader(){{
 
         JOB_STATUSES+=(${{STATUS}})
         JOB_EXECUTION_TIME+=(${{COLLAPSED_TIME}})
-        echo "# `printf "%5d" $JOB_ID` `printf "%20s" $START_TIME` `printf "%20s" $END_TIME` `printf "%10s" $STATUS` `printf "%6s" $COLLAPSED_TIME`" >> ${{LOG_FILE}}
+
+        if [[ $SAVE_TO_FILE_FLAG = true ]]
+        then
+            echo "# `printf "%5d" $JOB_ID` `printf "%20s" $START_TIME` `printf "%20s" $END_TIME` `printf "%10s" $STATUS` `printf "%6s" $COLLAPSED_TIME`" >> ${{LOG_FILE}}
+        fi
         echo " `printf "%5d" $JOB_ID` `printf "%20s" $START_TIME` `printf "%20s" $END_TIME` `printf "%10s" $STATUS` `printf "%6s" $COLLAPSED_TIME`"
     done
-    echo "#" >> ${{LOG_FILE}}
+
+    if [[ $SAVE_TO_FILE_FLAG = true ]]
+    then
+        echo "#" >> ${{LOG_FILE}}
+    fi
 }}
 
 
@@ -198,13 +209,18 @@ WORKSPACE={workspace_dir:s}
 MAIN_DIR={main_dir:s}
 COLLECT_LOG={collect_dir:s}/info.log
 
-if [ $# -eq 0 ]
-  then
-    FILE_NAME=status_`date +%Y%m%d_%H%M%S`.log
-    LOG_FILE=${{MAIN_DIR}}/workspace/${{FILE_NAME}}
-  else
-    LOG_FILE=$1
-fi
+SAVE_TO_FILE_FLAG=false
+while getopts ":s" opt; do
+  case $opt in
+    s)
+        SAVE_TO_FILE_FLAG=true
+        ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
 JOBS_LOG_FILE="info.log"
 JOB_ID_REGEX="job_([0-9]*)"
@@ -221,7 +237,8 @@ JOB_STATUSES=()
 JOB_EXECUTION_TIME=()
 JOB_LOG_LINK_DIR=${{MAIN_DIR}}/log/jobs_log
 SUBMIT_LOG_FILE="${{MAIN_DIR}}/submit.log"
-
+FILE_NAME=status_`date +%Y%m%d_%H%M%S`.log
+LOG_FILE=${{MAIN_DIR}}/workspace/${{FILE_NAME}}
 RE="Job ID: ([0-9]*)"
 
 # no log file. Probably submit.sh not run
@@ -229,7 +246,10 @@ if [ ! -f $SUBMIT_LOG_FILE ]; then
     echo "File not found: $SUBMIT_LOG_FILE"
     echo "Make sure you run submit script"
     exit 1
-else
+fi
+
+if [[ $SAVE_TO_FILE_FLAG = true ]]
+then
     touch $LOG_FILE
     if [ ! -f $LOG_FILE ]; then
         exit 2
@@ -242,8 +262,11 @@ then
 fi
 
 writeLogHeader
-writeTimeInSeconds
-writeJobsDetailInformation
-createLinkToJobLog
-appendCollectInfo
-writeSummary
+if [[ $SAVE_TO_FILE_FLAG = true ]]
+then
+    writeTimeInSeconds
+    writeJobsDetailInformation
+    createLinkToJobLog
+    appendCollectInfo
+    writeSummary
+fi
