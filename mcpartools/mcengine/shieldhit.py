@@ -53,9 +53,10 @@ class ShieldHit(Engine):
 
         self.files_size = self.calculate_size()
         self.files_no_multiplier = 1 if self.files_size[0] == 0 else (
-                                   self.files_size[1] / 10.0) * self.files_and_size_regression[0] * (
-                                   self.files_size[0] - self.files_and_size_regression[1]
-                                   ) ** 2 + self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
+            self.files_size[1] / 10.0
+        ) * self.files_and_size_regression[0] * (
+            self.files_size[0] - self.files_and_size_regression[1]
+        ) ** 2 + self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
 
         self.particle_no = 1
         self.rng_seed = 1
@@ -82,7 +83,6 @@ class ShieldHit(Engine):
                 return config["SHIELDHIT"]
         except ImportError as e:
             logger.error("configparser not found. Please install configparser or avoid -P option")
-            raise e
         return None
 
     def randomize(self, new_seed, output_dir=None):
@@ -293,12 +293,6 @@ class ShieldHit(Engine):
     def predict_best(self, total_particle_no, collect_type):
         try:
             import numpy as np
-        except ImportError as e:
-            logger.error("Numpy not found. Please install numpy or avoid -P option")
-            raise e
-
-        try:
-
             # This type of collect almost not affect calculation time
             if collect_type == "mv":
                 return self.max_predicted_job_number
@@ -307,8 +301,7 @@ class ShieldHit(Engine):
             # For small output file, collect behave differently than for big ones
             elif self.files_size[0] < 10:
                 coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(
-                         collect_type) * 3 * self.smallCollectFileCoef,
-                         0, 0, 0,
+                        collect_type) * 3 * self.smallCollectFileCoef, 0, 0, 0,
                          -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
             else:
                 coeff = [
@@ -323,13 +316,16 @@ class ShieldHit(Engine):
                             key=lambda x: x[1])[0][0]
 
             result = self.max_predicted_job_number if result > self.max_predicted_job_number else result
+            return result
         except ZeroDivisionError:
             # output file is extremely small
             result = self.max_predicted_job_number
         except AttributeError:
             logger.error("Could not predict configuration! Check correctness of config file for prediction feature")
-            return None
-        return result
+        except ImportError as e:
+            logger.error("Numpy not found. Please install numpy or avoid -P option")
+            raise e
+        return None
 
     def calculate_size(self):
         try:
@@ -371,8 +367,10 @@ class ShieldHit(Engine):
             elif self.files_size[0] < 10:
                 collect_time = self.min_collect_time + self.smallCollectFileCoef * (jobs_no ** 3)
             else:
-                collect_time = self.jobs_and_size_regression[0] * self.files_size[0] * jobs_no + \
-                               self.jobs_and_size_regression[1] * jobs_no * self.files_size[0] ** 2
+                collect_time = (
+                    self.jobs_and_size_regression[0] * self.files_size[0] * jobs_no +
+                    self.jobs_and_size_regression[1] * jobs_no * self.files_size[0] ** 2
+                )
 
             calc_time = self.jobs_and_particles_regression * (1 / float(jobs_no)) * total_particles_no
             collect_time *= self.files_no_multiplier * self.collect_std_deviation

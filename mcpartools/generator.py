@@ -125,8 +125,9 @@ class Generator:
         logger.info("Number of jobs - {0}".format(self.options.jobs_no))
         estimated_time = self.mc_engine.calculation_time(self.options.particle_no, self.options.jobs_no,
                                                          self.options.collect)
-        m, s = divmod(estimated_time, 60)
-        logger.info("Estimated calculation time: {} minute(s) {} second(s)\n".format(int(m), int(s)))
+        if estimated_time:
+            m, s = divmod(estimated_time, 60)
+            logger.info("Calculation time in the best case: {} minute(s) {} second(s)\n".format(int(m), int(s)))
 
         # predict jobs_no for particle_no if option was chosen
         if self.options.prediction:
@@ -143,8 +144,10 @@ class Generator:
 
                     estimated_time = self.mc_engine.calculation_time(self.options.particle_no, self.options.jobs_no,
                                                                      self.options.collect)
-                    m, s = divmod(estimated_time, 60)
-                    logger.info("Estimated calculation time: {} minute(s) {} second(s)\n".format(int(m), int(s)))
+                    if estimated_time:
+                        m, s = divmod(estimated_time, 60)
+                        logger.info("Calculation time in the best case: {} minute(s) {} second(s)\n".format(
+                            int(m), int(s)))
 
                     if total_part_no - self.options.particle_no * self.options.jobs_no > 0:
                         logger.warn("{0} is not divided by {1} !".format(total_part_no, self.options.jobs_no))
@@ -223,7 +226,7 @@ class Generator:
             from progress.bar import ChargingBar
             bar = ChargingBar("Creating workspace", max=self.options.jobs_no)
             bar_avail = True
-        except ImportError as e:
+        except ImportError:
             logger.info("Progress bar not available. Please install progress for better user experience")
 
         for jobid in range(self.options.jobs_no):

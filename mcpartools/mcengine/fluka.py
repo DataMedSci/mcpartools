@@ -95,3 +95,11 @@ class Fluka(Engine):
 
     def find_external_files(self, run_input_dir):
         return None
+
+    def predict_best(self, particle_no, collect_type):
+        logger.error("Predict feature is not available for Fluka")
+        return None
+
+    def calculation_time(self, particles_no_per_job, jobs_no, collect_type):
+        logger.error("Estimated calculation time is not known for Fluka")
+        return None
