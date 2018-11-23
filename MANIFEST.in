@@ -4,5 +4,3 @@
   prune docs
   prune .travis
   prune tests
-include versioneer.py
-include mcpartools/_version.py
