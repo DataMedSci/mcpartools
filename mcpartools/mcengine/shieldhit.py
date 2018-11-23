@@ -1,6 +1,5 @@
 import logging
 import os
-from configparser import ConfigParser
 from pkg_resources import resource_string
 
 from mcpartools.mcengine.mcengine import Engine
@@ -12,8 +11,6 @@ class ShieldHit(Engine):
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
     regression_cfg_path = os.path.join('data', 'regression.ini')
     output_wildcard = "*.bdo"
-    max_predicted_job_number = 750
-    smallCollectFileCoef = (3 * 15 / 125000000.0)
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
@@ -37,15 +34,16 @@ class ShieldHit(Engine):
                 self.jobs_and_particles_regression = float(self.config["JOBS_AND_PARTICLES"])
                 self.jobs_and_size_regression = [float(self.config["JOBS_AND_SIZE_A"]),
                                                  float(self.config["JOBS_AND_SIZE_B"])]
-                self.files_and_size_regression = [float(self.config["FILES_AND_SIZE_A"]), float(self.config["FILES_AND_SIZE_B"]),
+                self.files_and_size_regression = [float(self.config["FILES_AND_SIZE_A"]),
+                                                  float(self.config["FILES_AND_SIZE_B"]),
                                                   float(self.config["FILES_AND_SIZE_C"])]
                 self.density_and_size_regression = float(self.config["DENSITY_AND_SIZE"])
                 self.collect_std_deviation = float(self.config['COLLECT_STANDARD_DEVIATION'])
                 self.calculation_std_deviation = float(self.config['CALCULATION_STANDARD_DEVIATION'])
-                logger.debug("Regressions from config file:")
-                logger.debug("JOBS_AND_PARTICLES = {0}".format(self.jobs_and_particles_regression))
-                logger.debug("JOBS_AND_SIZE = {0}".format(self.jobs_and_size_regression))
-                logger.debug("DENSITY_AND_SIZE = {0}".format(self.density_and_size_regression))
+                self.max_predicted_job_number = float(self.config['MAX_JOB_NUMBER'])
+                self.smallCollectFileCoef = float(self.config['SMALL_FILE_COEF'])
+                self.min_collect_time = float(self.config['MIN_COLLECT_TIME'])
+
             except ValueError:
                 logger.warning("Config file could not be read properly! Probably coefficients are not floats")
             except KeyError:
@@ -54,10 +52,10 @@ class ShieldHit(Engine):
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
         self.files_size = self.calculate_size()
-        self.files_no_multiplier = 1 if self.files_size[0] == 0 else (self.files_size[1] / 10.0) * \
-                                        self.files_and_size_regression[0] * \
-                                        (self.files_size[0] - self.files_and_size_regression[1]) ** 2 + \
-                                        self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
+        self.files_no_multiplier = 1 if self.files_size[0] == 0 else (
+                                   self.files_size[1] / 10.0) * self.files_and_size_regression[0] * (
+                                   self.files_size[0] - self.files_and_size_regression[1]
+                                   ) ** 2 + self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
 
         self.particle_no = 1
         self.rng_seed = 1
@@ -74,14 +72,18 @@ class ShieldHit(Engine):
 
     @property
     def regression_config(self):
-        config = ConfigParser()
-        cfg_rs = resource_string(__name__, self.regression_cfg_path)
-        config_string = cfg_rs.decode('ascii')
-        config.read_string(config_string)
         try:
-            return config["SHIELDHIT"]
-        except KeyError:
-            return None
+            from configparser import ConfigParser
+            config = ConfigParser()
+            cfg_rs = resource_string(__name__, self.regression_cfg_path)
+            config_string = cfg_rs.decode('ascii')
+            config.read_string(config_string)
+            if config.has_section("SHIELDHIT"):
+                return config["SHIELDHIT"]
+        except ImportError as e:
+            logger.error("configparser not found. Please install configparser or avoid -P option")
+            raise e
+        return None
 
     def randomize(self, new_seed, output_dir=None):
         self.rng_seed = new_seed
@@ -304,13 +306,16 @@ class ShieldHit(Engine):
             # The coefficients correspond to the derivative function. That function was found experimentally
             # For small output file, collect behave differently than for big ones
             elif self.files_size[0] < 10:
-                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) * self.smallCollectFileCoef,
-                         0, 0, 0, -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
-            else:
-                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) *
-                         (self.jobs_and_size_regression[1] * self.files_size[0] ** 2 +
-                         self.jobs_and_size_regression[0] * self.files_size[0]), 0,
+                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(
+                         collect_type) * 3 * self.smallCollectFileCoef,
+                         0, 0, 0,
                          -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
+            else:
+                coeff = [
+                    self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) *
+                    (self.jobs_and_size_regression[1] * self.files_size[0] ** 2 +
+                     self.jobs_and_size_regression[0] * self.files_size[0]), 0,
+                    -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
 
             # smallest, real solution
             results = [int(x.real) for x in np.roots(coeff) if np.isreal(x) and x.real > 0]
@@ -334,17 +339,17 @@ class ShieldHit(Engine):
             files_size = 0
             i = 0
             counter = 0
-            with open(detect_file, 'r') as detect:
+            with open(detect_file, 'r') as detect:  # calculate sizes and number of entries
                 for line in detect:
-                    if line[0] == "*":
+                    if line[0] == "*":  # new entry in detect.dat
                         i = 0
-                    if i % 4 == 1:
+                    if i % 4 == 1:  # check if this entry is GEOMAP and if so, do not take it into account
                         count = True
                         scoring = line.split()[0]
                         logger.debug("Found {0} in detect.dat".format(scoring))
                         if scoring == "GEOMAP":
                             count = False
-                    if i % 4 == 2 and count:
+                    if i % 4 == 2 and count:  # Calculate size of entry and increment counter
                         x, y, z = [int(j) for j in line.split()[0:3]]
                         files_size += a * (x * y * z) / 1000000
                         counter += 1
@@ -364,7 +369,7 @@ class ShieldHit(Engine):
             if collect_type == "mv":
                 collect_time = float(self.config['MV_COLLECT_TIME'])
             elif self.files_size[0] < 10:
-                collect_time = 5 + 15 * (jobs_no ** 3) / 125000000
+                collect_time = self.min_collect_time + self.smallCollectFileCoef * (jobs_no ** 3)
             else:
                 collect_time = self.jobs_and_size_regression[0] * self.files_size[0] * jobs_no + \
                                self.jobs_and_size_regression[1] * jobs_no * self.files_size[0] ** 2
