@@ -132,7 +132,7 @@ class Generator:
                                if class_obj.id == self.options.batch]
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
-                self.scheduler = scheduler_class[0](self.options.scheduler_options)
+                self.scheduler = scheduler_class[0](self.options.scheduler_options, self.options.dump)
                 logger.info("Using: " + self.scheduler.id)
             else:
                 logger.error("Given scheduler: \'%s\' is not on the list of supported batch systems: %s",
