@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# Exit immediately if a simple command exits with a non-zero status.
-set -e
-
-MIN_NUM=1
 JOB_NUM={jobs_no:d}
 RUN_DIR={main_dir:s}
 DUMP_DIR="{main_dir:s}/dumped/`date '+%Y%m%d_%H%M%S'`/"
@@ -15,24 +11,13 @@ function usage () {{
    cat <<EOF
 Usage: $progname [-c] [-m <num>]
 where:
-    -m set minimal number of correctly dumped jobs
-       from which you can collect the results (1 by default)
     -c collect after dump
 EOF
    exit 0
 }}
 
-while getopts ":cm:" opt; do
+while getopts ":c" opt; do
   case $opt in
-    m)
-      if ! [[ $OPTARG =~ '^[0-9]+$' ]] ; then
-         echo "error: \"$OPTARG\" is not a number" >&2; exit 1
-      elif [[ "$OPTARG" -gt "$JOB_NUM"  ]] ; then
- 	 echo "error: $OPTARG is bigger then number of jobs ($JOB_NUM)" >&2; exit 1
-      fi
-      echo "-m was triggered, Parameter: $OPTARG" >&2
-      MIN_NUM=$OPTARG
-      ;;
     c)
       COLLECT=1
       ;;
@@ -59,13 +44,20 @@ SIG_SENDER='scancel -b -s'
 SIGNAL='{dump_signal:s}'
 PID=''
 
-
-eval "$SIG_SENDER $SIGNAL $PID"
-mkdir -p $DUMP_DIR
-dump_function
-echo "Results dumped to $DUMP_DIR"
-if [[ $COLLECT -eq 1 ]]; then
-   echo "Collecting..."
-   $COLLECT_BIN
+if [[ ! -z "$PID" ]] ; then
+    eval "$SIG_SENDER $SIGNAL $PID" 2>/dev/null
+    if [[ $? -ne 0 ]] ; then
+        echo "Nothing to dump from. All jobs finished"
+        exit 1
+    fi
+    mkdir -p $DUMP_DIR
+    dump_function
+    if [[ $COLLECT -eq 1 ]]; then
+       echo "Collecting..."
+       $COLLECT_BIN
+    fi
+    echo "Results dumped to $DUMP_DIR"
+else
+    echo "First run submit.sh and then try to dump results"
 fi
 

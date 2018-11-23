@@ -1,2 +1,2 @@
-echo "Not supported future for fluka"
+echo "Not supported feature for fluka"
 exit 1

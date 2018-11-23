@@ -92,6 +92,9 @@ class Options:
         # no checks needed - argparse does it
         self.batch = args.batch
 
+        # no checks needed - argparse does it
+        self.dump = args.dump
+
     @property
     def valid(self):
         return self._valid
@@ -103,7 +106,8 @@ class Generator:
         self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
                                                      mc_run_script=self.options.mc_run_template,
                                                      collect_method=self.options.collect,
-                                                     mc_engine_options=self.options.mc_engine_options)
+                                                     mc_engine_options=self.options.mc_engine_options,
+                                                     dump_opt=self.options.dump)
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
@@ -120,7 +124,8 @@ class Generator:
 
         # get scheduler and pass main dir for log file
         if not self.options.batch:
-            self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
+            self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.options.dump,
+                                                             self.main_dir)
         else:
             # get desired scheduler class and pass arguments
             scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported
@@ -141,7 +146,8 @@ class Generator:
         self.generate_submit_script()
 
         # generate dump script
-        self.generate_dump_script()
+        if self.options.dump:
+            self.generate_dump_script()
 
         # copy input files
         self.copy_input()
