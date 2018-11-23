@@ -62,7 +62,7 @@ if [ -n "$CALC_JOBID" ] ; then
         cat $ERR >> "$LOGFILE"
     fi
 
-    MERGE_LOGS_CMD="sbatch  --dependency=afterany:$LAST_JOB_ID --output='{log_dir:s}/output_%j_merge_logs.log' --error='{log_dir:s}/error_%j_merge_logs.log' --parsable {main_dir:s}/workspace/merge_logs.sh > $OUT 2> $ERR"
+    MERGE_LOGS_CMD="sbatch  --dependency=afterany:$LAST_JOB_ID --output='{log_dir:s}/output_%j_merge_logs.log' --error='{log_dir:s}/error_%j_merge_logs.log' --parsable {main_dir:s}/workspace/merge_logs.sh -s> $OUT 2> $ERR"
     eval $MERGE_LOGS_CMD
 
     echo "" >> "$LOGFILE"

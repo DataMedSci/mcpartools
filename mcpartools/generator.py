@@ -195,7 +195,7 @@ class Generator:
 
             self.mc_engine.save_run_script(jobdir_path, jobid + 1)
 
-        self.scheduler.write_main_run_script(jobs_no=self.options.jobs_no, output_dir=self.workspace_dir)
+        self.scheduler.write_main_run_script(particle_no=self.options.particle_no, output_dir=self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
 
     def generate_submit_script(self):
