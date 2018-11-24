@@ -43,7 +43,7 @@ class ShieldHit(Engine):
                 self.max_predicted_job_number = float(self.config['MAX_JOB_NUMBER'])
                 self.smallCollectFileCoef = float(self.config['SMALL_FILE_COEF'])
                 self.min_collect_time = float(self.config['MIN_COLLECT_TIME'])
-
+                self.mv_collect_time = float(self.config['MV_COLLECT_TIME'])
             except ValueError:
                 logger.warning("Config file could not be read properly! Probably coefficients are not floats")
             except KeyError:
@@ -52,11 +52,12 @@ class ShieldHit(Engine):
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
         self.files_size = self.calculate_size()
-        self.files_no_multiplier = 1 if self.files_size[0] == 0 else (
-            self.files_size[1] / 10.0
-        ) * self.files_and_size_regression[0] * (
-            self.files_size[0] - self.files_and_size_regression[1]
-        ) ** 2 + self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
+        if self.files_size is not None:
+            self.files_no_multiplier = 1 if self.files_size[0] == 0 else (
+                self.files_size[1] / 10.0
+            ) * self.files_and_size_regression[0] * (
+                self.files_size[0] - self.files_and_size_regression[1]
+            ) ** 2 + self.files_and_size_regression[2] * ((self.files_size[1] + 10) / 10.0)
 
         self.particle_no = 1
         self.rng_seed = 1
@@ -81,7 +82,7 @@ class ShieldHit(Engine):
             config.read_string(config_string)
             if config.has_section("SHIELDHIT"):
                 return config["SHIELDHIT"]
-        except ImportError as e:
+        except ImportError:
             logger.error("configparser not found. Please install configparser or avoid -P option")
         return None
 
@@ -300,15 +301,19 @@ class ShieldHit(Engine):
             # The coefficients correspond to the derivative function. That function was found experimentally
             # For small output file, collect behave differently than for big ones
             elif self.files_size[0] < 10:
-                coeff = [self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(
-                        collect_type) * 3 * self.smallCollectFileCoef, 0, 0, 0,
-                         -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
+                coeff = [
+                    self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(
+                        collect_type
+                    ) * 3 * self.smallCollectFileCoef, 0, 0, 0,
+                    - self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation
+                ]
             else:
                 coeff = [
                     self.collect_std_deviation * self.files_no_multiplier * self.collect_coefficient(collect_type) *
                     (self.jobs_and_size_regression[1] * self.files_size[0] ** 2 +
                      self.jobs_and_size_regression[0] * self.files_size[0]), 0,
-                    -self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation]
+                    - self.jobs_and_particles_regression * total_particle_no * self.calculation_std_deviation
+                ]
 
             # smallest, real solution
             results = [int(x.real) for x in np.roots(coeff) if np.isreal(x) and x.real > 0]
@@ -363,7 +368,7 @@ class ShieldHit(Engine):
         try:
             # This type of collect has constant execution time
             if collect_type == "mv":
-                collect_time = float(self.config['MV_COLLECT_TIME'])
+                collect_time = self.mv_collect_time
             elif self.files_size[0] < 10:
                 collect_time = self.min_collect_time + self.smallCollectFileCoef * (jobs_no ** 3)
             else:
