@@ -322,9 +322,6 @@ class ShieldHit(Engine):
 
             result = self.max_predicted_job_number if result > self.max_predicted_job_number else result
             return result
-        except ZeroDivisionError:
-            # output file is extremely small
-            result = self.max_predicted_job_number
         except AttributeError:
             logger.error("Could not predict configuration! Check correctness of config file for prediction feature")
         except ImportError as e:
@@ -386,7 +383,7 @@ class ShieldHit(Engine):
             calc_time *= self.calculation_std_deviation
 
             return collect_time + calc_time
-        except AttributeError:
+        except (AttributeError, TypeError):
             logger.error("Could not estimate calculation time! Check correctness of config file for prediction feature")
             return None
 
