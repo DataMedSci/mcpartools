@@ -29,29 +29,3 @@ if [ "`cat $ERR`" != "" ] ; then
         echo "---------------------" >> "$LOGFILE"
         cat $ERR >> "$LOGFILE"
 fi
-
-# If parallel calculation submission was successful, we proceed to submit collect script and the create a log file
-if [ -n "$CALC_JOBID" ] ; then
-
-    MERGE_LOGS_CMD="qsub  -W depend=afterany:$CALC_JOBID -o {log_dir:s} -e {log_dir:s} {script_dir:s}/merge_logs.sh -s > $OUT 2> $ERR"
-    eval $MERGE_LOGS_CMD
-
-    echo "" >> "$LOGFILE"
-    echo "Merge logs" >> "$LOGFILE"
-    echo "Merge command: $MERGE_LOGS_CMD" >> "$LOGFILE"
-
-    # If sbatch command ended with a success log following info
-    if [ $? -eq 0 ] ; then
-        MERGE__JOBID=`cat $OUT | cut -d ";" -f 1`
-        echo "Job ID: $MERGE__JOBID" >> "$LOGFILE"
-        echo "Submission time: `date +"%Y-%m-%d %H:%M:%S"`" >> "$LOGFILE"
-    fi
-
-    # If output from stderr isn't an empty string then log it as well to submit.log
-    if [ "`cat $ERR`" != "" ] ; then
-        echo "---------------------" >> "$LOGFILE"
-        echo "ERROR MESSAGE" >>"$LOGFILE"
-        echo "---------------------" >> "$LOGFILE"
-        cat $ERR >> "$LOGFILE"
-    fi
-fi

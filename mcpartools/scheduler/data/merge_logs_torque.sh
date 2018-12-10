@@ -274,11 +274,13 @@ then
 fi
 
 writeLogHeader
+createLinkToJobLog
+
 if [[ $SAVE_TO_FILE_FLAG = true ]]
 then
     writeTimeInSeconds
     writeJobsDetailInformation
-    createLinkToJobLog
     appendCollectInfo
     writeSummary
+    echo "Status successfully saved to file: $LOG_FILE"
 fi

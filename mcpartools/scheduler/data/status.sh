@@ -26,8 +26,3 @@ done
 
 eval $STATUS_CMD
 CMD_STATUS=$?
-
-if [[ $CMD_STATUS -eq 0 && $SAVE_TO_FILE_FLAG = true ]]
-then
-    echo "Status successfully saved to file."
-fi
