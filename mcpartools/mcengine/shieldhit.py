@@ -1,7 +1,11 @@
 import logging
 import os
-from pkg_resources import resource_string
+import subprocess
+import time
+import re
+import shutil
 
+from pkg_resources import resource_string
 from mcpartools.mcengine.mcengine import Engine
 
 logger = logging.getLogger(__name__)
@@ -277,7 +281,6 @@ class ShieldHit(Engine):
         """
         lines = []
         # make a copy of config
-        import shutil
         shutil.copyfile(config_file, str(config_file + '_original'))
         with open(config_file) as infile:
             for line in infile:
@@ -332,28 +335,21 @@ class ShieldHit(Engine):
     def calculate_size(self):
         try:
             beam_file, geo_file, mat_file, detect_file = self.input_files
-            count = True
+            dry_dir = os.path.join(self.input_path, time.strftime("dry_run_%Y%m%d_%H%M%S"))
+            os.mkdir(dry_dir)
+            args = ("shieldhit", "-b", beam_file, "-g", geo_file, "-m", mat_file, "-d", detect_file, "-n", "0", dry_dir)
+            popen = subprocess.Popen(args, stdout=subprocess.PIPE)
+            popen.wait()
+            output = popen.stdout.read().decode("utf-8")
             a = self.density_and_size_regression
-            files_size = 0
-            i = 0
-            counter = 0
-            with open(detect_file, 'r') as detect:  # calculate sizes and number of entries
-                for line in detect:
-                    if line[0] == "*":  # new entry in detect.dat
-                        i = 0
-                    if i % 4 == 1:  # check if this entry is GEOMAP and if so, do not take it into account
-                        count = True
-                        scoring = line.split()[0]
-                        logger.debug("Found {0} in detect.dat".format(scoring))
-                        if scoring == "GEOMAP":
-                            count = False
-                    if i % 4 == 2 and count:  # Calculate size of entry and increment counter
-                        x, y, z = [int(j) for j in line.split()[0:3]]
-                        files_size += a * (x * y * z) / 1000000
-                        counter += 1
-                        logger.debug("x = {0}, y = {1}, z = {2}, files_size = {3} ".format(x, y, z, files_size))
-                    i += 1
-            return files_size, counter
+            for line in output.splitlines():
+                if "Number of detectors" in line:
+                    no_files = int(re.findall(r"\d+", line)[0])
+                elif "Placeholders needed" in line:
+                    files_size = a * int(re.findall(r"\d+", line)[0]) / 1000000
+                    break
+            shutil.rmtree(dry_dir)
+            return files_size, no_files
         except AttributeError:
             logger.error("Could not calculate size of files! Check correctness of config file for prediction feature")
             return None
