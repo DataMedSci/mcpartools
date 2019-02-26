@@ -11,8 +11,7 @@ class Fluka(Engine):
 
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
     output_wildcard = "*_fort*"
-
-    alignment_line = '*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8'
+    alignment_line = '*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8\n'
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)

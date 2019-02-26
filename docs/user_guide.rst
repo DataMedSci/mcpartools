@@ -97,7 +97,7 @@ will result in new directory `mydir/run_20170717_195557`
 Another useful option is the ability to provide additional options for scheduler and for Monte-Carlo binary.
 The first one can be used i.e. to specify directly the walltime for job execution::
 
-   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp --scheduler_options "[--walltime=2:00:00]"
+   generatemc.py -p 10000 -j 20 tests/res/sample_fluka.inp --scheduler_options "[--time=2:00:00]"
 
 Note additional square brackets added to distinguish between `generatemc` and scheduler options.
 
