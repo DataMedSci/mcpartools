@@ -12,6 +12,8 @@ class Fluka(Engine):
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
     output_wildcard = "*_fort*"
 
+    alignment_line = '*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8'
+
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
 
@@ -45,9 +47,9 @@ class Fluka(Engine):
         for l in self.input_lines:
             # TODO better discovery needed
             if l.startswith("RANDOMIZ"):
-                # TODO check formatting
-                new_line = "RANDOMIZ         1.0 {0:f}\n".format(new_seed)
+                new_line = "RANDOMIZ         1.0{0:10.1f}\n".format(new_seed)
                 logger.debug("Replace RAND line with [" + new_line[:-1] + "]")
+                result.append(self.alignment_line)
                 result.append(new_line)
             else:
                 result.append(l)
@@ -58,8 +60,8 @@ class Fluka(Engine):
         for l in self.input_lines:
             # TODO better discovery needed
             if l.startswith("START"):
-                # TODO check formatting
-                new_line = "START        {0:10.1f}\n".format(particle_no)
+                new_line = "START     {0:10.1f}\n".format(particle_no)
+                result.append(self.alignment_line)
                 result.append(new_line)
                 logger.debug("Replace START line with [" + new_line[:-1] + "]")
             else:
