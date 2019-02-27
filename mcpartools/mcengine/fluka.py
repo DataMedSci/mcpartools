@@ -43,12 +43,13 @@ class Fluka(Engine):
     def randomize(self, new_seed):
         result = []
         # TODO think of using flair API for that purpose
-        for l in self.input_lines:
+        for i, l in enumerate(self.input_lines):
             # TODO better discovery needed
             if l.startswith("RANDOMIZ"):
                 new_line = "RANDOMIZ         1.0{0:10.1f}\n".format(new_seed)
                 logger.debug("Replace RAND line with [" + new_line[:-1] + "]")
-                result.append(self.alignment_line)
+                if self.input_lines[i - 1] != self.alignment_line:
+                    result.append(self.alignment_line)
                 result.append(new_line)
             else:
                 result.append(l)
@@ -56,11 +57,17 @@ class Fluka(Engine):
 
     def set_particle_no(self, particle_no):
         result = []
-        for l in self.input_lines:
+        for i, l in enumerate(self.input_lines):
             # TODO better discovery needed
             if l.startswith("START"):
-                new_line = "START     {0:10.1f}\n".format(particle_no)
-                result.append(self.alignment_line)
+                standard_format_number = '{0:10.1f}'.format(particle_no)
+                if len(standard_format_number) <= 10:
+                    new_line = "START     {:s}\n".format(standard_format_number)
+                else:  # use scientific notation if number of particles doesn't fit 10-char field
+                    scientific_notation = '{:.4e}'.format(particle_no)
+                    new_line = "START     {:s}\n".format(scientific_notation)
+                if self.input_lines[i - 1] != self.alignment_line:
+                    result.append(self.alignment_line)
                 result.append(new_line)
                 logger.debug("Replace START line with [" + new_line[:-1] + "]")
             else:
