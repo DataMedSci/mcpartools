@@ -60,7 +60,12 @@ class Fluka(Engine):
         for i, l in enumerate(self.input_lines):
             # TODO better discovery needed
             if l.startswith("START"):
-                new_line = "START     {0:10.1f}\n".format(particle_no)
+                standard_format_number = '{0:10.1f}'.format(particle_no)
+                if len(standard_format_number) <= 10:
+                    new_line = "START     {:s}\n".format(standard_format_number)
+                else:  # use scientific notation if number of particles doesn't fit 10-char field
+                    scientific_notation = '{:.4e}'.format(particle_no)
+                    new_line = "START     {:s}\n".format(scientific_notation)
                 if self.input_lines[i - 1] != self.alignment_line:
                     result.append(self.alignment_line)
                 result.append(new_line)
