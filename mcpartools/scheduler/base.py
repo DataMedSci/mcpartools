@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 
 class JobScheduler:
-    def __init__(self, scheduler_options):
+    def __init__(self, scheduler_options, dump_opt):
         # check if user provided path to options file
         if scheduler_options is None:
             self.options_header = "# no user options provided"
@@ -22,9 +22,27 @@ class JobScheduler:
             self.options_header = "# no user options provided"
             self.options_args = scheduler_options[1:-1]
             logger.debug("Scheduler options argument:" + self.options_args)
+        self.dump_available = dump_opt
 
     submit_script = 'submit.sh'
     main_run_script = 'main_run.sh'
+    dump_script = 'dump.sh'
+    _dump_functions = {
+        'check_running': """# Check if executable is still running
+if [[ ! -z $PID ]]; then
+    IS_RUNNING=`eval ps -p $PID | wc -l`
+    while [[ $IS_RUNNING -eq 2 ]]; do
+       IS_RUNNING=`eval ps -p $PID | wc -l`
+       sleep 0.5
+    done
+fi""",
+        'trap_sig': """_term() {
+  echo Caught SIGUSR1 signal in main run script, resending!
+  kill -SIGUSR1 $PID 2>/dev/null
+}
+
+trap _term SIGUSR1"""
+    }
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
         from pkg_resources import resource_string
@@ -43,12 +61,34 @@ class JobScheduler:
                                          main_dir=main_dir,
                                          collect_script_name='collect.sh')
 
+    def dump_script_body(self, jobs_no, main_dir, workspace_dir, dump_function, dump_signal):
+        from pkg_resources import resource_string
+        tpl = resource_string(__name__, self.dump_script_template)
+        self.dump_script = tpl.decode('ascii')
+
+        return self.dump_script.format(options_args=self.options_args,
+                                       jobs_no=jobs_no,
+                                       workspace_dir=workspace_dir,
+                                       calculate_script_name='main_run.sh',
+                                       main_dir=main_dir,
+                                       collect_script_name='collect.sh',
+                                       dump_function=dump_function,
+                                       dump_signal=dump_signal)
+
     def main_run_script_body(self, jobs_no, workspace_dir):
         from pkg_resources import resource_string
         tpl = resource_string(__name__, self.main_run_script_template)
-        self.main_run_script = tpl.decode('ascii').format(options_header=self.options_header,
-                                                          workspace_dir=workspace_dir,
-                                                          jobs_no=jobs_no)
+        if self.dump_available:
+            self.main_run_script = tpl.decode('ascii').format(options_header=self.options_header,
+                                                              workspace_dir=workspace_dir,
+                                                              jobs_no=jobs_no,
+                                                              check_running=self._dump_functions["check_running"],
+                                                              trap_sig=self._dump_functions["trap_sig"])
+        else:
+            self.main_run_script = tpl.decode('ascii').format(options_header=self.options_header,
+                                                              workspace_dir=workspace_dir,
+                                                              check_running="",
+                                                              trap_sig="")
         return self.main_run_script
 
     def write_submit_script(self, main_dir, script_basename, jobs_no, workspace_dir):
@@ -62,6 +102,16 @@ class JobScheduler:
         logger.debug("Saved submit script: " + script_path)
         logger.debug("Jobs no " + str(jobs_no))
         logger.debug("Workspace " + abs_path_workspace)
+
+    def write_dump_script(self, main_dir, script_basename, jobs_no, workspace_dir, dump_function, dump_signal):
+        script_path = os.path.join(main_dir, script_basename)
+        fd = open(script_path, 'w')
+        abs_path_workspace = os.path.abspath(workspace_dir)
+        abs_path_main_dir = os.path.abspath(main_dir)
+        fd.write(self.dump_script_body(jobs_no, abs_path_main_dir, abs_path_workspace, dump_function, dump_signal))
+        fd.close()
+        os.chmod(script_path, 0o750)
+        logger.debug("Saved dump script: " + script_path)
 
     def write_main_run_script(self, jobs_no, output_dir):
         output_dir_abspath = os.path.abspath(output_dir)
