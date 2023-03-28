@@ -13,3 +13,5 @@ class Torque(JobScheduler):
     submit_script_template = os.path.join('data', 'submit_torque.sh')
 
     main_run_script_template = os.path.join('data', 'run_torque.sh')
+
+    kill_script_template = os.path.join('data', 'kill_torque.sh')
