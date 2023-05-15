@@ -3,6 +3,6 @@ versioneer<0.18
 pytest==7.3.1
 pytest-catchlog==1.2.2
 pytest-timeout==2.1.0
-pytest-xdist==3.2.1
+pytest-xdist==3.3.0
 pytest-cov==4.0.0
 tox==4.5.1
