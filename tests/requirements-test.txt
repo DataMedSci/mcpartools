@@ -1,5 +1,5 @@
 # micro-language and markers are described here: https://www.python.org/dev/peps/pep-0496/
-versioneer<0.18
+versioneer<0.30
 pytest==7.4.0
 pytest-catchlog==1.2.2
 pytest-timeout==2.1.0
