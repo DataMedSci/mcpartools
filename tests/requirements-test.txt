@@ -1,6 +1,6 @@
 # micro-language and markers are described here: https://www.python.org/dev/peps/pep-0496/
 versioneer<0.18
-pytest==8.1.0
+pytest==8.1.1
 pytest-catchlog==1.2.2
 pytest-timeout==2.3.1
 pytest-xdist==3.5.0
