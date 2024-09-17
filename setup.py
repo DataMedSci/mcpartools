@@ -116,7 +116,7 @@ setuptools.setup(
     version=get_version(),
     packages=setuptools.find_packages(where='.', exclude=("*.tests", "*.tests.*", "tests.*", "tests")),
     package_data={
-        'mcpartools.mcengine.data': ['*.sh', '*.json'],
+        'mcpartools.mcengine.data': ['*.sh', '*.json', '*.ini'],
         'mcpartools.scheduler.data': ['*.sh'],
     },
     url='https://github.com/DataMedSci/mcpartools',
