@@ -14,20 +14,20 @@ class SchedulerDiscover:
         pass
 
     @classmethod
-    def get_scheduler(cls, scheduler_options, log_location):
+    def get_scheduler(cls, scheduler_options, dump_opt, log_location):
         file_logger = logging.getLogger('file_logger')
         try:
             srun_output = check_output(['srun --version'], shell=True)
             file_logger.info("srun version: {}".format(srun_output[:-1]))
             logger.debug("Discovered job scheduler SLURM")
-            return Slurm(scheduler_options)
+            return Slurm(scheduler_options, dump_opt)
         except CalledProcessError as e:
             logger.debug("Slurm not found: %s", e)
         try:
             qsub_output = check_output(['qsub --version'], shell=True)
             file_logger.info("qsub version: {}".format(qsub_output[:-1]))
             logger.debug("Discovered job scheduler Torque")
-            return Torque(scheduler_options)
+            return Torque(scheduler_options, dump_opt)
         except CalledProcessError as e:
             logger.debug("Torque not found: %s", e)
         raise SystemError("No known batch system found!")

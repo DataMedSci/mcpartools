@@ -92,6 +92,9 @@ class Options:
         # no checks needed - argparse does it
         self.batch = args.batch
 
+        # no checks needed - argparse does it
+        self.dump = args.dump
+
     @property
     def valid(self):
         return self._valid
@@ -103,7 +106,8 @@ class Generator:
         self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
                                                      mc_run_script=self.options.mc_run_template,
                                                      collect_method=self.options.collect,
-                                                     mc_engine_options=self.options.mc_engine_options)
+                                                     mc_engine_options=self.options.mc_engine_options,
+                                                     dump_opt=self.options.dump)
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
@@ -120,14 +124,15 @@ class Generator:
 
         # get scheduler and pass main dir for log file
         if not self.options.batch:
-            self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
+            self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.options.dump,
+                                                             self.main_dir)
         else:
             # get desired scheduler class and pass arguments
             scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported
                                if class_obj.id == self.options.batch]
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
-                self.scheduler = scheduler_class[0](self.options.scheduler_options)
+                self.scheduler = scheduler_class[0](self.options.scheduler_options, self.options.dump)
                 logger.info("Using: " + self.scheduler.id)
             else:
                 logger.error("Given scheduler: \'%s\' is not on the list of supported batch systems: %s",
@@ -139,6 +144,10 @@ class Generator:
 
         # generate submit script
         self.generate_submit_script()
+
+        # generate dump script
+        if self.options.dump:
+            self.generate_dump_script()
 
         # copy input files
         self.copy_input()
@@ -200,6 +209,17 @@ class Generator:
             script_basename=self.scheduler.submit_script,
             jobs_no=self.options.jobs_no,
             workspace_dir=self.workspace_dir)
+
+    def generate_dump_script(self):
+        script_path = os.path.join(self.main_dir, self.scheduler.dump_script)
+        logger.debug("Preparation to generate " + script_path)
+        self.scheduler.write_dump_script(
+            main_dir=self.main_dir,
+            script_basename=self.scheduler.dump_script,
+            jobs_no=self.options.jobs_no,
+            workspace_dir=self.workspace_dir,
+            dump_function=self.mc_engine.dump_function,
+            dump_signal=self.mc_engine.dump_signal)
 
     def copy_input(self):
         indir_name = 'input'
