@@ -98,6 +98,8 @@ class Options:
 
 
 class Generator:
+    wspdir_name = 'workspace'
+
     def __init__(self, options):
         self.options = options
         self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
@@ -146,6 +148,12 @@ class Generator:
         # make symlinks to external files found
         self.symlink_external_files()
 
+        # generate script merging info logs
+        self.generate_merge_logs_script()
+
+        # generate status script
+        self.generate_status_script()
+
         # store information about command line arguments, date, time, user and hostname into generatemc.log
         self.save_logs()
 
@@ -169,8 +177,7 @@ class Generator:
         file_logger.addHandler(logging.FileHandler(os.path.join(dir_path, "generatemc.log"), mode='w+'))
 
     def generate_workspace(self):
-        wspdir_name = 'workspace'
-        wspdir_path = os.path.join(self.main_dir, wspdir_name)
+        wspdir_path = os.path.join(self.main_dir, self.wspdir_name)
         logger.debug("Generated workspace directory path: " + wspdir_path)
         os.mkdir(wspdir_path)
         self.workspace_dir = wspdir_path
@@ -188,7 +195,7 @@ class Generator:
 
             self.mc_engine.save_run_script(jobdir_path, jobid + 1)
 
-        self.scheduler.write_main_run_script(jobs_no=self.options.jobs_no, output_dir=self.workspace_dir)
+        self.scheduler.write_main_run_script(particle_no=self.options.particle_no, output_dir=self.workspace_dir)
         self.mc_engine.write_collect_script(self.main_dir)
 
     def generate_submit_script(self):
@@ -242,3 +249,13 @@ class Generator:
         file_logger.info('Date and time: ' + time.strftime("%Y-%m-%d %H:%M:%S"))
         file_logger.info('username@hostname: ' + getpass.getuser() + '@' + socket.gethostname())
         file_logger.info('Current working directory: ' + os.getcwd())
+
+    def generate_merge_logs_script(self):
+        output_name = 'output'
+        wspdir_path = os.path.join(self.main_dir, self.wspdir_name)
+        collect_path = os.path.join(self.main_dir, output_name)
+        self.scheduler.write_merge_logs_script(wspdir_path, collect_path, self.main_dir)
+
+    def generate_status_script(self):
+        wspdir_path = os.path.join(self.main_dir, self.wspdir_name)
+        self.scheduler.write_status_script(self.main_dir, wspdir_path)
