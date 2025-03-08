@@ -33,6 +33,9 @@ class Fluka(Engine):
 
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
+    def __str__(self):
+        return "Fluka"
+
     @property
     def input_files(self):
         # TODO check if additional files are needed
@@ -99,4 +102,12 @@ class Fluka(Engine):
         os.chmod(out_file_path, 0o750)
 
     def find_external_files(self, run_input_dir):
+        return None
+
+    def predict_best(self, particle_no, collect_type):
+        logger.error("Predict feature is not available for Fluka")
+        return None
+
+    def calculation_time(self, particles_no_per_job, jobs_no, collect_type):
+        logger.error("Estimated calculation time is not known for Fluka")
         return None
