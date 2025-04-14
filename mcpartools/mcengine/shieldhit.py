@@ -10,9 +10,10 @@ logger = logging.getLogger(__name__)
 class ShieldHit(Engine):
 
     default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
+    default_dump_function_path = os.path.join('data', 'dump_function_shieldhit.sh')
     output_wildcard = "*.bdo"
 
-    def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
+    def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options, dump_opt):
         Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
 
         # user didn't provided path to input scripts, use default
@@ -28,8 +29,11 @@ class ShieldHit(Engine):
 
         self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
 
+        self.dump_function = resource_string(__name__, self.default_dump_function_path).decode('ascii')
         self.particle_no = 1
         self.rng_seed = 1
+        self.dump_signal = 'USR1'
+        self.dump_available = dump_opt
 
     @property
     def input_files(self):
@@ -63,7 +67,8 @@ class ShieldHit(Engine):
             beam_file=os.path.join(input_dir, os.path.basename(beam_file)),
             geo_file=os.path.join(input_dir, os.path.basename(geo_file)),
             mat_file=os.path.join(input_dir, os.path.basename(mat_file)),
-            detect_file=os.path.join(input_dir, os.path.basename(detect_file))
+            detect_file=os.path.join(input_dir, os.path.basename(detect_file)),
+            dumping="&" if self.dump_available else ""
         )
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
