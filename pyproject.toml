@@ -47,6 +47,20 @@ find = { where = ["."], exclude = ["*.tests", "*.tests.*", "tests.*", "tests"] }
 [tool.setuptools_scm]
 write_to = "mcpartools/_version.py"
 
+[tool.flake8]
+exclude = [
+    ".tox",
+    "*.egg",
+    "build",
+    "_vendor",
+    "data",
+    "*_version.py",
+    "docs/conf.py",
+    ".pytest_cache/",
+]
+select = ["E", "W", "F"]
+max-line-length = 120
+
 [project.optional-dependencies]
 test = [
     "pytest==8.3.5",
@@ -54,8 +68,6 @@ test = [
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.6.1",
     "pytest-cov==6.1.1",
-    # You might also want 'coverage' here if pytest-cov doesn't pull it
-    # or if you run coverage directly. pytest-cov typically implies coverage.
     "coverage>=6.0",
 ]
 
