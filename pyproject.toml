@@ -47,20 +47,6 @@ find = { where = ["."], exclude = ["*.tests", "*.tests.*", "tests.*", "tests"] }
 [tool.setuptools_scm]
 write_to = "mcpartools/_version.py"
 
-[tool.flake8]
-exclude = [
-    ".tox",
-    "*.egg",
-    "build",
-    "_vendor",
-    "data",
-    "*_version.py",
-    "docs/conf.py",
-    ".pytest_cache/",
-]
-select = ["E", "W", "F"]
-max-line-length = 120
-
 [project.optional-dependencies]
 test = [
     "pytest==8.3.5",
