@@ -9,7 +9,7 @@ name = "mcpartools"
 dynamic = ["version"]
 description = "Set of tools to parallelize MC calculations on clusters"
 readme = "README.rst"
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 license = { file = "LICENSE" }
 authors = [
     { name = "Leszek Grzanka", email = "leszek.grzanka@gmail.com" },
@@ -26,9 +26,6 @@ classifiers = [
     'Operating System :: Unix',
     'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
     'Programming Language :: Python :: 3',
-    'Programming Language :: Python :: 3.6',
-    'Programming Language :: Python :: 3.7',
-    'Programming Language :: Python :: 3.8',
     'Programming Language :: Python :: 3.9',
     'Programming Language :: Python :: 3.10',
     'Programming Language :: Python :: 3.11',
@@ -48,7 +45,6 @@ find = { where = ["."], exclude = ["*.tests", "*.tests.*", "tests.*", "tests"] }
 "mcpartools.scheduler.data" = ["*.sh"]
 
 [tool.setuptools_scm]
-# Konfiguracja setuptools_scm
 write_to = "mcpartools/_version.py"
 
 [project.optional-dependencies]
