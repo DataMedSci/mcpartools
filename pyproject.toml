@@ -1,0 +1,56 @@
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcpartools"
+dynamic = ["version"]
+# version = "0.0.0" # Możesz tu wstawić placeholder, ale najlepiej usunąć, gdy używasz setuptools_scm
+description = "Set of tools to parallelize MC calculations on clusters"
+readme = "README.rst"
+requires-python = ">=3.6"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Leszek Grzanka", email = "leszek.grzanka@gmail.com" },
+]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Topic :: Software Development :: Build Tools',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Scientific/Engineering :: Medical Science Apps.',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Environment :: Console',
+    'Operating System :: Unix',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+
+# Wymagania (jeśli masz jakieś zależności w pip install_requires, przenieś je tutaj)
+dependencies = [] # Jeśli nie masz tutaj, zostaw puste lub usuń
+
+[project.scripts]
+generatemc = "mcpartools.generatemc:main"
+
+[tool.setuptools.packages]
+# Jeśli Twój kod źródłowy jest bezpośrednio w katalogu głównym projektu (np. mcpartools/..),
+# setuptools znajdzie go automatycznie. Jeśli masz layout 'src/' (np. src/mcpartools/..),
+find = { where = ["."], exclude = ["*.tests", "*.tests.*", "tests.*", "tests"] }
+
+[tool.setuptools.package-data]
+"mcpartools.mcengine.data" = ["*.sh", "*.json"]
+"mcpartools.scheduler.data" = ["*.sh"]
+
+[tool.setuptools_scm]
+# Konfiguracja setuptools_scm
+write_to = "mcpartools/_version.py"

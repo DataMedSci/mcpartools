@@ -87,3 +87,6 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+# ignore setuptools_scm version file
+mcpartools/_version.py
