@@ -72,12 +72,12 @@ jobs:
           cache: 'pip' # Cache pip for faster dependency installs
 
       - name: Install build tools and prerequisites
-          run: |
-            python -m pip install --upgrade pip setuptools wheel
-            pip install ".[build]"
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          pip install ".[build]"
 
-            sudo apt-get update
-            sudo apt-get install -qq -y --no-install-recommends wget # For downloading sample_fluka.inp
+          sudo apt-get update
+          sudo apt-get install -qq -y --no-install-recommends wget # For downloading sample_fluka.inp
 
       - name: Build wheel for Python ${{ matrix.python-version }}
         run: |
@@ -86,15 +86,15 @@ jobs:
           ls -al dist/ # Verify the wheel is created
 
       - name: Install package from local wheel
-          run: |
-            # Install the just-built wheel into the current environment
-            pip install dist/*.whl
+        run: |
+          # Install the just-built wheel into the current environment
+          pip install dist/*.whl
 
       - name: Run smoke tests with generatemc
-          run: |
-            # Execute your functional tests on the installed package
-            generatemc --version
-            generatemc --help
-            wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
-            generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
-            ls -al fluka
+        run: |
+          # Execute your functional tests on the installed package
+          generatemc --version
+          generatemc --help
+          wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
+          generatemc -p 1000 -j 10 -b slurm sample_fluka.inp -w fluka
+          ls -al fluka
