@@ -78,8 +78,8 @@ class Fluka(Engine):
         out_file_name = os.path.basename(self.input_path)
         out_file_path = os.path.join(output_dir, out_file_name)
         out_fd = open(out_file_path, 'w')
-        for l in self.input_lines:
-            out_fd.write(l)
+        for line in self.input_lines:
+            out_fd.write(line)
         out_fd.close()
 
     def save_run_script(self, output_dir, jobid):
