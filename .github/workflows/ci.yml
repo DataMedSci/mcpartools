@@ -113,7 +113,6 @@ jobs:
           # Execute your functional tests on the installed package
           generatemc --version
           generatemc --help
-          wget https://raw.githubusercontent.com/DataMedSci/mcpartools/master/tests/res/sample_fluka.inp
           generatemc -p 1000 -j 10 -b slurm sample-fluka-input/sample_fluka.inp -w fluka
           ls -al fluka
   build-and-test-zipapp:
