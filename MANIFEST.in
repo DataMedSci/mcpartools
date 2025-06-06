@@ -2,7 +2,7 @@
   include .flake8
   include *.toml
   exclude *.sh *.yml *.ini *.txt *.spec .gitkeep .coveragerc
-  exclude LICENSE CODE_OF_CONDUCT.md
+  exclude CODE_OF_CONDUCT.md
   exclude mcpartools/_version.py
   prune docs
   prune .travis
