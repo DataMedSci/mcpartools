@@ -49,7 +49,7 @@ write_to = "mcpartools/_version.py"
 
 [project.optional-dependencies]
 test = [
-    "pytest==8.3.5",
+    "pytest==8.4.0",
     "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.7.0",
@@ -78,7 +78,7 @@ build = [
 # plus any other general dev tools.
 dev = [
     # From 'test'
-    "pytest==8.3.5",
+    "pytest==8.4.0",
     "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.6.1",
