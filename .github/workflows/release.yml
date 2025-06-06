@@ -67,7 +67,6 @@ jobs:
       with:
         files: |
           dist/* # Includes your .whl and .tar.gz
-          dist/generatemc      # PyInstaller executable (adjust path if different)
           generatemc.pyz       # Zipapp executable
 
 #    - name: Publish Python packages to PyPI
