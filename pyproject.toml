@@ -66,11 +66,36 @@ lint = [
     "flake8>=6.0.0",
 ]
 
-dev = [
-    "mcpartools[test,docs,lint]",
+build = [
+    "setuptools>=61.0",
+    "wheel",
     "build",
-    "twine",
-    "check-manifest",
-    "tox",
+    "setuptools_scm[toml]", # Correct for setuptools_scm integration
+]
+
+# The 'dev' extra should list ALL dependencies required for development.
+# This means combining the dependencies from 'test', 'docs', 'lint', 'build',
+# plus any other general dev tools.
+dev = [
+    # From 'test'
+    "pytest==8.3.5",
+    "pytest-catchlog==1.2.2",
+    "pytest-timeout==2.4.0",
+    "pytest-xdist==3.6.1",
+    "pytest-cov==6.1.1",
+    "coverage>=6.0",
+    # From 'docs'
+    "Sphinx>=7.0.0",
+    "sphinx-rtd-theme",
+    # From 'lint'
+    "flake8>=6.0.0",
+    # From 'build'
+    "setuptools>=61.0",
+    "wheel",
+    "build",
     "setuptools_scm[toml]",
+    # Other general dev tools
+    "check-manifest",
+    "twine",          # For publishing
+    "tox",
 ]
