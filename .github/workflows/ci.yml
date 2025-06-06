@@ -22,6 +22,8 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
@@ -100,13 +102,13 @@ jobs:
 
       - name: Verify downloaded wheel
         run: |
-          ls -al mcpartools-wheel/*.whl
+          ls -al mcpartools-*.whl
           ls -al sample-fluka-input/sample_fluka.inp
 
       - name: Install package from downloaded wheel
         run: |
           # Install the built wheel from the downloaded artifact directory
-          pip install mcpartools-wheel/*.whl
+          pip install mcpartools-*.whl
 
       - name: Run smoke tests with generatemc
         run: |
