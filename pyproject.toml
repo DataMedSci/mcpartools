@@ -1,0 +1,101 @@
+# pyproject.toml
+
+[build-system]
+requires = ["setuptools>=61.0", "setuptools_scm[toml]>=6.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mcpartools"
+dynamic = ["version"]
+description = "Set of tools to parallelize MC calculations on clusters"
+readme = "README.rst"
+requires-python = ">=3.9"
+license = { file = "LICENSE" }
+authors = [
+    { name = "Leszek Grzanka", email = "leszek.grzanka@gmail.com" },
+]
+classifiers = [
+    'Development Status :: 5 - Production/Stable',
+    'Topic :: Software Development :: Build Tools',
+    'Intended Audience :: Developers',
+    'Intended Audience :: Science/Research',
+    'Topic :: Software Development :: Libraries :: Python Modules',
+    'Topic :: Scientific/Engineering :: Medical Science Apps.',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Environment :: Console',
+    'Operating System :: Unix',
+    'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+]
+
+dependencies = []
+
+[project.scripts]
+generatemc = "mcpartools.generatemc:main"
+
+[tool.setuptools.packages]
+find = { where = ["."], exclude = ["*.tests", "*.tests.*", "tests.*", "tests"] }
+
+[tool.setuptools.package-data]
+"mcpartools.mcengine.data" = ["*.sh", "*.json"]
+"mcpartools.scheduler.data" = ["*.sh"]
+
+[tool.setuptools_scm]
+write_to = "mcpartools/_version.py"
+
+[project.optional-dependencies]
+test = [
+    "pytest==8.3.5",
+    "pytest-catchlog==1.2.2",
+    "pytest-timeout==2.4.0",
+    "pytest-xdist==3.7.0",
+    "pytest-cov==6.1.1",
+    "coverage>=6.0",
+]
+
+docs = [
+    "Sphinx>=7.0.0",
+    "sphinx-rtd-theme",
+]
+
+lint = [
+    "flake8>=6.0.0",
+]
+
+build = [
+    "setuptools>=61.0",
+    "wheel",
+    "build",
+    "setuptools_scm[toml]", # Correct for setuptools_scm integration
+]
+
+# The 'dev' extra should list ALL dependencies required for development.
+# This means combining the dependencies from 'test', 'docs', 'lint', 'build',
+# plus any other general dev tools.
+dev = [
+    # From 'test'
+    "pytest==8.3.5",
+    "pytest-catchlog==1.2.2",
+    "pytest-timeout==2.4.0",
+    "pytest-xdist==3.6.1",
+    "pytest-cov==6.1.1",
+    "coverage>=6.0",
+    # From 'docs'
+    "Sphinx>=7.0.0",
+    "sphinx-rtd-theme",
+    # From 'lint'
+    "flake8>=6.0.0",
+    # From 'build'
+    "setuptools>=61.0",
+    "wheel",
+    "build",
+    "setuptools_scm[toml]",
+    # Other general dev tools
+    "check-manifest",
+    "twine",          # For publishing
+    "tox",
+]
