@@ -32,7 +32,9 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 
-dependencies = []
+dependencies = [
+    "setuptools"
+]
 
 [project.scripts]
 generatemc = "mcpartools.generatemc:main"
