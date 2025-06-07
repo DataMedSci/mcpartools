@@ -53,6 +53,7 @@ extensions = [
     'sphinx.ext.inheritance_diagram',
     'sphinx.ext.coverage',
     'sphinx.ext.graphviz',
+    'sphinx_multiversion'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -388,3 +389,18 @@ epub_exclude_files = ['search.html']
 
 # If false, no index is generated.
 #epub_use_index = True
+
+# -- sphinx-multiversion configuration ---------------------------------------
+# You might want to customize these, but these are common defaults.
+# Check https://github.com/mr-bolle/sphinx-multiversion for all options.
+
+# Which branches to build documentation for (e.g., 'main', 'v1.x', 'develop')
+smv_branch_whitelist = r'^(master|docs-develop)$'
+# Which tags to build documentation for (e.g., 'v1.0.0', 'v2.1.0')
+smv_tag_whitelist = r'^(v0\.6\.2)$'
+# Which branches/tags are considered "stable" or "latest" for linking/redirects
+smv_latest_version = 'master'  # Or 'master' or your latest stable branch
+smv_outputdir_format = '{{ version }}'  # How output directories are named (e.g., _build/html/main/, _build/html/v1.0.0/)
+smv_remote_whitelist = r'^.*$'
+smv_tag_sort = 'semver'
+smv_branch_sort = 'alphanum'
