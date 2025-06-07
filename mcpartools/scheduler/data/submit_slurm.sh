@@ -30,7 +30,7 @@ fi
 # If output from stderr isn't an empty string then log it as well to submit.log
 if [ "`cat $ERR`" != "" ] ; then
 	echo "---------------------" >> "$LOGFILE"
-	echo "ERROR MESSAGE" >>"$LOGFILE"	
+	echo "ERROR MESSAGE" >>"$LOGFILE"
 	echo "---------------------" >> "$LOGFILE"
 	cat $ERR >> "$LOGFILE"
 fi

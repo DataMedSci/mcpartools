@@ -1,8 +1,7 @@
 import os
+import shutil
 import tempfile
 import unittest
-
-import shutil
 
 from mcpartools import generatemc
 
@@ -41,9 +40,21 @@ class TestRunGenerate(unittest.TestCase):
     def test_slurm_shieldhit_scheduler_options(self):
         working_dir = tempfile.mkdtemp()  # make temp working dir
         shieldhit_input = os.path.join(self.main_dir, "shieldhit")
-        ret_code = generatemc.main(["-j", "2", "-p", "100", "-w", working_dir, "-b", "slurm", "-s",
-                                    "[--nodes=1 --ntasks-per-node=1 --mem=2000 --time=0:30:00]",
-                                    shieldhit_input])
+        ret_code = generatemc.main(
+            [
+                "-j",
+                "2",
+                "-p",
+                "100",
+                "-w",
+                working_dir,
+                "-b",
+                "slurm",
+                "-s",
+                "[--nodes=1 --ntasks-per-node=1 --mem=2000 --time=0:30:00]",
+                shieldhit_input,
+            ]
+        )
         self.assertEqual(ret_code, 0)
         shutil.rmtree(working_dir)
 
@@ -68,5 +79,5 @@ class TestRunGenerate(unittest.TestCase):
             self.assertEqual(e.code, 2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

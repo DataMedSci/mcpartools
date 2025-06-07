@@ -11,5 +11,3 @@ Contents:
    install.rst
    developer.rst
    contributing.rst
-
-   
