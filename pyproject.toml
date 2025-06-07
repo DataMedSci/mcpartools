@@ -99,5 +99,4 @@ dev = [
     # Other general dev tools
     "check-manifest",
     "twine",          # For publishing
-    "tox",
 ]
