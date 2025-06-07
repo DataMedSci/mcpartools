@@ -83,7 +83,7 @@ dev = [
     "pytest==8.4.0",
     "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
-    "pytest-xdist==3.6.1",
+    "pytest-xdist==3.7.0",
     "pytest-cov==6.1.1",
     "coverage>=6.0",
     # From 'docs'
