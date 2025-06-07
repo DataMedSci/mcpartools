@@ -47,7 +47,7 @@ script:
 - if [[ "$TRAVIS_TEST_RESULT" == "0" ]] && [[ $TOXENV == "packaging" ]]; then .travis/deploy_package.sh ; fi
 
 
-# automatic deploy to github releases and pypi    
+# automatic deploy to github releases and pypi
 deploy:
   - provider: releases
     api_key:

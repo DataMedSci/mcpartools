@@ -6,7 +6,7 @@ BEAM           -0.06       0.0       0.0      -2.0      -2.0          PROTON
 * Define the beam position
 BEAMPOS          0.0       0.0     -100.       0.0       0.0
 GEOBEGIN                                                              COMBNAME
-    0    0          
+    0    0
 * Black body
 SPH blkbody    0.0 0.0 0.0 100000.0
 * Void sphere

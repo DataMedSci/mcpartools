@@ -1,5 +1,6 @@
 import logging
 import os
+
 from pkg_resources import resource_string
 
 from mcpartools.mcengine.mcengine import Engine
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 class ShieldHit(Engine):
 
-    default_run_script_path = os.path.join('data', 'run_shieldhit.sh')
+    default_run_script_path = os.path.join("data", "run_shieldhit.sh")
     output_wildcard = "*.bdo"
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
@@ -18,15 +19,15 @@ class ShieldHit(Engine):
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
             tpl = resource_string(__name__, self.default_run_script_path)
-            self.run_script_content = tpl.decode('ascii')
+            self.run_script_content = tpl.decode("ascii")
             logger.debug("Using default run script: " + self.default_run_script_path)
         else:
-            tpl_fd = open(self.run_script_path, 'r')
+            tpl_fd = open(self.run_script_path, "r")
             self.run_script_content = tpl_fd.read()
             tpl_fd.close()
             logger.debug("Using user run script: " + self.run_script_path)
 
-        self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
+        self.collect_script_content = resource_string(__name__, self.collect_script).decode("ascii")
 
         self.particle_no = 1
         self.rng_seed = 1
@@ -34,7 +35,7 @@ class ShieldHit(Engine):
     @property
     def input_files(self):
         base = os.path.abspath(self.input_path)
-        files = ('beam.dat', 'geo.dat', 'mat.dat', 'detect.dat')
+        files = ("beam.dat", "geo.dat", "mat.dat", "detect.dat")
         result = (os.path.join(base, f) for f in files)
         return result
 
@@ -52,9 +53,9 @@ class ShieldHit(Engine):
         abs_output_dir = os.path.abspath(output_dir)
         # SH12A should use configs we copied/edited
         # go up from 'workspace/job_xxxx' to 'run_xxxxxxxx' dir and add 'input/'
-        input_dir = os.path.abspath(os.path.join(abs_output_dir, '..', '..', 'input'))
+        input_dir = os.path.abspath(os.path.join(abs_output_dir, "..", "..", "input"))
         contents = self.run_script_content.format(
-            shieldhit_bin='shieldhit',
+            shieldhit_bin="shieldhit",
             engine_options=self.engine_options,
             working_directory=abs_output_dir,
             particle_no=self.particle_no,
@@ -63,11 +64,11 @@ class ShieldHit(Engine):
             beam_file=os.path.join(input_dir, os.path.basename(beam_file)),
             geo_file=os.path.join(input_dir, os.path.basename(geo_file)),
             mat_file=os.path.join(input_dir, os.path.basename(mat_file)),
-            detect_file=os.path.join(input_dir, os.path.basename(detect_file))
+            detect_file=os.path.join(input_dir, os.path.basename(detect_file)),
         )
         out_file_name = "run.sh"
         out_file_path = os.path.join(output_dir, out_file_name)
-        out_fd = open(out_file_path, 'w')
+        out_fd = open(out_file_path, "w")
         out_fd.write(contents)
         out_fd.close()
         os.chmod(out_file_path, 0o750)
@@ -112,18 +113,20 @@ class ShieldHit(Engine):
         """Scan SH12A BEAM file for references to external files and return them"""
         external_files = []
         paths_to_replace = []
-        with open(file_path, 'r') as beam_f:
+        with open(file_path, "r") as beam_f:
             for line in beam_f.readlines():
                 split_line = line.split()
                 # line length checking to prevent IndexError
                 if len(split_line) > 2 and split_line[0] == "USEBMOD":
-                    logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                                 split_line[0], split_line[2]))
+                    logger.debug(
+                        "Found reference to external file in BEAM file: {0} {1}".format(split_line[0], split_line[2])
+                    )
                     external_files.append(split_line[2])
                     paths_to_replace.append(split_line[2])
                 elif len(split_line) > 1 and split_line[0] == "USECBEAM":
-                    logger.debug("Found reference to external file in BEAM file: {0} {1}".format(
-                                 split_line[0], split_line[1]))
+                    logger.debug(
+                        "Found reference to external file in BEAM file: {0} {1}".format(split_line[0], split_line[1])
+                    )
                     external_files.append(split_line[1])
                     paths_to_replace.append(split_line[1])
         if paths_to_replace:
@@ -136,19 +139,19 @@ class ShieldHit(Engine):
         """Scan SH12A GEO file for references to external files (like voxelised geometry) and return them"""
         external_files = []
         paths_to_replace = []
-        with open(file_path, 'r') as geo_f:
+        with open(file_path, "r") as geo_f:
             for line in geo_f.readlines():
                 split_line = line.split()
                 if len(split_line) > 0 and not line.startswith("*"):
                     base_path = os.path.join(self.input_path, split_line[0])
-                    if os.path.isfile(base_path + '.hed'):
+                    if os.path.isfile(base_path + ".hed"):
                         logger.debug("Found ctx + hed files: {0}".format(base_path))
-                        external_files.append(base_path + '.hed')
+                        external_files.append(base_path + ".hed")
                         # try to find ctx file
-                        if os.path.isfile(base_path + '.ctx'):
-                            external_files.append(base_path + '.ctx')
-                        elif os.path.isfile(base_path + '.ctx.gz'):
-                            external_files.append(base_path + '.ctx.gz')
+                        if os.path.isfile(base_path + ".ctx"):
+                            external_files.append(base_path + ".ctx")
+                        elif os.path.isfile(base_path + ".ctx.gz"):
+                            external_files.append(base_path + ".ctx.gz")
                         # replace path to match symlink location
                         paths_to_replace.append(split_line[0])
         if paths_to_replace:
@@ -164,7 +167,7 @@ class ShieldHit(Engine):
 
     @staticmethod
     def _extract_mat_sections(file_path):
-        with open(file_path, 'r') as mat_f:
+        with open(file_path, "r") as mat_f:
             chunks = []
             current_chunk = []
             for line in mat_f:
@@ -213,8 +216,9 @@ class ShieldHit(Engine):
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
         import json
-        icru_file = resource_string(__name__, os.path.join('data', 'SH12A_ICRU_table.json'))
-        ref_dict = json.loads(icru_file.decode('ascii'))
+
+        icru_file = resource_string(__name__, os.path.join("data", "SH12A_ICRU_table.json"))
+        ref_dict = json.loads(icru_file.decode("ascii"))
         try:
             return [ref_dict[e] for e in numbers]
         except KeyError as er:
@@ -230,7 +234,8 @@ class ShieldHit(Engine):
         lines = []
         # make a copy of config
         import shutil
-        shutil.copyfile(config_file, str(config_file + '_original'))
+
+        shutil.copyfile(config_file, str(config_file + "_original"))
         with open(config_file) as infile:
             for line in infile:
                 for old_path in paths_to_replace:
@@ -239,6 +244,6 @@ class ShieldHit(Engine):
                         line = line.replace(old_path, new_path)
                         logger.debug("Changed path {0} ---> {1} in file {2}".format(old_path, new_path, config_file))
                 lines.append(line)
-        with open(config_file, 'w') as outfile:
+        with open(config_file, "w") as outfile:
             for line in lines:
                 outfile.write(line)

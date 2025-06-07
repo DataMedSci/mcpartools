@@ -61,4 +61,3 @@ Badges and links
     :target: https://pypi.python.org/pypi/mcpartools
 
 .. end-badges
-

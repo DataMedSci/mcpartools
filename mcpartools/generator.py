@@ -11,14 +11,14 @@ from mcpartools.scheduler.common import SchedulerDiscover
 
 logger = logging.getLogger(__name__)
 
-file_logger = logging.getLogger('file_logger')
+file_logger = logging.getLogger("file_logger")
 file_logger.setLevel(logging.INFO)
 file_logger.propagate = False
 
 
 class Options:
 
-    collect_methods = ('mv', 'cp', 'plotdata', 'image', 'custom')
+    collect_methods = ("mv", "cp", "plotdata", "image", "custom")
 
     def __init__(self, args):
         self._valid = True
@@ -59,7 +59,7 @@ class Options:
         self.scheduler_options = args.scheduler_options
         if self.scheduler_options is not None:
             if not os.path.exists(self.scheduler_options):
-                if not (self.scheduler_options[0] == '[' and self.scheduler_options[-1] == ']'):
+                if not (self.scheduler_options[0] == "[" and self.scheduler_options[-1] == "]"):
                     logger.error("-s should be followed by a path or text enclosed in square brackets, i.e. [--help]")
                     self._valid = False
                 else:
@@ -70,7 +70,7 @@ class Options:
         self.mc_engine_options = args.mc_engine_options
         if self.mc_engine_options is not None:
             if not os.path.exists(self.mc_engine_options):
-                if not (self.mc_engine_options[0] == '[' and self.mc_engine_options[-1] == ']'):
+                if not (self.mc_engine_options[0] == "[" and self.mc_engine_options[-1] == "]"):
                     logger.error("-e should be followed by a path or text enclosed in square brackets, i.e. [--help]")
                     self._valid = False
                 else:
@@ -100,10 +100,12 @@ class Options:
 class Generator:
     def __init__(self, options):
         self.options = options
-        self.mc_engine = EngineDiscover.get_mcengine(input_path=self.options.input_path,
-                                                     mc_run_script=self.options.mc_run_template,
-                                                     collect_method=self.options.collect,
-                                                     mc_engine_options=self.options.mc_engine_options)
+        self.mc_engine = EngineDiscover.get_mcengine(
+            input_path=self.options.input_path,
+            mc_run_script=self.options.mc_run_template,
+            collect_method=self.options.collect,
+            mc_engine_options=self.options.mc_engine_options,
+        )
         # assigned in methods
         self.scheduler = None
         self.input_dir = None
@@ -123,15 +125,19 @@ class Generator:
             self.scheduler = SchedulerDiscover.get_scheduler(self.options.scheduler_options, self.main_dir)
         else:
             # get desired scheduler class and pass arguments
-            scheduler_class = [class_obj for class_obj in SchedulerDiscover.supported
-                               if class_obj.id == self.options.batch]
+            scheduler_class = [
+                class_obj for class_obj in SchedulerDiscover.supported if class_obj.id == self.options.batch
+            ]
             if scheduler_class:  # if not empty
                 # list should have only 1 element - that's why we call scheduler_class[0] (list is not callable)
                 self.scheduler = scheduler_class[0](self.options.scheduler_options)
                 logger.info("Using: " + self.scheduler.id)
             else:
-                logger.error("Given scheduler: \'%s\' is not on the list of supported batch systems: %s",
-                             self.options.batch, [supported.id for supported in SchedulerDiscover.supported])
+                logger.error(
+                    "Given scheduler: '%s' is not on the list of supported batch systems: %s",
+                    self.options.batch,
+                    [supported.id for supported in SchedulerDiscover.supported],
+                )
                 raise NotImplementedError("Class not found: " + self.options.batch)
 
         # generate tmp dir with workspace
@@ -166,10 +172,10 @@ class Generator:
         os.mkdir(dir_path)
         self.main_dir = dir_path
 
-        file_logger.addHandler(logging.FileHandler(os.path.join(dir_path, "generatemc.log"), mode='w+'))
+        file_logger.addHandler(logging.FileHandler(os.path.join(dir_path, "generatemc.log"), mode="w+"))
 
     def generate_workspace(self):
-        wspdir_name = 'workspace'
+        wspdir_name = "workspace"
         wspdir_path = os.path.join(self.main_dir, wspdir_name)
         logger.debug("Generated workspace directory path: " + wspdir_path)
         os.mkdir(wspdir_path)
@@ -199,10 +205,11 @@ class Generator:
             main_dir=self.main_dir,
             script_basename=self.scheduler.submit_script,
             jobs_no=self.options.jobs_no,
-            workspace_dir=self.workspace_dir)
+            workspace_dir=self.workspace_dir,
+        )
 
     def copy_input(self):
-        indir_name = 'input'
+        indir_name = "input"
         indir_path = os.path.join(self.main_dir, indir_name)
         logger.debug("Generated input directory path: " + indir_path)
         os.mkdir(indir_path)
@@ -238,7 +245,7 @@ class Generator:
                 os.symlink(abs_path, os.path.join(jobdir_path, os.path.split(abs_path)[-1]))
 
     def save_logs(self):
-        file_logger.info('Executed command: ' + ' '.join(sys.argv))
-        file_logger.info('Date and time: ' + time.strftime("%Y-%m-%d %H:%M:%S"))
-        file_logger.info('username@hostname: ' + getpass.getuser() + '@' + socket.gethostname())
-        file_logger.info('Current working directory: ' + os.getcwd())
+        file_logger.info("Executed command: " + " ".join(sys.argv))
+        file_logger.info("Date and time: " + time.strftime("%Y-%m-%d %H:%M:%S"))
+        file_logger.info("username@hostname: " + getpass.getuser() + "@" + socket.gethostname())
+        file_logger.info("Current working directory: " + os.getcwd())
