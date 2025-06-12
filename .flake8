@@ -1,4 +1,0 @@
-[flake8]
-select = E,W,F
-max-line-length = 120
-exclude = *.egg,build,_vendor,data,*_version.py,docs/conf.py,.pytest_cache/
