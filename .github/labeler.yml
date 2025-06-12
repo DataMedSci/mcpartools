@@ -1,0 +1,14 @@
+docs:
+  - 'docs/**'
+  - '**/*.rst'
+  - '**/*.md'
+
+infra:
+  - '.github/**'
+
+dependencies:
+  - 'pyproject.toml'
+
+feature:
+  - 'mcpartools/**'
+  - '!docs/**'

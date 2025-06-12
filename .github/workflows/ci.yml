@@ -25,6 +25,19 @@ jobs:
       with:
         fetch-depth: 0
 
+    - name: Check for License Modifications
+      run: |
+        CHANGED_FILES=$(git diff --name-only ${{ github.event.pull_request.base.sha }} ${{ github.sha }})
+        for pattern in "LICENSE"; do
+          if echo "$CHANGED_FILES" | grep -q "$pattern"; then
+            echo "::error::One or more license files were modified. License files cannot be changed."
+            exit 1 # Fail the workflow step
+          fi
+        done
+
+        echo "No license files were modified."
+      shell: bash
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v5
       with:
