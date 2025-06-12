@@ -1,22 +1,22 @@
 docs:
-  changed-files:
+  - changed-files:
     - any-glob-to-any-file:
         - 'docs/**'
         - '**/*.rst'
         - '**/*.md'
 
 infra:
-  changed-files:
+  - changed-files:
     - any-glob-to-any-file:
         - '.github/**'
 
 dependencies:
-  changed-files:
+  - changed-files:
     - any-glob-to-any-file:
         - 'pyproject.toml'
 
 feature:
-  changed-files:
+  - changed-files:
     - any-glob-to-any-file:
         - 'mcpartools/**'
         - '!docs/**'
