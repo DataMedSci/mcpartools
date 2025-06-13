@@ -52,14 +52,6 @@ jobs:
     - name: Build documentation
       run: sphinx-multiversion docs _build/html
 
-    - name: Copy latest release docs to 'latest' directory
-      if: ${{ steps.get_build_refs.outputs.LATEST_TAG_NAME != '' }}
-      run: |
-        LATEST_TAG_NAME="${{ steps.get_build_refs.outputs.LATEST_TAG_NAME }}"
-        echo "Copying docs from '$LATEST_TAG_NAME' to 'latest/'"
-        mkdir -p ./_build/html/latest/
-        cp -r ./_build/html/"$LATEST_TAG_NAME"/. ./_build/html/latest/
-
     - name: Upload documentation artifacts
       uses: actions/upload-pages-artifact@v3
       with:
