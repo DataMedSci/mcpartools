@@ -2,19 +2,27 @@
 
 name: Release and Publish
 
+permissions:
+  contents: read
+  pull-requests: write
+
 on:
+  workflow_dispatch:
+  push:
+    branches:
+     - master
   release:
-    types: [published] # This workflow triggers when a new GitHub Release is published
+    types:
+      - published
+  schedule:
+    - cron: '46 18 * * 2'
+
+env:
+  FORCE_COLOR: 3
 
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
-
-    environment: pypi
-
-    permissions:
-      id-token: write  # Required for OIDC authentication with PyPI (Trusted Publishing)
-      contents: write  # Required to upload assets (wheels/sdists/executables) to the GitHub Release
 
     steps:
     - name: Checkout code
@@ -22,22 +30,14 @@ jobs:
       with:
         fetch-depth: 0 # Important for setuptools_scm to get correct version from git tags
 
-    - name: Set up Python 3.12
-      # Use a specific, stable Python 3 version for consistent builds across all artifacts
+    - name: Set up Python
       uses: actions/setup-python@v5
       with:
-        python-version: '3.12' # Using 3.12 as per your primary dev version
+        python-version: '3.12'
 
     - name: Install build, upload, and executable packaging tools
       run: |
-        python -m pip install --upgrade setuptools
-        # Install tools for Python package distribution
-        pip install build twine
-        # Install tools for standalone executables
-        pip install pyinstaller # For PyInstaller executable
-        # Note: Nuitka typically has more complex setup, make_single_executable.sh handles its setup
-        # if make_single_executable.sh uses something other than 'build' for its internal wheel creation,
-        # ensure those dependencies are also installed here.
+        python -m pip install --upgrade setuptools build twine pyinstaller
 
     - name: Build sdist and wheel distributions
       run: |
@@ -49,29 +49,46 @@ jobs:
 
     - name: Build PyInstaller Executable
       run: |
-        # Ensure 'main.spec' is in your project root or provide the correct path
         pyinstaller main.spec
-        ls -al dist/generatemc # Verify the executable is created by PyInstaller
+        ls -al dist/generatemc
 
-    - name: Build Zipapp Executable
-      run: |
-        chmod +x make_single_executable.sh # Make the script executable
-        # Run the script. It will build the wheel (if not already done by python -m build),
-        # create the zipapp, and test it internally.
-        ./make_single_executable.sh
-        ls -al generatemc.pyz # Verify the .pyz file was created
+    - uses: actions/upload-artifact@v4
+      with:
+        name: packages
+        path: dist/*
+
+
+  publish:
+    name: Upload if release
+    needs: [build]
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release' && github.event.action == 'published'
+    environment: pypi
+    permissions:
+      id-token: write
+      attestations: write
+      contents: write
+
+    steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+
+    - uses: actions/download-artifact@v4
+      with:
+        name: packages
+        path: dist
+
+    - name: Generate artifact attestation for sdist and wheels
+      uses: actions/attest-build-provenance@v2
+      with:
+        subject-path: "dist/*whl"
+
+    - uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        attestations: true
 
     - name: Upload release assets to GitHub Release
       uses: softprops/action-gh-release@v2
-      if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: |
-          dist/* # Includes your .whl and .tar.gz
-          generatemc.pyz       # Zipapp executable
-
-#    - name: Publish Python packages to PyPI
-#      # This is for your .whl and .tar.gz files only.
-#      uses: pypa/gh-action-pypi-publish@release/v1
-#      with:
-        # No need for PYPI_API_TOKEN secret with Trusted Publishing, as it uses OIDC
-        # repository-url: https://test.pypi.org/legacy/ # Uncomment to publish to TestPyPI for testing
+        files: dist/*

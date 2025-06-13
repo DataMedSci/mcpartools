@@ -48,12 +48,9 @@ jobs:
         echo "Refs to build: $BUILD_REFS"
         echo "BUILD_REFS=$BUILD_REFS" >> "$GITHUB_OUTPUT"
         echo "LATEST_TAG_NAME=$LATEST_TAG_NAME" >> "$GITHUB_OUTPUT"
-      shell: bash
 
     - name: Build documentation
-      run: |
-        sphinx-multiversion docs _build/html "${{ steps.get_build_refs.outputs.BUILD_REFS }}"
-      shell: bash
+      run: sphinx-multiversion docs _build/html
 
     - name: Copy latest release docs to 'latest' directory
       if: ${{ steps.get_build_refs.outputs.LATEST_TAG_NAME != '' }}
@@ -62,7 +59,6 @@ jobs:
         echo "Copying docs from '$LATEST_TAG_NAME' to 'latest/'"
         mkdir -p ./_build/html/latest/
         cp -r ./_build/html/"$LATEST_TAG_NAME"/. ./_build/html/latest/
-      shell: bash
 
     - name: Upload documentation artifacts
       uses: actions/upload-pages-artifact@v3
