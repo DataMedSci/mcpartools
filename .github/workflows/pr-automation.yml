@@ -18,20 +18,30 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Check PR Best Practices
-        id: check_pr_description_and_issues
-        run: |
-          PR_DESCRIPTION="${{ github.event.pull_request.body }}"
-          PR_NUMBER=${{ github.event.pull_request.number }}
-          PR_URL="${{ github.event.pull_request.html_url }}"
+      - name: Check PR Description
+        uses: actions/github-script@v6
+        id: check_pr_description
+        with:
+          script: |
+            const prBody = context.payload.pull_request.body;
+            const prNumber = context.payload.pull_request.number;
+            const actor = context.actor;
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
 
-          if [ -z "$PR_DESCRIPTION" ] || [ "$PR_DESCRIPTION" == "null" ]; then
-            echo "::warning file=.github/workflows/pr-automation.yml::Pull Request description is empty. Please provide a description for the pull request."
-            curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -d '{"body":"@${{ github.actor }} please provide a description for this pull request."}' \
-              "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments"
-          fi
-        shell: bash
+            if (!prBody || prBody.trim() === "") {
+              console.log("::warning file=.github/workflows/pr-automation.yml::Pull Request description is empty. Please provide a description for the pull request.");
+
+              // Post a comment to the PR
+              await github.rest.issues.createComment({
+                owner: repoOwner,
+                repo: repoName,
+                issue_number: prNumber,
+                body: `🤖 @${actor}, please provide a description for this pull request.`,
+              });
+            } else {
+              console.log("PR description is not empty.");
+            }
 
       - name: Label PR by Size
         uses: pascalgn/size-label-action@v0.5.5
