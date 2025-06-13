@@ -9,15 +9,8 @@ on:
   workflow_dispatch: # to allow manual triggering
 
 jobs:
-  build-and-deploy-docs:
+  build-docs:
     runs-on: ubuntu-latest
-    permissions:
-      pages: write
-      id-token: write
-
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
     - name: Checkout code
@@ -71,6 +64,24 @@ jobs:
         cp -r ./_build/html/"$LATEST_TAG_NAME"/. ./_build/html/latest/
       shell: bash
 
+    - name: Upload documentation artifacts
+      uses: actions/upload-pages-artifact@v3
+      with:
+        name: docs
+        path: _build/html
+
+  deploy-docs:
+    needs: build-docs
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
     - name: Deploy to GitHub Pages
       id: deployment
       uses: actions/deploy-pages@v4
