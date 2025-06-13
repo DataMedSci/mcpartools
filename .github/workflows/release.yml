@@ -84,12 +84,7 @@ jobs:
       with:
         attestations: true
 
-    - name: Upload release assets to GitHub Release
-      uses: softprops/action-gh-release@v2
-      with:
-        files: dist/*
-
-  upload:
+  upload-release-assets:
     name: Upload if release
     needs: [build]
     runs-on: ubuntu-latest
