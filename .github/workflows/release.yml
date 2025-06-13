@@ -60,13 +60,14 @@ jobs:
 
   publish:
     name: Upload if release
-    needs: [build_wheels, build_sdist]
+    needs: [build]
     runs-on: ubuntu-latest
     if: github.event_name == 'release' && github.event.action == 'published'
     environment: pypi
     permissions:
       id-token: write
       attestations: write
+      contents: write
 
     steps:
     - uses: actions/setup-python@v5
@@ -90,6 +91,4 @@ jobs:
     - name: Upload release assets to GitHub Release
       uses: softprops/action-gh-release@v2
       with:
-        files: |
-          dist/* # Includes your .whl and single executable files
-          
+        files: dist/*
