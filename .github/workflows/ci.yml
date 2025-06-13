@@ -50,19 +50,15 @@ jobs:
         pip install ".[test]"
         pip install ".[lint]"
         pip install ".[build]"
-        pip install check-manifest
 
     - name: Run unit tests with pytest
       run: |
         pytest --cov=mcpartools --cov-report=xml --cov-report=term-missing
 
-    - name: Run Flake8 linting
+    - name: Run pre-commit hooks on changed files and verify
       run: |
-        flake8 mcpartools/ tests/
-
-    - name: Run check-manifest (verify package includes all necessary files)
-      run: |
-        check-manifest --verbose
+        pre-commit run
+        git diff --exit-code
 
     - name: Build wheel for Python ${{ matrix.python-version }}
       run: |

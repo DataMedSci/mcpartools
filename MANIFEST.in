@@ -1,5 +1,5 @@
   recursive-include mcpartools *.py *.sh *.json
-  include .flake8
+  include .pre-commit-config.yaml
   include *.toml
   exclude *.sh *.yml *.ini *.txt *.spec .gitkeep .coveragerc
   exclude CODE_OF_CONDUCT.md
