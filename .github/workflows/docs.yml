@@ -1,0 +1,86 @@
+name: Build and Deploy Docs (Master + Latest on Release)
+
+on:
+  push:
+    branches:
+      - master
+  release:
+    types: [published]
+  workflow_dispatch: # to allow manual triggering
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install documentation dependencies
+      run: |
+        python -m pip install --upgrade setuptools
+        pip install ".[docs]"
+
+    - name: Determine versions to build
+      id: get_build_refs
+      run: |
+        MAIN_BRANCH="master"
+        BUILD_REFS="$MAIN_BRANCH"
+
+        LATEST_TAG_NAME=""
+
+        # If workflow was triggered by github release, use the tag name from the release
+        if [[ "${{ github.event_name }}" == "release" && "${{ github.event.action }}" == "published" ]]; then
+          LATEST_TAG_NAME="${{ github.event.release.tag_name }}"
+          echo "Workflow triggered by release '${LATEST_TAG_NAME}'. Building for: $LATEST_TAG_NAME"
+          BUILD_REFS="$BUILD_REFS|$LATEST_TAG_NAME"
+        else
+          echo "Workflow triggered by push to '$MAIN_BRANCH' (or manually). Building only '$MAIN_BRANCH'."
+        fi
+
+        echo "Refs to build: $BUILD_REFS"
+        echo "BUILD_REFS=$BUILD_REFS" >> "$GITHUB_OUTPUT"
+        echo "LATEST_TAG_NAME=$LATEST_TAG_NAME" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Build documentation
+      run: |
+        sphinx-multiversion docs _build/html "${{ steps.get_build_refs.outputs.BUILD_REFS }}"
+      shell: bash
+
+    - name: Copy latest release docs to 'latest' directory
+      if: ${{ steps.get_build_refs.outputs.LATEST_TAG_NAME != '' }}
+      run: |
+        LATEST_TAG_NAME="${{ steps.get_build_refs.outputs.LATEST_TAG_NAME }}"
+        echo "Copying docs from '$LATEST_TAG_NAME' to 'latest/'"
+        mkdir -p ./_build/html/latest/
+        cp -r ./_build/html/"$LATEST_TAG_NAME"/. ./_build/html/latest/
+      shell: bash
+
+    - name: Upload documentation artifacts
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: _build/html
+
+  deploy-docs:
+    needs: build-docs
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4
