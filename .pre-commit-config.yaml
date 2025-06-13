@@ -2,11 +2,11 @@ repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v5.0.0
     hooks:
-      - id: trailing-whitespace # Usuwa białe znaki na końcu linii
-      - id: end-of-file-fixer # Zapewnia pojedynczą nową linię na końcu plików
-      - id: check-added-large-files # Sprawdza, czy nie dodajesz zbyt dużych plików
-      - id: check-yaml # Sprawdza składnię plików YAML (np. workflowy GitHub Actions)
-      - id: mixed-line-ending # Wymusza spójne zakończenia linii (LF, CRLF)
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-added-large-files
+      - id: check-yaml
+      - id: mixed-line-ending
 
   - repo: https://github.com/psf/black
     rev: 25.1.0
@@ -18,7 +18,7 @@ repos:
     rev: 6.0.1
     hooks:
       - id: isort
-        args: ["--profile", "black"] # Ważne: isort musi być skonfigurowany pod Black, by nie było konfliktów
+        args: ["--profile", "black"]
 
   - repo: https://github.com/mgedmin/check-manifest
     rev: "0.50"
