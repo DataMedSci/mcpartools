@@ -50,7 +50,7 @@ jobs:
         echo "LATEST_TAG_NAME=$LATEST_TAG_NAME" >> "$GITHUB_OUTPUT"
 
     - name: Build documentation
-      run: sphinx-multiversion docs _build/html ${{ steps.get_build_refs.outputs.BUILD_REFS }}
+      run: sphinx-multiversion docs _build/html
 
     - name: Copy latest release docs to 'latest' directory
       if: ${{ steps.get_build_refs.outputs.LATEST_TAG_NAME != '' }}
