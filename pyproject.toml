@@ -55,7 +55,7 @@ test = [
     "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.8.0",
-    "pytest-cov==6.2.1",
+    "pytest-cov==6.3.0",
     "coverage>=6.0",
 ]
 
@@ -88,7 +88,7 @@ dev = [
     "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.8.0",
-    "pytest-cov==6.2.1",
+    "pytest-cov==6.3.0",
     "coverage>=6.0",
     # From 'docs'
     "Sphinx>=7.0.0",
