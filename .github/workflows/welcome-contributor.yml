@@ -13,7 +13,7 @@ jobs:
       issues: write
       pull-requests: write
     steps:
-      - uses: plbstl/first-contribution@v3
+      - uses: plbstl/first-contribution@v4
         with:
           labels: first contrib
           issue-opened-msg: |
