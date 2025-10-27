@@ -67,13 +67,13 @@ jobs:
         ls -al dist/ # Verify the wheel is created
 
     - name: Upload Wheel Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: mcpartools-wheel
         path: dist/*.whl
 
     - name: Upload Sample Test Data Artifact
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: sample-fluka-input
         path: tests/res/sample_fluka.inp
@@ -152,7 +152,7 @@ jobs:
 
       - name: Upload Zipapp Executable as Artifact
         # This step makes the .pyz file available if needed for later stages (e.g., release)
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: generatemc-zipapp
           path: generatemc.pyz
