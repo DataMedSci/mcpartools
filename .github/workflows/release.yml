@@ -49,17 +49,17 @@ jobs:
         pyinstaller main.spec
         ls -al dist/generatemc
 
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@v6
       with:
         name: single
         path: dist/generatemc
 
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@v6
       with:
         name: wheel
         path: dist/*.whl
 
-    - uses: actions/upload-artifact@v5
+    - uses: actions/upload-artifact@v6
       with:
         name: source
         path: dist/*.tar.gz
