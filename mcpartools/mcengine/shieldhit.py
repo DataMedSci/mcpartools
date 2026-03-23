@@ -17,10 +17,8 @@ class ShieldHit(Engine):
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
-            self.run_script_content = (
-                files(__package__).joinpath(self.default_run_script_path)
-                .read_text(encoding='ascii')
-            )
+            self.run_script_content = files(__package__).joinpath(
+                self.default_run_script_path).read_text(encoding='ascii')
             logger.debug("Using default run script: " + self.default_run_script_path)
         else:
             tpl_fd = open(self.run_script_path, 'r')
@@ -28,10 +26,7 @@ class ShieldHit(Engine):
             tpl_fd.close()
             logger.debug("Using user run script: " + self.run_script_path)
 
-        self.collect_script_content = (
-            files(__package__).joinpath(self.collect_script)
-            .read_text(encoding='ascii')
-        )
+        self.collect_script_content = files(__package__).joinpath(self.collect_script).read_text(encoding='ascii')
 
         self.particle_no = 1
         self.rng_seed = 1
@@ -218,11 +213,8 @@ class ShieldHit(Engine):
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
         import json
-        icru_content = (
-            files(__package__)
-            .joinpath(os.path.join('data', 'SH12A_ICRU_table.json'))
-            .read_text(encoding='ascii')
-        )
+        icru_content = files(__package__).joinpath(
+            os.path.join('data', 'SH12A_ICRU_table.json')).read_text(encoding='ascii')
         ref_dict = json.loads(icru_content)
         try:
             return [ref_dict[e] for e in numbers]

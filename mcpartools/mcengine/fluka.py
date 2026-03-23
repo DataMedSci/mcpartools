@@ -11,22 +11,15 @@ class Fluka(Engine):
 
     default_run_script_path = os.path.join('data', 'run_fluka.sh')
     output_wildcard = "*_fort*"
-    alignment_line = (
-        '*...+....1....+....2....+....3....+....4....+'
-        '....5....+....6....+....7....+....8\n'
-    )
+    alignment_line = '*...+....1....+....2....+....3....+....4....+....5....+....6....+....7....+....8\n'
 
     def __init__(self, input_path, mc_run_script, collect_method, mc_engine_options):
-        Engine.__init__(
-            self, input_path, mc_run_script, collect_method, mc_engine_options
-        )
+        Engine.__init__(self, input_path, mc_run_script, collect_method, mc_engine_options)
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
-            self.run_script_content = (
-                files(__package__).joinpath(self.default_run_script_path)
-                .read_text(encoding='ascii')
-            )
+            self.run_script_content = files(__package__).joinpath(
+                self.default_run_script_path).read_text(encoding='ascii')
             logger.debug("Using default run script: " + self.default_run_script_path)
         else:
             tpl_fd = open(self.run_script_path, 'r')
@@ -38,10 +31,7 @@ class Fluka(Engine):
         self.input_lines = in_fd.readlines()
         in_fd.close()
 
-        self.collect_script_content = (
-            files(__package__).joinpath(self.collect_script)
-            .read_text(encoding='ascii')
-        )
+        self.collect_script_content = files(__package__).joinpath(self.collect_script).read_text(encoding='ascii')
 
     @property
     def input_files(self):
@@ -73,7 +63,7 @@ class Fluka(Engine):
                 standard_format_number = '{0:10.1f}'.format(particle_no)
                 if len(standard_format_number) <= 10:
                     new_line = "START     {:s}\n".format(standard_format_number)
-                else:  # use scientific notation if number doesn't fit 10-char field
+                else:  # use scientific notation if number of particles doesn't fit 10-char field
                     scientific_notation = '{:.4e}'.format(particle_no)
                     new_line = "START     {:s}\n".format(scientific_notation)
                 if self.input_lines[i - 1] != self.alignment_line:
