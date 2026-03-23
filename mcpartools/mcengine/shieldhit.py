@@ -27,7 +27,8 @@ class ShieldHit(Engine):
             tpl_fd.close()
             logger.debug("Using user run script: " + self.run_script_path)
 
-        self.collect_script_content = files(__package__).joinpath(*PurePath(self.collect_script).parts).read_text(encoding='ascii')
+        self.collect_script_content = files(__package__).joinpath(
+            *PurePath(self.collect_script).parts).read_text(encoding='ascii')
 
         self.particle_no = 1
         self.rng_seed = 1

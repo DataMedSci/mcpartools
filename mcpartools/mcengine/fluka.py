@@ -32,7 +32,8 @@ class Fluka(Engine):
         self.input_lines = in_fd.readlines()
         in_fd.close()
 
-        self.collect_script_content = files(__package__).joinpath(*PurePath(self.collect_script).parts).read_text(encoding='ascii')
+        self.collect_script_content = files(__package__).joinpath(
+            *PurePath(self.collect_script).parts).read_text(encoding='ascii')
 
     @property
     def input_files(self):
