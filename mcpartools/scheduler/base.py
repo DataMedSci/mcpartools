@@ -1,6 +1,7 @@
 import logging
 import os
 from importlib.resources import files
+from pathlib import PurePath
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,7 @@ class JobScheduler:
     main_run_script = 'main_run.sh'
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
-        self.submit_script = files(__package__).joinpath(self.submit_script_template).read_text(encoding='ascii')
+        self.submit_script = files(__package__).joinpath(*PurePath(self.submit_script_template).parts).read_text(encoding='ascii')
 
         log_dir = os.path.join(main_dir, "log")
         if not os.path.exists(log_dir):
@@ -44,7 +45,7 @@ class JobScheduler:
 
     def main_run_script_body(self, jobs_no, workspace_dir):
         self.main_run_script = (
-            files(__package__).joinpath(self.main_run_script_template)
+            files(__package__).joinpath(*PurePath(self.main_run_script_template).parts)
             .read_text(encoding='ascii')
             .format(
                 options_header=self.options_header,

@@ -1,6 +1,7 @@
 import logging
 import os
 from importlib.resources import files
+from pathlib import PurePath
 
 from mcpartools.mcengine.mcengine import Engine
 
@@ -19,7 +20,7 @@ class Fluka(Engine):
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
             self.run_script_content = files(__package__).joinpath(
-                self.default_run_script_path).read_text(encoding='ascii')
+                *PurePath(self.default_run_script_path).parts).read_text(encoding='ascii')
             logger.debug("Using default run script: " + self.default_run_script_path)
         else:
             tpl_fd = open(self.run_script_path, 'r')
@@ -31,7 +32,7 @@ class Fluka(Engine):
         self.input_lines = in_fd.readlines()
         in_fd.close()
 
-        self.collect_script_content = files(__package__).joinpath(self.collect_script).read_text(encoding='ascii')
+        self.collect_script_content = files(__package__).joinpath(*PurePath(self.collect_script).parts).read_text(encoding='ascii')
 
     @property
     def input_files(self):
