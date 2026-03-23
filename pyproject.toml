@@ -32,9 +32,7 @@ classifiers = [
     'Programming Language :: Python :: 3.12',
 ]
 
-dependencies = [
-    "setuptools"
-]
+dependencies = []
 
 [project.scripts]
 generatemc = "mcpartools.generatemc:main"
@@ -52,7 +50,6 @@ write_to = "mcpartools/_version.py"
 [project.optional-dependencies]
 test = [
     "pytest==9.0.2",
-    "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.8.0",
     "pytest-cov==7.0.0",
@@ -85,7 +82,6 @@ build = [
 dev = [
     # From 'test'
     "pytest==9.0.2",
-    "pytest-catchlog==1.2.2",
     "pytest-timeout==2.4.0",
     "pytest-xdist==3.8.0",
     "pytest-cov==7.0.0",

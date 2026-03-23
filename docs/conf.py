@@ -79,15 +79,14 @@ author = "Leszek Grzanka"
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 
-import pkg_resources
+from importlib.metadata import version, PackageNotFoundError
 
 try:
-    release = pkg_resources.get_distribution("mcpartools").version
-except pkg_resources.DistributionNotFound:
+    release = version("mcpartools")
+except PackageNotFoundError:
     print("mcpartools must be installed to build the documentation.")
     print("Install from source using `pip install -e .` in a virtualenv.")
     sys.exit(1)
-del pkg_resources
 
 if "dev" in release:
     release = release.split("dev")[0] + "dev"

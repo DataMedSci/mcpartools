@@ -1,5 +1,6 @@
 import logging
 import os
+from importlib.resources import files
 
 logger = logging.getLogger(__name__)
 
@@ -27,9 +28,7 @@ class JobScheduler:
     main_run_script = 'main_run.sh'
 
     def submit_script_body(self, jobs_no, main_dir, workspace_dir):
-        from pkg_resources import resource_string
-        tpl = resource_string(__name__, self.submit_script_template)
-        self.submit_script = tpl.decode('ascii')
+        self.submit_script = files(__package__).joinpath(self.submit_script_template).read_text(encoding='ascii')
 
         log_dir = os.path.join(main_dir, "log")
         if not os.path.exists(log_dir):
@@ -44,9 +43,7 @@ class JobScheduler:
                                          collect_script_name='collect.sh')
 
     def main_run_script_body(self, jobs_no, workspace_dir):
-        from pkg_resources import resource_string
-        tpl = resource_string(__name__, self.main_run_script_template)
-        self.main_run_script = tpl.decode('ascii').format(options_header=self.options_header,
+        self.main_run_script = files(__package__).joinpath(self.main_run_script_template).read_text(encoding='ascii').format(options_header=self.options_header,
                                                           workspace_dir=workspace_dir,
                                                           jobs_no=jobs_no)
         return self.main_run_script
