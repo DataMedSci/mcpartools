@@ -1,6 +1,7 @@
 import logging
 import os
-from pkg_resources import resource_string
+from importlib.resources import files
+from pathlib import PurePath
 
 from mcpartools.mcengine.mcengine import Engine
 
@@ -17,8 +18,8 @@ class ShieldHit(Engine):
 
         # user didn't provided path to input scripts, use default
         if self.run_script_path is None:
-            tpl = resource_string(__name__, self.default_run_script_path)
-            self.run_script_content = tpl.decode('ascii')
+            self.run_script_content = files(__package__).joinpath(
+                *PurePath(self.default_run_script_path).parts).read_text(encoding='ascii')
             logger.debug("Using default run script: " + self.default_run_script_path)
         else:
             tpl_fd = open(self.run_script_path, 'r')
@@ -26,7 +27,8 @@ class ShieldHit(Engine):
             tpl_fd.close()
             logger.debug("Using user run script: " + self.run_script_path)
 
-        self.collect_script_content = resource_string(__name__, self.collect_script).decode('ascii')
+        self.collect_script_content = files(__package__).joinpath(
+            *PurePath(self.collect_script).parts).read_text(encoding='ascii')
 
         self.particle_no = 1
         self.rng_seed = 1
@@ -34,8 +36,8 @@ class ShieldHit(Engine):
     @property
     def input_files(self):
         base = os.path.abspath(self.input_path)
-        files = ('beam.dat', 'geo.dat', 'mat.dat', 'detect.dat')
-        result = (os.path.join(base, f) for f in files)
+        input_file_names = ('beam.dat', 'geo.dat', 'mat.dat', 'detect.dat')
+        result = (os.path.join(base, f) for f in input_file_names)
         return result
 
     def randomize(self, new_seed, output_dir=None):
@@ -213,8 +215,9 @@ class ShieldHit(Engine):
     def _decrypt_icru_files(numbers):
         """Find matching file names for given ICRU numbers"""
         import json
-        icru_file = resource_string(__name__, os.path.join('data', 'SH12A_ICRU_table.json'))
-        ref_dict = json.loads(icru_file.decode('ascii'))
+        icru_content = files(__package__).joinpath(
+            'data', 'SH12A_ICRU_table.json').read_text(encoding='ascii')
+        ref_dict = json.loads(icru_content)
         try:
             return [ref_dict[e] for e in numbers]
         except KeyError as er:
